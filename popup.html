@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 350px;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h2 {
+            color: #2563eb;
+            margin: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #374151;
+        }
+        select, input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .checkbox-group {
+            margin-bottom: 15px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
+        .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .btn:hover {
+            background: #1d4ed8;
+        }
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 13px;
+        }
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        .status.loading {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        .hidden {
+            display: none;
+        }
+        .search-container {
+            position: relative;
+        }
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .dropdown-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 13px;
+        }
+        .dropdown-item:hover, .dropdown-item.highlighted {
+            background: #f3f4f6;
+        }
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .course-name {
+            font-weight: 500;
+            color: #374151;
+        }
+        .course-details {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        .selected-course {
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: #e0f2fe;
+            border: 1px solid #b3e5fc;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .selected-course .course-title {
+            font-weight: 500;
+            color: #01579b;
+        }
+        .selected-course .course-meta {
+            font-size: 11px;
+            color: #0277bd;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>=Ä Question Paper Helper</h2>
+        <p style="margin: 5px 0; color: #6b7280; font-size: 13px;">Upload relevant question papers to ChatGPT</p>
+    </div>
+
+    <form id="paperForm">
+        <div class="form-group">
+            <label for="courseSearch">Search Course:</label>
+            <div class="search-container">
+                <input type="text" id="courseSearch" placeholder="Type course name..." autocomplete="off" required>
+                <div id="courseDropdown" class="dropdown hidden"></div>
+            </div>
+            <div id="selectedCourse" class="selected-course hidden"></div>
+            <div id="paperCount" class="paper-count hidden"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Exam Types:</label>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="regular" value="Regular" checked>
+                    <label for="regular">Regular</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="supplementary" value="Supplementary" checked>
+                    <label for="supplementary">Supplementary</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="maxPapers">Maximum Papers to Upload:</label>
+            <input type="number" id="maxPapers" min="1" max="10" value="5">
+        </div>
+
+        <button type="submit" class="btn" id="uploadBtn">
+            =ä Upload Papers to ChatGPT
+        </button>
+    </form>
+
+    <div id="status" class="status hidden"></div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
