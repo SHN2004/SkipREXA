@@ -242,10 +242,14 @@ function updateHighlight(items) {
     });
 }
 
-// Get paper count for selected course and filters
-async function updatePaperCount() {
+// Get papers for selected course and filters and display them
+async function updatePaperDisplay() {
+    const paperSelectionGroup = document.getElementById('paperSelectionGroup');
+    const paperList = document.getElementById('paperList');
+    
     if (!selectedCourse) {
         paperCountDiv.classList.add('hidden');
+        paperSelectionGroup.style.display = 'none';
         return;
     }
 
@@ -265,14 +269,94 @@ async function updatePaperCount() {
         paperCountDiv.textContent = `${filteredPapers.length} papers available`;
         paperCountDiv.classList.remove('hidden');
         
+        if (filteredPapers.length > 0) {
+            displayPaperList(filteredPapers);
+            paperSelectionGroup.style.display = 'block';
+        } else {
+            paperSelectionGroup.style.display = 'none';
+        }
+        
     } catch (error) {
-        console.error('Error counting papers:', error);
+        console.error('Error fetching papers:', error);
+        paperSelectionGroup.style.display = 'none';
     }
 }
 
-// Get selected exam types
+// Legacy function name for compatibility
+async function updatePaperCount() {
+    return updatePaperDisplay();
+}
+
+// Display paper list with checkboxes
+function displayPaperList(papers) {
+    const paperList = document.getElementById('paperList');
+    
+    paperList.innerHTML = papers.map((paper, index) => `
+        <div class="paper-item">
+            <input type="checkbox" id="paper-${index}" value="${index}" class="paper-checkbox">
+            <div class="paper-info">
+                <div class="paper-details">${paper.raw_exam_details || 'No details available'}</div>
+                <div class="paper-meta">
+                    ${paper.exam_type} • ${paper.exam_month} ${paper.exam_year} • ${paper.semester}
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    // Store papers data globally for later access
+    window.availablePapers = papers;
+    
+    // Add event listeners to checkboxes
+    const checkboxes = paperList.querySelectorAll('.paper-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedCount);
+    });
+    
+    updateSelectedCount();
+}
+
+// Update selected count display
+function updateSelectedCount() {
+    const selectedCheckboxes = document.querySelectorAll('.paper-checkbox:checked');
+    const selectedCount = document.getElementById('selectedCount');
+    const count = selectedCheckboxes.length;
+    
+    selectedCount.textContent = `${count} paper${count !== 1 ? 's' : ''} selected`;
+}
+
+// Get selected papers
+function getSelectedPapers() {
+    const selectedCheckboxes = document.querySelectorAll('.paper-checkbox:checked');
+    const selectedIndices = Array.from(selectedCheckboxes).map(cb => parseInt(cb.value));
+    
+    if (!window.availablePapers) {
+        return [];
+    }
+    
+    return selectedIndices.map(index => window.availablePapers[index]);
+}
+
+// Select all papers
+function selectAllPapers() {
+    const checkboxes = document.querySelectorAll('.paper-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = true;
+    });
+    updateSelectedCount();
+}
+
+// Deselect all papers
+function deselectAllPapers() {
+    const checkboxes = document.querySelectorAll('.paper-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    updateSelectedCount();
+}
+
+// Get selected exam types (updated to exclude paper checkboxes)
 function getSelectedExamTypes() {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked:not(.paper-checkbox)');
     return Array.from(checkboxes).map(cb => cb.value);
 }
 
@@ -303,19 +387,14 @@ async function uploadPapers() {
             return;
         }
 
-        const examTypes = getSelectedExamTypes();
-        const maxPapers = parseInt(document.getElementById('maxPapers').value);
+        const selectedPapers = getSelectedPapers();
 
-        // Fetch papers from Supabase
-        const data = await supabase.from('question_papers')
-            .select('*')
-            .eq('course_name', selectedCourse.name)
-            .eq('actual_subject_code', selectedCourse.code)
-            .data();
+        if (selectedPapers.length === 0) {
+            showStatus('Please select at least one paper first', 'error');
+            return;
+        }
 
-        const filteredPapers = data
-            .filter(paper => examTypes.includes(paper.exam_type))
-            .slice(0, maxPapers);
+        const filteredPapers = selectedPapers;
 
         if (filteredPapers.length === 0) {
             showStatus('No papers found for the selected criteria', 'error');
@@ -533,7 +612,10 @@ document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
     checkbox.addEventListener('change', updatePaperCount);
 });
 
-document.getElementById('maxPapers').addEventListener('input', updatePaperCount);
+// Add event listeners for Select All/Deselect All buttons
+document.getElementById('selectAllBtn').addEventListener('click', selectAllPapers);
+document.getElementById('deselectAllBtn').addEventListener('click', deselectAllPapers);
+
 
 form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -546,6 +628,12 @@ form.addEventListener('submit', (e) => {
     const examTypes = getSelectedExamTypes();
     if (examTypes.length === 0) {
         showStatus('Please select at least one exam type', 'error');
+        return;
+    }
+    
+    const selectedPapers = getSelectedPapers();
+    if (selectedPapers.length === 0) {
+        showStatus('Please select at least one paper to upload', 'error');
         return;
     }
     
