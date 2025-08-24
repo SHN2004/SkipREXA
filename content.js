@@ -33,6 +33,20 @@ if (window.questionPaperHelperLoaded) {
             return true; // Keep message channel open for async response
         }
         
+        if (message.action === 'injectPrompt') {
+            console.log('Content script received prompt injection request');
+            injectPromptToChatGPT(message.prompt)
+                .then(() => {
+                    console.log('Prompt injection completed successfully');
+                    sendResponse({ success: true });
+                })
+                .catch(error => {
+                    console.error('Prompt injection error:', error);
+                    sendResponse({ success: false, error: error.message });
+                });
+            return true; // Keep message channel open for async response
+        }
+        
         return false; // Don't keep channel open for unknown actions
     });
     
@@ -930,4 +944,71 @@ async function downloadFilesForManualUpload(pdfs) {
     }
     
     console.log('📥 Manual download completed');
+}
+
+// Inject custom prompt into ChatGPT's input field
+async function injectPromptToChatGPT(promptText) {
+    try {
+        console.log('🔤 Attempting to inject prompt:', promptText);
+        
+        // First try to find the ProseMirror editor
+        const proseMirrorDiv = document.querySelector('#prompt-textarea[contenteditable="true"]');
+        if (proseMirrorDiv) {
+            console.log('Found ProseMirror div, injecting prompt...');
+            
+            // Clear existing content and set new content
+            proseMirrorDiv.innerHTML = `<p>${promptText}</p>`;
+            
+            // Trigger input events to notify ProseMirror of the change
+            const inputEvent = new Event('input', { bubbles: true });
+            proseMirrorDiv.dispatchEvent(inputEvent);
+            
+            const focusEvent = new Event('focus', { bubbles: true });
+            proseMirrorDiv.dispatchEvent(focusEvent);
+            
+            console.log('✅ Prompt injected via ProseMirror');
+            return;
+        }
+        
+        // Fallback: try to find the textarea
+        const textarea = document.querySelector('textarea[name="prompt-textarea"]');
+        if (textarea) {
+            console.log('Found textarea, injecting prompt...');
+            
+            textarea.value = promptText;
+            textarea.style.display = 'block'; // Make visible if hidden
+            
+            // Trigger events
+            const inputEvent = new Event('input', { bubbles: true });
+            textarea.dispatchEvent(inputEvent);
+            
+            const changeEvent = new Event('change', { bubbles: true });
+            textarea.dispatchEvent(changeEvent);
+            
+            console.log('✅ Prompt injected via textarea');
+            return;
+        }
+        
+        // Last resort: try any contenteditable div that might be the input
+        const contentEditableInputs = document.querySelectorAll('div[contenteditable="true"]');
+        for (const input of contentEditableInputs) {
+            if (input.closest('[class*="input"]') || input.closest('[class*="prompt"]')) {
+                console.log('Found alternative contenteditable input, injecting prompt...');
+                
+                input.innerHTML = `<p>${promptText}</p>`;
+                
+                const inputEvent = new Event('input', { bubbles: true });
+                input.dispatchEvent(inputEvent);
+                
+                console.log('✅ Prompt injected via alternative method');
+                return;
+            }
+        }
+        
+        throw new Error('Could not find ChatGPT input field to inject prompt');
+        
+    } catch (error) {
+        console.error('Error injecting prompt:', error);
+        throw error;
+    }
 }

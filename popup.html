@@ -223,6 +223,25 @@
             color: #6b7280;
             font-weight: 500;
         }
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .radio-item {
+            display: flex;
+            align-items: center;
+        }
+        .radio-item input[type="radio"] {
+            width: auto;
+            margin-right: 8px;
+            margin-top: 0;
+        }
+        .radio-item label {
+            margin-bottom: 0;
+            font-weight: 400;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -243,15 +262,23 @@
         </div>
 
         <div class="form-group">
-            <label>Exam Types:</label>
-            <div class="checkbox-group">
-                <div class="checkbox-item">
-                    <input type="checkbox" id="regular" value="Regular" checked>
-                    <label for="regular">Regular</label>
+            <label>Study Purpose:</label>
+            <div class="radio-group">
+                <div class="radio-item">
+                    <input type="radio" id="generalAnalysis" name="studyPurpose" value="general" checked>
+                    <label for="generalAnalysis">General Analysis</label>
                 </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="supplementary" value="Supplementary" checked>
-                    <label for="supplementary">Supplementary</label>
+                <div class="radio-item">
+                    <input type="radio" id="internal1" name="studyPurpose" value="internal1">
+                    <label for="internal1">Studying for Internal 1</label>
+                </div>
+                <div class="radio-item">
+                    <input type="radio" id="internal2" name="studyPurpose" value="internal2">
+                    <label for="internal2">Studying for Internal 2</label>
+                </div>
+                <div class="radio-item">
+                    <input type="radio" id="endSemester" name="studyPurpose" value="endSemester">
+                    <label for="endSemester">Studying for End Semester Exam</label>
                 </div>
             </div>
         </div>

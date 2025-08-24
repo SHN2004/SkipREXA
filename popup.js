@@ -254,17 +254,13 @@ async function updatePaperDisplay() {
     }
 
     try {
-        const examTypes = getSelectedExamTypes();
-        
         const data = await supabase.from('question_papers')
             .select('*')
             .eq('course_name', selectedCourse.name)
             .eq('actual_subject_code', selectedCourse.code)
             .data();
 
-        const filteredPapers = data.filter(paper => 
-            examTypes.includes(paper.exam_type)
-        );
+        const filteredPapers = data;
 
         paperCountDiv.textContent = `${filteredPapers.length} papers available`;
         paperCountDiv.classList.remove('hidden');
@@ -354,11 +350,61 @@ function deselectAllPapers() {
     updateSelectedCount();
 }
 
-// Get selected exam types (updated to exclude paper checkboxes)
-function getSelectedExamTypes() {
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked:not(.paper-checkbox)');
-    return Array.from(checkboxes).map(cb => cb.value);
+// Get selected study purpose
+function getSelectedStudyPurpose() {
+    const selectedRadio = document.querySelector('input[name="studyPurpose"]:checked');
+    return selectedRadio ? selectedRadio.value : 'general';
 }
+
+// Generate custom prompt based on study purpose
+function generateCustomPrompt(studyPurpose, selectedPapers) {
+    if (studyPurpose === 'general') {
+        return ''; // No prompt for general analysis
+    }
+    
+    const courseName = selectedCourse ? selectedCourse.name : 'this course';
+    const paperCount = selectedPapers.length;
+    
+    const promptTemplates = {
+        'internal1': `I'm studying for my Internal 1 exam and have uploaded ${paperCount} end semester question papers for ${courseName} for reference. My Internal 1 will have:
+- Section A: 4 questions (5 marks each) 
+- Section B: 4 questions (2 main questions, each with OR options, 15 marks each)
+
+Internal 1 typically covers Modules 1 and 2, but my teacher may have assigned different modules.
+
+Before we start, please ask me:
+1. Which specific modules are covered in my Internal 1 exam?
+2. How much time do I have to prepare for this exam?
+3. What's my preferred study approach: (a) Practice solving questions, (b) Understand concepts through questions, (c) Create study notes from questions, or (d) Mixed approach?
+
+Since I've uploaded end semester question papers, I need you to filter the relevant questions based on my modules. The end semester paper structure is: Section A has questions 1-2 (Module 1), 3-4 (Module 2), 5-6 (Module 3), 7-8 (Module 4), 9-10 (Module 5). Section B has questions 11-12 (Module 1 with OR), 13-14 (Module 2 with OR), 15-16 (Module 3 with OR), 17-18 (Module 4 with OR), 19-20 (Module 5 with OR). Please identify and focus on questions from my specified modules only.`,
+        'internal2': `I'm studying for my Internal 2 exam and have uploaded ${paperCount} end semester question papers for ${courseName} for reference. My Internal 2 will have:
+- Section A: 4 questions (5 marks each)
+- Section B: 4 questions (2 main questions, each with OR options, 15 marks each)
+
+Internal 2 typically covers Modules 3 and 4, but my teacher may have assigned different modules.
+
+Before we start, please ask me:
+1. Which specific modules are covered in my Internal 2 exam?
+2. How much time do I have to prepare for this exam?
+3. What's my preferred study approach: (a) Practice solving questions, (b) Understand concepts through questions, (c) Create study notes from questions, or (d) Mixed approach?
+
+Since I've uploaded end semester question papers, I need you to filter the relevant questions based on my modules. The end semester paper structure is: Section A has questions 1-2 (Module 1), 3-4 (Module 2), 5-6 (Module 3), 7-8 (Module 4), 9-10 (Module 5). Section B has questions 11-12 (Module 1 with OR), 13-14 (Module 2 with OR), 15-16 (Module 3 with OR), 17-18 (Module 4 with OR), 19-20 (Module 5 with OR). Please identify and focus on questions from my specified modules only.`,
+        'endSemester': `I'm studying for my End Semester exam and have uploaded ${paperCount} question papers for ${courseName} for reference. My End Semester exam will have:
+- Section A: 10 questions (2 from each of the 5 modules)
+- Section B: 10 questions (5 main questions, each with OR options)
+
+Before we start, please ask me:
+1. Are there any specific modules I want to focus on more, or should we cover all 5 modules equally?
+2. How much time do I have to prepare for this exam?
+3. What's my preferred study approach: (a) Practice solving questions, (b) Understand concepts through questions, (c) Create study notes from questions, (d) Focus on frequently asked questions, or (e) Mixed approach?
+
+Once you know this, please help me create a comprehensive study plan covering all modules according to my study approach and time constraint, using the uploaded question papers as reference.`
+    };
+    
+    return promptTemplates[studyPurpose] || '';
+}
+
 
 // PDF downloads now handled by background script
 
@@ -568,6 +614,28 @@ async function uploadPapers() {
             showStatus(`Successfully uploaded ${pdfData.length} papers!`, 'success');
         }
         
+        // Inject custom prompt based on study purpose
+        const studyPurpose = getSelectedStudyPurpose();
+        const customPrompt = generateCustomPrompt(studyPurpose, selectedPapers);
+        
+        if (customPrompt && customPrompt.trim() !== '') {
+            console.log(`📝 Injecting custom prompt for study purpose: ${studyPurpose}`);
+            showStatus('Injecting study prompt...', 'loading');
+            
+            try {
+                await chrome.tabs.sendMessage(tab.id, {
+                    action: 'injectPrompt',
+                    prompt: customPrompt
+                });
+                console.log('✅ Custom prompt injected successfully');
+            } catch (promptError) {
+                console.error('❌ Failed to inject custom prompt:', promptError);
+                // Don't show error to user since upload was successful
+            }
+        } else {
+            console.log('ℹ️ No custom prompt needed for general analysis');
+        }
+        
     } catch (error) {
         console.error('Upload error:', error);
         showStatus('Upload failed. Please try again.', 'error');
@@ -607,10 +675,7 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Add event listeners for checkboxes
-document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', updatePaperCount);
-});
+// Note: Exam type checkboxes have been removed, no longer need event listeners for them
 
 // Add event listeners for Select All/Deselect All buttons
 document.getElementById('selectAllBtn').addEventListener('click', selectAllPapers);
@@ -622,12 +687,6 @@ form.addEventListener('submit', (e) => {
     
     if (!selectedCourse) {
         showStatus('Please select a course first', 'error');
-        return;
-    }
-    
-    const examTypes = getSelectedExamTypes();
-    if (examTypes.length === 0) {
-        showStatus('Please select at least one exam type', 'error');
         return;
     }
     
