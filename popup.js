@@ -1,9 +1,43 @@
 console.log("🚀 Popup.js script loading...")
 
-// Configuration
-const SUPABASE_URL = "https://avmoixumqzdydqrzquon.supabase.co"
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk"
+// Configuration will be loaded from Chrome storage
+let SUPABASE_URL = null
+let SUPABASE_ANON_KEY = null
+
+// Initialize credentials from Chrome storage
+async function initializeCredentials() {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get(['supabaseUrl', 'supabaseKey'], (result) => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message))
+        return
+      }
+      
+      // Set up default credentials if not found
+      if (!result.supabaseUrl || !result.supabaseKey) {
+        console.log("🔧 Setting up default credentials...")
+        chrome.storage.sync.set({
+          'supabaseUrl': 'https://avmoixumqzdydqrzquon.supabase.co',
+          'supabaseKey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk'
+        }, () => {
+          if (chrome.runtime.lastError) {
+            reject(new Error(chrome.runtime.lastError.message))
+            return
+          }
+          SUPABASE_URL = 'https://avmoixumqzdydqrzquon.supabase.co'
+          SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk'
+          console.log("✅ Default credentials stored and loaded")
+          resolve()
+        })
+      } else {
+        SUPABASE_URL = result.supabaseUrl
+        SUPABASE_ANON_KEY = result.supabaseKey
+        console.log("✅ Credentials loaded from storage")
+        resolve()
+      }
+    })
+  })
+}
 
 // Initialize Supabase client
 function createSupabaseClient() {
@@ -126,7 +160,7 @@ function createSupabaseClient() {
   }
 }
 
-const supabase = createSupabaseClient()
+let supabase = null
 
 // DOM elements with error checking
 console.log("🔍 Looking for DOM elements...")
@@ -399,6 +433,15 @@ async function loadAllCourses() {
     console.log("🔄 Starting to load courses...")
     showStatus("Loading courses...", "loading")
 
+    // Check if credentials are loaded
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      throw new Error("Supabase credentials not loaded")
+    }
+
+    if (!supabase) {
+      throw new Error("Supabase client not initialized")
+    }
+
     // Test network connectivity first
     console.log("🌐 Testing Supabase connectivity...")
     console.log(`📍 Supabase URL: ${SUPABASE_URL}`)
@@ -589,6 +632,12 @@ async function updatePaperDisplay() {
     console.log("No course selected, hiding paper display")
     paperCountDiv.classList.add("hidden")
     paperSelectionGroup.style.display = "none"
+    return
+  }
+
+  // Check if credentials and supabase client are available
+  if (!supabase || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    showStatus("Extension credentials not available", "error")
     return
   }
 
@@ -1133,11 +1182,17 @@ form.addEventListener("submit", (e) => {
 // Initialize with comprehensive error handling
 console.log("🎬 Setting up DOMContentLoaded listener...")
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   console.log("🚀 DOM loaded, initializing extension...")
   
   try {
-    // Load theme preference first
+    // Initialize credentials first
+    console.log("🔐 Initializing credentials...")
+    await initializeCredentials()
+    supabase = createSupabaseClient()
+    console.log("✅ Supabase client created")
+    
+    // Load theme preference
     loadThemePreference()
     
     // Verify all critical elements exist
@@ -1196,7 +1251,9 @@ document.addEventListener("DOMContentLoaded", () => {
     console.error("❌ Critical error during initialization:", error)
     console.error("❌ Error stack:", error.stack)
     
-    if (statusDiv) {
+    if (error.message.includes('credentials') || error.message.includes('storage')) {
+      showStatus("Failed to load extension credentials", "error")
+    } else if (statusDiv) {
       showStatus("Extension failed to initialize", "error")
     } else {
       alert("Extension initialization failed. Please reload the extension.")
