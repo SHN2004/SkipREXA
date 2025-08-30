@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Question Paper Helper",
+  "name": "SkipREXA",
   "version": "1.0",
   "description": "Upload relevant question papers to ChatGPT based on subject selection",
   "permissions": ["activeTab", "storage", "downloads", "contextMenus", "background", "scripting"],
@@ -21,6 +21,6 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Question Paper Helper"
+    "default_title": "SkipREXA"
   }
 }
