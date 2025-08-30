@@ -115,9 +115,10 @@
 
         .header-top {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: flex-start;
             margin-bottom: 8px;
+            position: relative;
         }
 
         .theme-toggle {
@@ -133,6 +134,9 @@
             min-width: 36px;
             min-height: 36px;
             flex-shrink: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
         }
 
         .theme-toggle:hover {
@@ -629,7 +633,7 @@
             <div class="header-top">
                 <h1>
                     <div class="header-icon">📄</div>
-                    Question Paper Helper
+                    SkipREXA
                 </h1>
                 <button id="themeToggle" class="theme-toggle" title="Toggle dark mode">
                     <span class="theme-icon">🌙</span>
