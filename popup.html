@@ -13,7 +13,7 @@
             --card-foreground: #2C2C2C;
             --popover: #FFFFFF;
             --popover-foreground: #2C2C2C;
-            --primary: #7A57C6; 
+            --primary: #6B46C1; 
             --primary-foreground: #FFFFFF; 
             --secondary: #2CA6A4; 
             --secondary-foreground: #FFFFFF; 
@@ -25,7 +25,7 @@
             --destructive-foreground: #ffffff; 
             --border: #DDDDDD; 
             --input: #FFFFFF; 
-            --ring: rgba(122, 87, 198, 0.5); 
+            --ring: rgba(107, 70, 193, 0.5); 
             --radius: 0.5rem;
         }
 
@@ -247,6 +247,18 @@
         .dropdown-item:hover, 
         .dropdown-item.highlighted {
             background: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+
+        .dropdown-item:hover .course-name,
+        .dropdown-item.highlighted .course-name {
+            color: var(--secondary-foreground) !important;
+        }
+
+        .dropdown-item:hover .course-details,
+        .dropdown-item.highlighted .course-details {
+            color: var(--secondary-foreground) !important;
+            opacity: 1;
         }
 
         .dropdown-item:last-child {
@@ -272,6 +284,7 @@
             border: 1px solid var(--primary);
             border-radius: var(--radius);
             font-size: 14px;
+            color: var(--secondary-foreground);
         }
 
         .selected-course .course-title {
@@ -282,7 +295,8 @@
 
         .selected-course .course-meta {
             font-size: 12px;
-            color: var(--muted-foreground);
+            color: var(--secondary-foreground);
+            opacity: 1;
         }
 
         .radio-group {
@@ -304,6 +318,11 @@
         .radio-item:hover {
             background: var(--secondary);
             border-color: var(--primary);
+            color: var(--secondary-foreground);
+        }
+
+        .radio-item:hover label {
+            color: var(--secondary-foreground) !important;
         }
 
         .radio-item input[type="radio"] {
@@ -373,6 +392,18 @@
 
         .paper-item:hover {
             background: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+
+        .paper-item:hover .paper-details,
+        .paper-item.highlighted .paper-details {
+            color: var(--secondary-foreground) !important;
+        }
+
+        .paper-item:hover .paper-meta,
+        .paper-item.highlighted .paper-meta {
+            color: var(--secondary-foreground) !important;
+            opacity: 1;
         }
 
         .paper-item input[type="checkbox"] {
@@ -440,12 +471,13 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            box-shadow: 0 2px 6px rgba(107, 70, 193, 0.15);
         }
 
         .btn:hover {
-            background: #6942B5;
+            background: #553C9A;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(122, 87, 198, 0.3);
+            box-shadow: 0 4px 12px rgba(107, 70, 193, 0.3);
         }
 
         .btn:disabled {
@@ -482,9 +514,9 @@
         }
 
         .status.loading {
-            background: rgba(122, 87, 198, 0.1);
+            background: rgba(107, 70, 193, 0.1);
             color: var(--primary);
-            border: 1px solid rgba(122, 87, 198, 0.3);
+            border: 1px solid rgba(107, 70, 193, 0.3);
         }
 
         .hidden {
