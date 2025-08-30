@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap');
+        
+        :root {
+            /* Light Theme Colors */
+            --background: #ffffff;
+            --foreground: #4b5563;
+            --card: #f9fafb;
+            --card-foreground: #4b5563;
+            --popover: #ffffff;
+            --popover-foreground: #4b5563;
+            --primary: #0891b2; 
+            --primary-foreground: #ffffff; 
+            --secondary: #ecfeff; 
+            --secondary-foreground: #4b5563; 
+            --muted: #f1f5f9; 
+            --muted-foreground: #6b7280; 
+            --accent: #10b981;
+            --accent-foreground: #ffffff; 
+            --destructive: #dc2626; 
+            --destructive-foreground: #ffffff; 
+            --border: #e5e7eb; 
+            --input: #f9fafb; 
+            --ring: rgba(8, 145, 178, 0.5); 
+            --radius: 0.5rem;
+        }
+
+        /* Dark Theme Colors using new vibrant palette */
+        .dark-theme {
+            --background: #000000;
+            --foreground: #FAEB92;
+            --card: #1a1a1a;
+            --card-foreground: #FAEB92;
+            --popover: #1a1a1a;
+            --popover-foreground: #FAEB92;
+            --primary: #9929EA; 
+            --primary-foreground: #000000; 
+            --secondary: #CC66DA; 
+            --secondary-foreground: #000000; 
+            --muted: #1a1a1a; 
+            --muted-foreground: #FAEB92; 
+            --accent: #CC66DA;
+            --accent-foreground: #000000; 
+            --destructive: #ef4444; 
+            --destructive-foreground: #1a1a1a; 
+            --border: #333333; 
+            --input: #1a1a1a; 
+            --ring: rgba(153, 41, 234, 0.5); 
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 380px;
+            padding: 0;
+            margin: 0;
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--background);
+            color: var(--foreground);
+            line-height: 1.5;
+        }
+
+        .container {
+            padding: 24px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .theme-toggle {
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            min-height: 36px;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent);
+            border-color: var(--primary);
+        }
+
+        .theme-icon {
+            font-size: 16px;
+            transition: transform 0.2s ease;
+        }
+
+        .dark-theme .theme-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Enhanced dark theme transitions */
+        body {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            transition: background-color 0.3s ease;
+        }
+
+        .form-section {
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .search-input, .btn, .paper-list, .dropdown, .selected-course, .progress-container {
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark theme specific enhancements */
+        .dark-theme .status.success {
+            background: rgba(204, 102, 218, 0.1);
+            color: #CC66DA;
+            border-color: #333333;
+        }
+
+        .dark-theme .status.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border-color: #333333;
+        }
+
+        .dark-theme .status.loading {
+            background: rgba(153, 41, 234, 0.1);
+            color: #9929EA;
+            border-color: #333333;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--primary);
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .header-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-foreground);
+            font-size: 14px;
+        }
+
+        .header p {
+            margin: 0;
+            color: var(--muted-foreground);
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--foreground);
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            background: var(--input);
+            color: var(--foreground);
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--ring);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted-foreground);
+            font-size: 16px;
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--popover);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 var(--radius) var(--radius);
+            max-height: 240px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: background-color 0.2s ease;
+        }
+
+        .dropdown-item:hover, 
+        .dropdown-item.highlighted {
+            background: var(--secondary);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .course-name {
+            font-weight: 600;
+            color: var(--foreground);
+            font-size: 14px;
+        }
+
+        .course-details {
+            font-size: 12px;
+            color: var(--muted-foreground);
+            margin-top: 4px;
+        }
+
+        .selected-course {
+            margin-top: 12px;
+            padding: 16px;
+            background: var(--secondary);
+            border: 1px solid var(--primary);
+            border-radius: var(--radius);
+            font-size: 14px;
+        }
+
+        .selected-course .course-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .selected-course .course-meta {
+            font-size: 12px;
+            color: var(--muted-foreground);
+        }
+
+        .radio-group {
+            display: grid;
+            gap: 12px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .radio-item:hover {
+            background: var(--secondary);
+            border-color: var(--primary);
+        }
+
+        .radio-item input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            accent-color: var(--primary);
+        }
+
+        .radio-item label {
+            margin: 0;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .paper-selection-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .selection-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-btn {
+            background: var(--muted);
+            color: var(--muted-foreground);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: calc(var(--radius) - 2px);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent);
+        }
+
+        .paper-list {
+            max-height: 280px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--card);
+        }
+
+        .paper-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            transition: background-color 0.2s ease;
+        }
+
+        .paper-item:last-child {
+            border-bottom: none;
+        }
+
+        .paper-item:hover {
+            background: var(--secondary);
+        }
+
+        .paper-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            margin-top: 2px;
+            accent-color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .paper-info {
+            flex: 1;
+        }
+
+        .paper-details {
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 6px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .paper-meta {
+            color: var(--muted-foreground);
+            font-size: 12px;
+            line-height: 1.3;
+        }
+
+        .selected-count {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted-foreground);
+            font-weight: 500;
+            padding: 8px;
+            background: var(--muted);
+            border-radius: calc(var(--radius) - 2px);
+        }
+
+        .paper-count {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 600;
+            text-align: center;
+            padding: 8px 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: calc(var(--radius) - 2px);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            padding: 14px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            width: 100%;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #0e7490;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(8, 145, 178, 0.3);
+        }
+
+        .btn:disabled {
+            background: var(--muted);
+            color: var(--muted-foreground);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-icon {
+            font-size: 16px;
+        }
+
+        .status {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status.error {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--destructive);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .status.loading {
+            background: rgba(8, 145, 178, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(8, 145, 178, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Progress Bar Styles */
+        .progress-container {
+            margin: 16px 0;
+            padding: 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--muted);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-details {
+            font-size: 12px;
+            color: var(--muted-foreground);
+            text-align: center;
+        }
+
+        /* Scrollbar styling */
+        .paper-list::-webkit-scrollbar,
+        .dropdown::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .paper-list::-webkit-scrollbar-track,
+        .dropdown::-webkit-scrollbar-track {
+            background: var(--muted);
+        }
+
+        .paper-list::-webkit-scrollbar-thumb,
+        .dropdown::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .paper-list::-webkit-scrollbar-thumb:hover,
+        .dropdown::-webkit-scrollbar-thumb:hover {
+            background: var(--muted-foreground);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <h1>
+                    <div class="header-icon">📄</div>
+                    Question Paper Helper
+                </h1>
+                <button id="themeToggle" class="theme-toggle" title="Toggle dark mode">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+            <p>Upload relevant question papers to ChatGPT</p>
+        </div>
+
+        <form id="paperForm">
+            <div class="form-section">
+                <label class="form-label" for="courseSearch">Search Course</label>
+                <div class="search-container">
+                    <div class="search-icon">🔍</div>
+                    <input type="text" id="courseSearch" class="search-input" placeholder="Type course name..." autocomplete="off" required>
+                    <div id="courseDropdown" class="dropdown hidden"></div>
+                </div>
+                <div id="selectedCourse" class="selected-course hidden"></div>
+                <div id="paperCount" class="paper-count hidden"></div>
+            </div>
+
+            <div class="form-section">
+                <label class="form-label">Study Purpose</label>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="generalAnalysis" name="studyPurpose" value="general" checked>
+                        <label for="generalAnalysis">General Analysis</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="internal1" name="studyPurpose" value="internal1">
+                        <label for="internal1">Studying for Internal 1</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="internal2" name="studyPurpose" value="internal2">
+                        <label for="internal2">Studying for Internal 2</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="endSemester" name="studyPurpose" value="endSemester">
+                        <label for="endSemester">Studying for End Semester Exam</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section" id="paperSelectionGroup" style="display: none;">
+                <div class="paper-selection-header">
+                    <label class="form-label">Available Papers</label>
+                    <div class="selection-controls">
+                        <button type="button" id="selectAllBtn" class="control-btn">Select All</button>
+                        <button type="button" id="deselectAllBtn" class="control-btn">Deselect All</button>
+                    </div>
+                </div>
+                <div id="paperList" class="paper-list"></div>
+                <div id="selectedCount" class="selected-count">0 papers selected</div>
+            </div>
+
+            <button type="submit" class="btn" id="uploadBtn">
+                <span class="btn-icon">📤</span>
+                Upload Papers to ChatGPT
+            </button>
+        </form>
+
+        <!-- Progress Bar -->
+        <div id="progressContainer" class="progress-container hidden">
+            <div class="progress-label">
+                <span id="progressText">Downloading papers...</span>
+                <span id="progressCount">0/0</span>
+            </div>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+            <div id="progressDetails" class="progress-details"></div>
+        </div>
+
+        <div id="status" class="status hidden"></div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

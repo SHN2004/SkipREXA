@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Question Paper Helper",
+  "version": "1.0",
+  "description": "Upload relevant question papers to ChatGPT based on subject selection",
+  "permissions": ["activeTab", "storage", "downloads", "contextMenus", "background", "scripting"],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
+    "https://*.supabase.co/*",
+    "https://student.rajagiritech.ac.in/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Question Paper Helper"
+  }
+}
