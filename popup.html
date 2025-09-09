@@ -532,6 +532,37 @@
             font-size: 16px;
         }
 
+        /* Button Group Styles */
+        .button-group {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn-upload {
+            flex: 3;
+        }
+
+        .btn-download {
+            flex: 1;
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+            box-shadow: 0 2px 6px rgba(44, 166, 164, 0.15);
+        }
+
+        .btn-download:hover {
+            background: #228B8D;
+            box-shadow: 0 4px 12px rgba(44, 166, 164, 0.3);
+        }
+
+        .btn-download:disabled {
+            background: var(--muted);
+            color: var(--muted-foreground);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         .status {
             margin-top: 16px;
             padding: 12px 16px;
@@ -688,10 +719,16 @@
                 <div id="selectedCount" class="selected-count">0 papers selected</div>
             </div>
 
-            <button type="submit" class="btn" id="uploadBtn">
-                <span class="btn-icon">📤</span>
-                Upload Papers to ChatGPT
-            </button>
+            <div class="button-group">
+                <button type="submit" class="btn btn-upload" id="uploadBtn">
+                    <span class="btn-icon">📤</span>
+                    Upload
+                </button>
+                <button type="button" class="btn btn-download" id="downloadBtn">
+                    <span class="btn-icon">💾</span>
+                    Download
+                </button>
+            </div>
         </form>
 
         <!-- Progress Bar -->

@@ -1,6 +1,7 @@
 // Content script for ChatGPT file upload
 console.log('Question Paper Helper content script loaded');
 
+
 // Prevent multiple script injections and event listener registration
 if (window.questionPaperHelperLoaded) {
     console.log('Content script already loaded, skipping initialization...');
@@ -20,7 +21,8 @@ if (window.questionPaperHelperLoaded) {
         }
         
         if (message.action === 'uploadPDFs') {
-            console.log('Content script received upload request for', message.pdfs.length, 'PDFs');
+            console.log(`Content script received upload request for ${message.pdfs.length} PDFs`);
+            
             uploadPDFsToChatGPT(message.pdfs)
                 .then(() => {
                     console.log('Upload completed successfully');
@@ -35,6 +37,7 @@ if (window.questionPaperHelperLoaded) {
         
         if (message.action === 'injectPrompt') {
             console.log('Content script received prompt injection request');
+            
             injectPromptToChatGPT(message.prompt)
                 .then(() => {
                     console.log('Prompt injection completed successfully');
@@ -729,6 +732,28 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Enhanced utility to convert base64 to File object
+function base64ToFile(base64, filename, mimeType) {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: mimeType });
+    return new File([blob], filename, { type: mimeType });
+}
+
+// Convert base64 to ArrayBuffer for background script File constructor
+function base64ToArrayBuffer(base64) {
+    const binaryString = atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+}
+
 // Upload verification system
 async function verifyFileUpload(fileName, maxWaitTime = 5000) {
     console.log(`Verifying upload of ${fileName}...`);
@@ -1012,3 +1037,10 @@ async function injectPromptToChatGPT(promptText) {
         throw error;
     }
 }
+
+
+
+
+
+
+

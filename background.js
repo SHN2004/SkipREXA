@@ -28,12 +28,13 @@ chrome.runtime.onInstalled.addListener((details) => {
     });
 });
 
-// Listen for tab updates to check if user navigates to ChatGPT
+// Listen for tab updates to check if user navigates to supported LLM platforms
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === 'complete' && tab.url) {
-        const isChatGPT = tab.url.includes('chatgpt.com') || tab.url.includes('chat.openai.com');
+        const isSupportedPlatform = tab.url.includes('chatgpt.com') || 
+                                    tab.url.includes('chat.openai.com');
         
-        if (isChatGPT) {
+        if (isSupportedPlatform) {
             // Inject content script if not already injected
             chrome.scripting.executeScript({
                 target: { tabId: tabId },
@@ -93,6 +94,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
         return true;
     }
+    
+    // Handle active tab requests
+    if (message.action === 'getActiveTab') {
+        chrome.tabs.query({active: true, currentWindow: true})
+            .then(tabs => sendResponse(tabs[0]))
+            .catch(error => sendResponse({error: error.message}));
+        return true; // keep channel open
+    }
+    
+    
 });
 
 // Function to download PDF (if needed by other parts of extension)

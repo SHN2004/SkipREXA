@@ -180,6 +180,7 @@ const courseDropdown = getElementSafely("courseDropdown")
 const selectedCourseDiv = getElementSafely("selectedCourse")
 const paperCountDiv = getElementSafely("paperCount")
 const uploadBtn = getElementSafely("uploadBtn")
+const downloadBtn = getElementSafely("downloadBtn")
 const statusDiv = getElementSafely("status")
 const form = getElementSafely("paperForm")
 
@@ -815,6 +816,7 @@ Once you know this, please help me create a comprehensive study plan covering al
 
 // PDF downloads now handled by background script
 
+
 // Main upload function
 async function uploadPapers() {
   try {
@@ -1031,7 +1033,7 @@ async function uploadPapers() {
       throw new Error(`Upload communication failed: ${error.message}. Please refresh ChatGPT and try again.`)
     }
 
-    // Hide progress bar and show success - ORIGINAL WORKING VERSION
+    // Hide progress bar and show success
     hideProgress()
 
     if (downloadErrors.length > 0) {
@@ -1094,6 +1096,120 @@ async function uploadPapers() {
   }
 }
 
+// Direct download function for downloading papers to user's PC
+async function downloadPapersDirectly() {
+  try {
+    showStatus("Preparing downloads...", "loading")
+    const downloadBtn = document.getElementById("downloadBtn")
+    downloadBtn.disabled = true
+
+    if (!selectedCourse) {
+      showStatus("Please select a course first", "error")
+      return
+    }
+
+    const selectedPapers = getSelectedPapers()
+
+    if (selectedPapers.length === 0) {
+      showStatus("Please select at least one paper first", "error")
+      return
+    }
+
+    // Initialize progress bar
+    showProgress(0, selectedPapers.length, "Preparing downloads...")
+    
+    let successfulDownloads = 0
+    let failedDownloads = []
+
+    for (let i = 0; i < selectedPapers.length; i++) {
+      const paper = selectedPapers[i]
+      try {
+        const currentPaperName = `${paper.course_name} (${paper.exam_type})`
+        showProgress(i, selectedPapers.length, `Downloading: ${currentPaperName}`)
+        
+        // Use background script to download PDF
+        const response = await chrome.runtime.sendMessage({
+          action: 'downloadPDF',
+          url: paper.download_url
+        })
+
+        if (response.success) {
+          // Convert base64 back to blob and create download
+          const byteCharacters = atob(response.base64Data)
+          const byteNumbers = new Array(byteCharacters.length)
+          for (let j = 0; j < byteCharacters.length; j++) {
+            byteNumbers[j] = byteCharacters.charCodeAt(j)
+          }
+          const byteArray = new Uint8Array(byteNumbers)
+          const blob = new Blob([byteArray], { type: "application/pdf" })
+          
+          // Create filename with proper naming
+          const filename = `${paper.course_name}_${paper.exam_type}_${paper.exam_month}_${paper.exam_year}.pdf`
+          
+          // Create download link and trigger download
+          const url = URL.createObjectURL(blob)
+          const downloadLink = document.createElement('a')
+          downloadLink.href = url
+          downloadLink.download = filename
+          downloadLink.style.display = 'none'
+          
+          // Trigger download
+          document.body.appendChild(downloadLink)
+          downloadLink.click()
+          document.body.removeChild(downloadLink)
+          
+          // Clean up URL after a short delay
+          setTimeout(() => URL.revokeObjectURL(url), 1000)
+          
+          successfulDownloads++
+          console.log(`✅ Successfully downloaded: ${filename}`)
+        } else {
+          throw new Error(response.error)
+        }
+      } catch (error) {
+        console.error(`❌ Error downloading ${paper.course_name}:`, error)
+        failedDownloads.push({
+          paper: paper.course_name,
+          error: error.message
+        })
+      }
+    }
+    
+    // Show final progress
+    showProgress(selectedPapers.length, selectedPapers.length, "Downloads complete")
+    
+    // Hide progress and show final status
+    setTimeout(() => {
+      hideProgress()
+      
+      if (successfulDownloads === selectedPapers.length) {
+        showStatus(`Successfully downloaded ${successfulDownloads} papers!`, "success")
+      } else if (successfulDownloads > 0) {
+        showStatus(`Downloaded ${successfulDownloads}/${selectedPapers.length} papers (${failedDownloads.length} failed)`, "success")
+      } else {
+        showStatus("All downloads failed. Please check your connection and try again.", "error")
+      }
+    }, 1000)
+    
+  } catch (error) {
+    console.error("❌ Critical download error:", error)
+    hideProgress()
+    
+    let errorMessage = "Download failed. Please try again."
+    if (error.message.includes("network") || error.message.includes("fetch")) {
+      errorMessage = "Network error. Check your connection and try again."
+    }
+    
+    showStatus(errorMessage, "error")
+  } finally {
+    // Re-enable the download button
+    const downloadBtn = document.getElementById("downloadBtn")
+    if (downloadBtn) {
+      downloadBtn.disabled = false
+    }
+  }
+}
+
 // Convert blob to base64
 function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
@@ -1148,6 +1264,18 @@ if (themeToggle) {
   console.error("❌ Cannot add theme toggle listener - themeToggle not found!")
 }
 
+// Download button event listener
+if (downloadBtn) {
+  try {
+    downloadBtn.addEventListener('click', downloadPapersDirectly)
+    console.log("✅ Download button event listener added")
+  } catch (error) {
+    console.error("❌ Error setting up download button listener:", error)
+  }
+} else {
+  console.error("❌ Cannot add download button listener - downloadBtn not found!")
+}
+
 // Close dropdown when clicking outside
 document.addEventListener("click", (e) => {
   if (!courseSearchInput.contains(e.target) && !courseDropdown.contains(e.target)) {
@@ -1198,7 +1326,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Verify all critical elements exist
     const criticalElements = {
       courseSearchInput, courseDropdown, selectedCourseDiv, 
-      paperCountDiv, uploadBtn, statusDiv, form
+      paperCountDiv, uploadBtn, downloadBtn, statusDiv, form
     }
     
     console.log("🔍 Checking critical elements...")
@@ -1228,11 +1356,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             showStatus("Please navigate to ChatGPT to use this extension", "error")
             if (uploadBtn) uploadBtn.disabled = true
             // Still load courses for testing course search functionality
-            console.log("📚 Not on ChatGPT, but loading courses for testing...")
+            console.log("📚 Not on supported LLM platform, but loading courses for testing...")
             loadAllCourses()
           } else {
-            console.log("✅ On ChatGPT, loading courses...")
-            // Load courses immediately when on ChatGPT
+            console.log("✅ On supported LLM platform, loading courses...")
+            // Load courses immediately when on supported platform
             loadAllCourses()
           }
         } catch (tabError) {
