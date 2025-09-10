@@ -646,11 +646,15 @@ async function updatePaperDisplay() {
     console.log("Fetching papers for course:", selectedCourse.name, selectedCourse.code)
     showStatus("Loading papers...", "loading")
     
+    // URL-encode the course name to handle # and other special characters
+    const encodedCourseName = encodeURIComponent(selectedCourse.name);
+    console.log("Querying for course_name:", selectedCourse.name);
+    console.log("URL-encoded course_name:", encodedCourseName);
+
     const data = await supabase
       .from("question_papers")
       .select("*")
-      .eq("course_name", selectedCourse.name)
-      .eq("actual_subject_code", selectedCourse.code)
+      .eq("course_name", encodedCourseName)
       .data()
 
     console.log("Fetched papers data:", data)
