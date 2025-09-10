@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SkipREXA",
-  "version": "2.0",
+  "version": "3.0",
   "description": "Upload relevant question papers to ChatGPT based on subject selection",
   "icons": {
     "16": "icon16.png",
