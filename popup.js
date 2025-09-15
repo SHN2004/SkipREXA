@@ -4,39 +4,49 @@ console.log("🚀 Popup.js script loading...")
 let SUPABASE_URL = null
 let SUPABASE_ANON_KEY = null
 
-// Initialize credentials from Chrome storage
+// Initialize credentials from browser storage
 async function initializeCredentials() {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(['supabaseUrl', 'supabaseKey'], (result) => {
-      if (chrome.runtime.lastError) {
-        reject(new Error(chrome.runtime.lastError.message))
-        return
+  try {
+    console.log("🔐 Starting credential initialization...")
+
+    // Try to get existing credentials
+    const result = await browser.storage.sync.get(['supabaseUrl', 'supabaseKey'])
+    console.log("📦 Storage result:", result)
+
+    // Set up default credentials if not found
+    if (!result.supabaseUrl || !result.supabaseKey) {
+      console.log("🔧 Setting up default credentials...")
+
+      const defaultCredentials = {
+        'supabaseUrl': 'https://avmoixumqzdydqrzquon.supabase.co',
+        'supabaseKey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk'
       }
-      
-      // Set up default credentials if not found
-      if (!result.supabaseUrl || !result.supabaseKey) {
-        console.log("🔧 Setting up default credentials...")
-        chrome.storage.sync.set({
-          'supabaseUrl': 'https://avmoixumqzdydqrzquon.supabase.co',
-          'supabaseKey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk'
-        }, () => {
-          if (chrome.runtime.lastError) {
-            reject(new Error(chrome.runtime.lastError.message))
-            return
-          }
-          SUPABASE_URL = 'https://avmoixumqzdydqrzquon.supabase.co'
-          SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk'
-          console.log("✅ Default credentials stored and loaded")
-          resolve()
-        })
-      } else {
-        SUPABASE_URL = result.supabaseUrl
-        SUPABASE_ANON_KEY = result.supabaseKey
-        console.log("✅ Credentials loaded from storage")
-        resolve()
-      }
+
+      await browser.storage.sync.set(defaultCredentials)
+
+      SUPABASE_URL = defaultCredentials.supabaseUrl
+      SUPABASE_ANON_KEY = defaultCredentials.supabaseKey
+      console.log("✅ Default credentials stored and loaded")
+    } else {
+      SUPABASE_URL = result.supabaseUrl
+      SUPABASE_ANON_KEY = result.supabaseKey
+      console.log("✅ Credentials loaded from storage")
+    }
+
+    console.log("🔍 Final credentials check:", {
+      hasUrl: !!SUPABASE_URL,
+      hasKey: !!SUPABASE_ANON_KEY
     })
-  })
+
+  } catch (error) {
+    console.error("❌ Credential initialization error:", error)
+
+    // Fallback: set credentials directly
+    console.log("🔄 Using fallback credentials...")
+    SUPABASE_URL = 'https://avmoixumqzdydqrzquon.supabase.co'
+    SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk'
+    console.log("✅ Fallback credentials set")
+  }
 }
 
 // Initialize Supabase client
@@ -278,13 +288,15 @@ function updateProgressDetails(details) {
 // Theme management functions
 async function loadThemePreference() {
   try {
-    const result = await chrome.storage.local.get(['theme'])
+    console.log("🎨 Loading theme preference...")
+    const result = await browser.storage.local.get(['theme'])
     const savedTheme = result.theme || 'light'
-    console.log(`🎨 Loaded theme preference: ${savedTheme}`)
+    console.log(`✅ Loaded theme preference: ${savedTheme}`)
     applyTheme(savedTheme)
     return savedTheme
   } catch (error) {
     console.error('❌ Error loading theme preference:', error)
+    console.log('🔄 Defaulting to light theme')
     applyTheme('light')
     return 'light'
   }
@@ -292,7 +304,7 @@ async function loadThemePreference() {
 
 async function saveThemePreference(theme) {
   try {
-    await chrome.storage.local.set({ theme })
+    await browser.storage.local.set({ theme })
     console.log(`💾 Saved theme preference: ${theme}`)
   } catch (error) {
     console.error('❌ Error saving theme preference:', error)
@@ -375,9 +387,9 @@ async function checkBackgroundScriptHealth() {
   try {
     const response = await new Promise((resolve, reject) => {
       // Send a test message to background script
-      chrome.runtime.sendMessage({ action: 'healthCheck' }, (response) => {
-        if (chrome.runtime.lastError) {
-          reject(new Error(chrome.runtime.lastError.message))
+      browser.runtime.sendMessage({ action: 'healthCheck' }, (response) => {
+        if (browser.runtime.lastError) {
+          reject(new Error(browser.runtime.lastError.message))
         } else {
           resolve(response || { success: false, error: 'No response' })
         }
@@ -406,9 +418,9 @@ async function ensureBackgroundScriptReady() {
   if (!isHealthy) {
     console.log("⚠️ Background script not responding, attempting to wake it up...")
     
-    // Try to wake up the service worker by calling chrome.runtime methods
+    // Try to wake up the service worker by calling browser.runtime methods
     try {
-      await chrome.runtime.getBackgroundPage?.() 
+      await browser.runtime.getBackgroundPage?.() 
     } catch (e) {
       console.log("getBackgroundPage not available (expected for MV3)")
     }
@@ -426,7 +438,7 @@ async function ensureBackgroundScriptReady() {
   return true
 }
 
-// Note: Using direct chrome.runtime.sendMessage() like the original working version
+// Note: Using direct browser.runtime.sendMessage() like the original working version
 
 // Load all courses when extension opens
 async function loadAllCourses() {
@@ -825,7 +837,7 @@ Once you know this, please help me create a comprehensive study plan covering al
 async function uploadPapers() {
   try {
     // Check if we're on ChatGPT
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+    const [tab] = await browser.tabs.query({ active: true, currentWindow: true })
     if (!tab || !tab.url) {
       showStatus("Could not access current tab. Please try again.", "error")
       return
@@ -881,7 +893,7 @@ async function uploadPapers() {
         showStatus(`Downloading ${i + 1}/${filteredPapers.length}: ${paper.course_name}`, 'loading')
         
         // Use background script to download PDF - ORIGINAL WORKING VERSION
-        const response = await chrome.runtime.sendMessage({
+        const response = await browser.runtime.sendMessage({
           action: 'downloadPDF',
           url: paper.download_url
         })
@@ -959,9 +971,8 @@ async function uploadPapers() {
 
       try {
         // Inject content script
-        await chrome.scripting.executeScript({
-          target: { tabId: tab.id },
-          files: ["content.js"],
+        await browser.tabs.executeScript(tab.id, {
+          file: "content.js"
         })
 
         // Wait longer for initialization
@@ -969,7 +980,7 @@ async function uploadPapers() {
 
         // Test if content script is responding
         try {
-          const testResponse = await chrome.tabs.sendMessage(tab.id, {
+          const testResponse = await browser.tabs.sendMessage(tab.id, {
             action: "ping",
           })
           contentScriptReady = true
@@ -993,7 +1004,7 @@ async function uploadPapers() {
 
       // Last resort: ask background script to inject
       try {
-        await chrome.runtime.sendMessage({
+        await browser.runtime.sendMessage({
           action: "injectContentScript",
           tabId: tab.id,
         })
@@ -1001,7 +1012,7 @@ async function uploadPapers() {
         await new Promise((resolve) => setTimeout(resolve, 1500))
 
         // Test one more time
-        const finalTestResponse = await chrome.tabs.sendMessage(tab.id, {
+        const finalTestResponse = await browser.tabs.sendMessage(tab.id, {
           action: "ping",
         })
 
@@ -1028,7 +1039,7 @@ async function uploadPapers() {
     console.log(`📤 Sending ${pdfsWithBase64.length} PDFs to content script...`)
 
     try {
-      await chrome.tabs.sendMessage(tab.id, {
+      await browser.tabs.sendMessage(tab.id, {
         action: "uploadPDFs",
         pdfs: pdfsWithBase64,
       })
@@ -1055,7 +1066,7 @@ async function uploadPapers() {
       showStatus("Injecting study prompt...", "loading")
 
       try {
-        await chrome.tabs.sendMessage(tab.id, {
+        await browser.tabs.sendMessage(tab.id, {
           action: "injectPrompt",
           prompt: customPrompt,
         })
@@ -1132,7 +1143,7 @@ async function downloadPapersDirectly() {
         showProgress(i, selectedPapers.length, `Downloading: ${currentPaperName}`)
         
         // Use background script to download PDF
-        const response = await chrome.runtime.sendMessage({
+        const response = await browser.runtime.sendMessage({
           action: 'downloadPDF',
           url: paper.download_url
         })
@@ -1351,7 +1362,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // Check if we're on ChatGPT
     if (chrome?.tabs) {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         try {
           const currentTab = tabs[0]
           console.log("🌐 Current tab URL:", currentTab?.url)

@@ -10,7 +10,7 @@ if (window.questionPaperHelperLoaded) {
     console.log('Content script initialized for the first time');
     
     // Set up message listener only once
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.log('Content script received message:', message.action);
         
         if (message.action === 'ping') {
@@ -137,72 +137,88 @@ async function findWorkingUploadMethod() {
     return null;
 }
 
-// Main function to upload PDFs to ChatGPT using drag-and-drop
+// Convert base64 to File (Firefox-compatible)
+const b642File = (b64, name, type = 'application/pdf') => {
+    const bin = atob(b64);
+    const arr = Uint8Array.from(bin, c => c.charCodeAt(0));
+    return new File([arr], name, {type});
+};
+
+// Wait for file input to exist
+const waitForFileInput = (timeout = 5000) =>
+    new Promise((resolve, reject) => {
+        const t0 = performance.now();
+        const poll = () => {
+            const el = document.querySelector('input[type="file"]');
+            if (el) return resolve(el);
+            if (performance.now() - t0 > timeout) return reject('no file input found');
+            requestAnimationFrame(poll);
+        };
+        poll();
+    });
+
+// Firefox-proof upload of one PDF
+async function uploadOnePDF(pdf) {
+    console.log(`[Firefox-compatible] uploading ${pdf.name}`);
+
+    try {
+        // ChatGPT keeps an invisible input[type=file] in the DOM
+        const input = await waitForFileInput();
+        const originalDisplay = input.style.display;
+
+        input.style.display = 'block';  // unhide temporarily
+        input.multiple = false;         // single file mode
+
+        const dt = new DataTransfer();
+        dt.items.add(b642File(pdf.data, pdf.name));
+        input.files = dt.files;         // works in Firefox
+
+        input.dispatchEvent(new Event('change', {bubbles: true}));
+
+        await delay(800);  // let UI react
+        input.style.display = originalDisplay;  // restore original
+
+        console.log(`✅ Upload completed: ${pdf.name}`);
+
+    } catch (error) {
+        console.error(`❌ Error uploading ${pdf.name}:`, error);
+        throw error;
+    }
+}
+
+// Main function to upload PDFs using direct file input method
 async function uploadPDFsToChatGPT(pdfs) {
-    console.log('Starting upload of', pdfs.length, 'PDFs to ChatGPT using drag-and-drop method');
-    
-    // Use drag-and-drop method directly
-    const workingMethod = 'drag_drop';
-    console.log(`📤 Using drag-and-drop method for all uploads`);
-    
-    console.log('📄 Starting individual upload strategy');
-    
-    // Track successful uploads
+    console.log(`Starting upload of ${pdfs.length} PDFs using Firefox-compatible method`);
+
     let successfulUploads = 0;
-    const initialFileCount = getCurrentFileCount();
-    
+
     for (let i = 0; i < pdfs.length; i++) {
         const pdf = pdfs[i];
         console.log(`\n📄 Uploading PDF ${i + 1}/${pdfs.length}: ${pdf.name}`);
-        
+
         try {
-            // Convert this specific PDF to File object
-            const byteCharacters = atob(pdf.data);
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let j = 0; j < byteCharacters.length; j++) {
-                byteNumbers[j] = byteCharacters.charCodeAt(j);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], { type: 'application/pdf' });
-            const file = new File([blob], pdf.name, { type: 'application/pdf' });
-            
-            // Use drag-and-drop method directly
-            const dropZone = findDropZone();
-            if (dropZone) {
-                console.log(`📤 Drag-dropping ${pdf.name}...`);
-                await simulateDragAndDrop(dropZone, file);
-                
-                // Wait for upload to process
-                await delay(2000);
-                
-                // Assume success - no verification to avoid confusion
-                successfulUploads++;
-                console.log(`✅ Upload ${i + 1} completed: ${pdf.name}`);
-            } else {
-                console.log(`❌ No drop zone found for ${pdf.name}`);
-            }
-            
-            // Longer delay between uploads to let ChatGPT stabilize
+            await uploadOnePDF(pdf);
+            successfulUploads++;
+
+            // Delay between uploads to let ChatGPT process
             if (i < pdfs.length - 1) {
                 console.log('⏳ Waiting before next upload...');
-                await delay(3000);
+                await delay(2000);
             }
-            
+
         } catch (error) {
             console.error(`Error uploading ${pdf.name}:`, error);
         }
     }
-    
-    const finalFileCount = getCurrentFileCount();
+
     console.log(`\n📊 Upload Summary:`);
     console.log(`- Attempted: ${pdfs.length}`);
     console.log(`- Successful: ${successfulUploads}`);
-    console.log(`- Files in UI: ${finalFileCount} (was ${initialFileCount})`);
-    
+
     if (successfulUploads === 0) {
         throw new Error('No files were uploaded successfully. Please try refreshing ChatGPT and try again.');
     }
-    
+
     console.log('🎉 Upload process completed');
 }
 
