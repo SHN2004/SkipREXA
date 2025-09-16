@@ -25,6 +25,8 @@
     "https://*.supabase.co/*",
     "https://student.rajagiritech.ac.in/*"
   ],
+
+  "content_security_policy": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://*.supabase.co https://*.rajagiritech.ac.in",
   "background": {
     "scripts": ["background.js"],
     "persistent": false

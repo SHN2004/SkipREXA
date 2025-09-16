@@ -34,7 +34,8 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         if (isSupportedPlatform) {
             // Inject content script if not already injected
             browser.tabs.executeScript(tabId, {
-                file: 'content.js'
+                file: 'content.js',
+                runAt: 'document_end'
             }).catch((error) => {
                 // Script might already be injected, ignore error
                 console.log('Content script injection skipped:', error.message);
@@ -77,7 +78,8 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Handle content script injection from background
         console.log('Background injecting content script for tab:', message.tabId);
         browser.tabs.executeScript(message.tabId, {
-            file: 'content.js'
+            file: 'content.js',
+            runAt: 'document_end'
         })
         .then(() => {
             console.log('Background injection successful');
