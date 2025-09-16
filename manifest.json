@@ -20,7 +20,6 @@
     "activeTab",
     "storage",
     "contextMenus",
-    "tabs",
     "https://chatgpt.com/*",
     "https://chat.openai.com/*",
     "https://*.supabase.co/*",
