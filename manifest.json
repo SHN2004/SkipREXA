@@ -3,6 +3,13 @@
   "name": "SkipREXA",
   "version": "3.0",
   "description": "Upload relevant question papers to ChatGPT based on subject selection",
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "dosa@canteen.yummy"
+    }
+  },
+
   "icons": {
     "16": "icon16.png",
     "32": "icon32.png",
