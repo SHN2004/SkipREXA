@@ -673,6 +673,23 @@
             <p>Upload relevant question papers to ChatGPT</p>
         </div>
 
+        <!-- Auth section: gate app until signed in -->
+        <div id="authArea" class="form-section">
+            <div id="signedOut">
+                <button type="button" id="loginBtn" class="btn">
+                    <span class="btn-icon">🔐</span>
+                    Sign in with Google (rajagiri.edu.in)
+                </button>
+            </div>
+            <div id="signedIn" class="hidden" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                <div>
+                    <div class="course-name" id="userEmail">Signed in</div>
+                </div>
+                <button type="button" id="logoutBtn" class="control-btn">Sign out</button>
+            </div>
+        </div>
+
+        <div id="appArea" class="hidden">
         <form id="paperForm">
             <div class="form-section">
                 <label class="form-label" for="courseSearch">Search Course</label>
@@ -744,6 +761,7 @@
         </div>
 
         <div id="status" class="status hidden"></div>
+        </div> <!-- end appArea -->
     </div>
 
     <script src="popup.js"></script>

@@ -3,11 +3,14 @@ console.log("🚀 Popup.js script loading...")
 // Configuration will be loaded from Chrome storage
 let SUPABASE_URL = null
 let SUPABASE_ANON_KEY = null
+let GOOGLE_CLIENT_ID = null
+const ALLOWED_DOMAIN = 'rajagiri.edu.in'
+let session = null // Supabase session { access_token, refresh_token, expires_at, user? }
 
 // Initialize credentials from Chrome storage
 async function initializeCredentials() {
   return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(['supabaseUrl', 'supabaseKey'], (result) => {
+    chrome.storage.sync.get(['supabaseUrl', 'supabaseKey', 'googleClientId'], (result) => {
       if (chrome.runtime.lastError) {
         reject(new Error(chrome.runtime.lastError.message))
         return
@@ -26,17 +29,80 @@ async function initializeCredentials() {
           }
           SUPABASE_URL = 'https://avmoixumqzdydqrzquon.supabase.co'
           SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk'
+          GOOGLE_CLIENT_ID = result.googleClientId || null
           console.log("✅ Default credentials stored and loaded")
           resolve()
         })
       } else {
         SUPABASE_URL = result.supabaseUrl
         SUPABASE_ANON_KEY = result.supabaseKey
+        GOOGLE_CLIENT_ID = result.googleClientId || null
         console.log("✅ Credentials loaded from storage")
         resolve()
       }
     })
   })
+}
+
+// Session storage helpers
+async function loadSession() {
+  const { supabaseSession } = await chrome.storage.local.get(['supabaseSession'])
+  session = supabaseSession || null
+  return session
+}
+
+async function saveSession(s) {
+  session = s
+  await chrome.storage.local.set({ supabaseSession: s })
+}
+
+async function clearSession() {
+  session = null
+  await chrome.storage.local.remove('supabaseSession')
+}
+
+function nowInSeconds() { return Math.floor(Date.now() / 1000) }
+
+function isSessionExpired() {
+  if (!session?.expires_at) return true
+  return nowInSeconds() >= session.expires_at
+}
+
+async function refreshSessionIfNeeded() {
+  if (!session?.refresh_token || !isSessionExpired()) return session
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({ refresh_token: session.refresh_token })
+    })
+    if (!res.ok) throw new Error(`Refresh failed: ${res.status}`)
+    const data = await res.json()
+    const expires_at = nowInSeconds() + (data.expires_in || 3600) - 60
+    const next = { ...session, ...data, expires_at }
+    await saveSession(next)
+    return next
+  } catch (e) {
+    console.error('Token refresh failed, clearing session', e)
+    await clearSession()
+    throw e
+  }
+}
+
+async function getSupabaseHeaders() {
+  await refreshSessionIfNeeded()
+  if (!session?.access_token) {
+    throw new Error('Not authenticated. Please sign in with your college email.')
+  }
+  return {
+    apikey: SUPABASE_ANON_KEY,
+    Authorization: `Bearer ${session.access_token}`,
+    'Content-Type': 'application/json'
+  }
 }
 
 // Initialize Supabase client
@@ -71,11 +137,7 @@ function createSupabaseClient() {
                       url += `&offset=${options.offset}`
                     }
 
-                    const headers = {
-                      apikey: SUPABASE_ANON_KEY,
-                      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-                      "Content-Type": "application/json",
-                    }
+                    const headers = await getSupabaseHeaders()
                     
                     // Add Range header for pagination
                     if (options.offset !== undefined && options.limit !== undefined) {
@@ -104,11 +166,7 @@ function createSupabaseClient() {
                   url += `&offset=${options.offset}`
                 }
 
-                const headers = {
-                  apikey: SUPABASE_ANON_KEY,
-                  Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-                  "Content-Type": "application/json",
-                }
+                const headers = await getSupabaseHeaders()
                 
                 // Add Range header for pagination
                 if (options.offset !== undefined && options.limit !== undefined) {
@@ -137,11 +195,7 @@ function createSupabaseClient() {
               url += `&offset=${options.offset}`
             }
 
-            const headers = {
-              apikey: SUPABASE_ANON_KEY,
-              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-              "Content-Type": "application/json",
-            }
+            const headers = await getSupabaseHeaders()
             
             // Add Range header for pagination
             if (options.offset !== undefined && options.limit !== undefined) {
@@ -194,6 +248,14 @@ const progressDetails = getElementSafely("progressDetails")
 // Theme toggle elements
 const themeToggle = getElementSafely("themeToggle")
 const themeIcon = themeToggle?.querySelector('.theme-icon')
+
+// Auth UI elements
+const loginBtn = document.getElementById('loginBtn')
+const logoutBtn = document.getElementById('logoutBtn')
+const signedIn = document.getElementById('signedIn')
+const signedOut = document.getElementById('signedOut')
+const userEmailEl = document.getElementById('userEmail')
+const appArea = document.getElementById('appArea')
 
 console.log("📋 DOM elements check complete")
 
@@ -443,6 +505,10 @@ async function loadAllCourses() {
       throw new Error("Supabase client not initialized")
     }
 
+    if (!session?.access_token) {
+      throw new Error("Not authenticated")
+    }
+
     // Test network connectivity first
     console.log("🌐 Testing Supabase connectivity...")
     console.log(`📍 Supabase URL: ${SUPABASE_URL}`)
@@ -450,13 +516,7 @@ async function loadAllCourses() {
     const testUrl = `${SUPABASE_URL}/rest/v1/question_papers?select=course_name&limit=1`
     console.log(`🔗 Test URL: ${testUrl}`)
     
-    const response = await fetch(testUrl, {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json'
-      }
-    })
+    const response = await fetch(testUrl, { headers: await getSupabaseHeaders() })
     
     console.log(`📡 Response status: ${response.status}`)
     console.log(`📡 Response headers:`, [...response.headers.entries()])
@@ -1268,6 +1328,29 @@ if (themeToggle) {
   console.error("❌ Cannot add theme toggle listener - themeToggle not found!")
 }
 
+// Auth event listeners
+if (loginBtn) {
+  loginBtn.addEventListener('click', async () => {
+    try {
+      await loginWithGoogle()
+    } catch (e) {
+      console.error('Login failed:', e)
+      showStatus(e.message || 'Login failed', 'error')
+    }
+  })
+}
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', async () => {
+    try {
+      await clearSession()
+      updateAuthUI()
+      showStatus('Signed out', 'success')
+    } catch (e) {
+      console.error('Logout error:', e)
+    }
+  })
+}
+
 // Download button event listener
 if (downloadBtn) {
   try {
@@ -1323,6 +1406,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     await initializeCredentials()
     supabase = createSupabaseClient()
     console.log("✅ Supabase client created")
+    await loadSession()
+    updateAuthUI()
     
     // Load theme preference
     loadThemePreference()
@@ -1361,22 +1446,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (uploadBtn) uploadBtn.disabled = true
             // Still load courses for testing course search functionality
             console.log("📚 Not on supported LLM platform, but loading courses for testing...")
-            loadAllCourses()
+            if (session?.access_token) loadAllCourses()
           } else {
             console.log("✅ On supported LLM platform, loading courses...")
             // Load courses immediately when on supported platform
-            loadAllCourses()
+            if (session?.access_token) loadAllCourses()
           }
         } catch (tabError) {
           console.error("❌ Error checking current tab:", tabError)
           showStatus("Extension context error", "error")
           // Still try to load courses
-          loadAllCourses()
+          if (session?.access_token) loadAllCourses()
         }
       })
     } else {
       console.warn("⚠️ Chrome tabs API not available, loading courses anyway...")
-      loadAllCourses()
+      if (session?.access_token) loadAllCourses()
     }
     
   } catch (error) {
@@ -1394,3 +1479,115 @@ document.addEventListener("DOMContentLoaded", async () => {
 })
 
 console.log("✅ DOMContentLoaded listener set up")
+
+// UI gating based on session
+function updateAuthUI() {
+  const isAuthed = !!session?.access_token
+  if (signedIn && signedOut) {
+    signedIn.classList.toggle('hidden', !isAuthed)
+    signedOut.classList.toggle('hidden', isAuthed)
+  }
+  if (appArea) {
+    appArea.classList.toggle('hidden', !isAuthed)
+  }
+  if (uploadBtn) uploadBtn.disabled = !isAuthed
+  if (downloadBtn) downloadBtn.disabled = !isAuthed
+  if (userEmailEl && isAuthed) {
+    const email = session?.user?.email || '(signed in)'
+    userEmailEl.textContent = email
+  }
+}
+
+// Google OAuth helpers
+function b64urlToJson(b64url) {
+  const b64 = b64url.replace(/-/g, '+').replace(/_/g, '/')
+  const json = atob(b64)
+  return JSON.parse(new TextDecoder().decode(new TextEncoder().encode(json)))
+}
+
+function getRedirectUri() {
+  return `https://${chrome.runtime.id}.chromiumapp.org/`
+}
+
+function randomHex() {
+  return crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
+}
+
+function buildGoogleAuthUrl(clientId, nonce, state) {
+  const u = new URL('https://accounts.google.com/o/oauth2/v2/auth')
+  u.searchParams.set('client_id', clientId)
+  u.searchParams.set('response_type', 'id_token token')
+  u.searchParams.set('redirect_uri', getRedirectUri())
+  u.searchParams.set('scope', 'openid email profile')
+  u.searchParams.set('prompt', 'consent')
+  u.searchParams.set('nonce', nonce)
+  u.searchParams.set('state', state)
+  u.searchParams.set('hd', ALLOWED_DOMAIN)
+  return u.toString()
+}
+
+async function revokeGoogleToken(token) {
+  try {
+    await fetch('https://oauth2.googleapis.com/revoke', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `token=${encodeURIComponent(token)}`
+    })
+  } catch (e) {
+    console.warn('Token revoke failed (ignored)', e)
+  }
+}
+
+async function exchangeIdTokenForSupabase(idToken, nonce) {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=id_token&provider=google`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+    },
+    body: JSON.stringify({
+      id_token: idToken,
+      nonce, // must match the nonce inside the ID token payload
+      client_id: GOOGLE_CLIENT_ID,
+      issuer: 'https://accounts.google.com'
+    })
+  })
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`Supabase auth failed (${res.status}): ${text}`)
+  }
+  const data = await res.json()
+  const expires_at = nowInSeconds() + (data.expires_in || 3600) - 60
+  return { ...data, expires_at }
+}
+
+async function loginWithGoogle() {
+  if (!GOOGLE_CLIENT_ID) {
+    throw new Error('Google Client ID not configured.')
+  }
+  const nonce = randomHex()
+  const state = randomHex()
+  const url = buildGoogleAuthUrl(GOOGLE_CLIENT_ID, nonce, state)
+  const redirectUrl = await chrome.identity.launchWebAuthFlow({ url, interactive: true })
+  const params = new URLSearchParams(new URL(redirectUrl).hash.slice(1))
+  const idToken = params.get('id_token')
+  const accessToken = params.get('access_token')
+  if (!idToken) throw new Error('No id_token returned from Google')
+  const payloadPart = idToken.split('.')[1]
+  const payload = JSON.parse(atob(payloadPart.replace(/-/g, '+').replace(/_/g, '/')))
+  const idTokenNonce = payload.nonce || null
+  const email = (payload.email || '').toLowerCase()
+  const verified = payload.email_verified === true || payload.email_verified === 'true'
+  const domain = email.split('@')[1] || ''
+  if (!verified || domain !== ALLOWED_DOMAIN) {
+    if (accessToken) await revokeGoogleToken(accessToken)
+    throw new Error('Please sign in with your rajagiri.edu.in account')
+  }
+  // Use the nonce claim from the ID token (if present) to avoid mismatch
+  const sup = await exchangeIdTokenForSupabase(idToken, idTokenNonce || nonce)
+  await saveSession({ ...sup, user: { email } })
+  updateAuthUI()
+  showStatus('Signed in successfully', 'success')
+  await loadAllCourses()
+}
