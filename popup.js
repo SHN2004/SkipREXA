@@ -1492,9 +1492,13 @@ function updateAuthUI() {
   }
   if (uploadBtn) uploadBtn.disabled = !isAuthed
   if (downloadBtn) downloadBtn.disabled = !isAuthed
-  if (userEmailEl && isAuthed) {
-    const email = session?.user?.email || '(signed in)'
-    userEmailEl.textContent = email
+  if (userEmailEl) {
+    if (isAuthed) {
+      const email = session?.user?.email || ''
+      userEmailEl.textContent = email
+    } else {
+      userEmailEl.textContent = ''
+    }
   }
 }
 

@@ -591,7 +591,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         /* Progress Bar Styles */
@@ -645,7 +645,7 @@
         .dropdown::-webkit-scrollbar-track {
             background: var(--muted);
         }
-
+ows — no “Signed in” text or
         .paper-list::-webkit-scrollbar-thumb,
         .dropdown::-webkit-scrollbar-thumb {
             background: var(--border);
@@ -655,6 +655,14 @@
         .paper-list::-webkit-scrollbar-thumb:hover,
         .dropdown::-webkit-scrollbar-thumb:hover {
             background: var(--muted-foreground);
+        }
+
+        /* Signed-in row layout (used only when authenticated) */
+        .signed-in-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
         }
     </style>
 </head>
@@ -681,9 +689,9 @@
                     Sign in with Google (rajagiri.edu.in)
                 </button>
             </div>
-            <div id="signedIn" class="hidden" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <div id="signedIn" class="hidden signed-in-row">
                 <div>
-                    <div class="course-name" id="userEmail">Signed in</div>
+                    <div class="course-name" id="userEmail"></div>
                 </div>
                 <button type="button" id="logoutBtn" class="control-btn">Sign out</button>
             </div>
