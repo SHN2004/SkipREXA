@@ -108,9 +108,10 @@
 
         .header {
             text-align: center;
-            margin-bottom: 24px;
-            padding-bottom: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
             border-bottom: 1px solid var(--border);
+            position: relative;
         }
 
         .header-top {
@@ -657,12 +658,38 @@ ows — no “Signed in” text or
             background: var(--muted-foreground);
         }
 
-        /* Signed-in row layout (used only when authenticated) */
-        .signed-in-row {
+        /* Auth info beneath header */
+        .user-info {
+            margin-top: 6px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 13px;
+        }
+
+        .user-email {
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted-foreground);
+            padding: 6px 12px;
+            border-radius: calc(var(--radius) - 2px);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: var(--accent);
+            color: var(--accent-foreground);
+            border-color: var(--accent);
         }
     </style>
 </head>
@@ -679,22 +706,18 @@ ows — no “Signed in” text or
                 </button>
             </div>
             <p>Upload relevant question papers to ChatGPT</p>
+            <div id="userInfo" class="user-info hidden">
+                <span id="userEmailHeader" class="user-email"></span>
+                <button type="button" id="headerLogoutBtn" class="logout-btn">Sign out</button>
+            </div>
         </div>
 
         <!-- Auth section: gate app until signed in -->
         <div id="authArea" class="form-section">
-            <div id="signedOut">
-                <button type="button" id="loginBtn" class="btn">
-                    <span class="btn-icon">🔐</span>
-                    Sign in with Google (rajagiri.edu.in)
-                </button>
-            </div>
-            <div id="signedIn" class="hidden signed-in-row">
-                <div>
-                    <div class="course-name" id="userEmail"></div>
-                </div>
-                <button type="button" id="logoutBtn" class="control-btn">Sign out</button>
-            </div>
+            <button type="button" id="loginBtn" class="btn">
+                <span class="btn-icon">🔐</span>
+                Sign in with Google (rajagiri.edu.in)
+            </button>
         </div>
 
         <div id="appArea" class="hidden">

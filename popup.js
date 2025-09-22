@@ -250,11 +250,11 @@ const themeToggle = getElementSafely("themeToggle")
 const themeIcon = themeToggle?.querySelector('.theme-icon')
 
 // Auth UI elements
+const authAreaContainer = document.getElementById('authArea')
 const loginBtn = document.getElementById('loginBtn')
-const logoutBtn = document.getElementById('logoutBtn')
-const signedIn = document.getElementById('signedIn')
-const signedOut = document.getElementById('signedOut')
-const userEmailEl = document.getElementById('userEmail')
+const userInfo = document.getElementById('userInfo')
+const userEmailHeader = document.getElementById('userEmailHeader')
+const headerLogoutBtn = document.getElementById('headerLogoutBtn')
 const appArea = document.getElementById('appArea')
 
 console.log("📋 DOM elements check complete")
@@ -1339,8 +1339,8 @@ if (loginBtn) {
     }
   })
 }
-if (logoutBtn) {
-  logoutBtn.addEventListener('click', async () => {
+if (headerLogoutBtn) {
+  headerLogoutBtn.addEventListener('click', async () => {
     try {
       await clearSession()
       updateAuthUI()
@@ -1483,22 +1483,19 @@ console.log("✅ DOMContentLoaded listener set up")
 // UI gating based on session
 function updateAuthUI() {
   const isAuthed = !!session?.access_token
-  if (signedIn && signedOut) {
-    signedIn.classList.toggle('hidden', !isAuthed)
-    signedOut.classList.toggle('hidden', isAuthed)
+  if (authAreaContainer) {
+    authAreaContainer.classList.toggle('hidden', isAuthed)
+  }
+  if (userInfo) {
+    userInfo.classList.toggle('hidden', !isAuthed)
   }
   if (appArea) {
     appArea.classList.toggle('hidden', !isAuthed)
   }
   if (uploadBtn) uploadBtn.disabled = !isAuthed
   if (downloadBtn) downloadBtn.disabled = !isAuthed
-  if (userEmailEl) {
-    if (isAuthed) {
-      const email = session?.user?.email || ''
-      userEmailEl.textContent = email
-    } else {
-      userEmailEl.textContent = ''
-    }
+  if (userEmailHeader) {
+    userEmailHeader.textContent = isAuthed ? (session?.user?.email || '') : ''
   }
 }
 
