@@ -15,13 +15,13 @@ async function initializeCredentials() {
         reject(new Error(chrome.runtime.lastError.message))
         return
       }
-      
       // Set up default credentials if not found
-      if (!result.supabaseUrl || !result.supabaseKey) {
+      if (!result.supabaseUrl || !result.supabaseKey|| !result.googleClientId) {
         console.log("🔧 Setting up default credentials...")
         chrome.storage.sync.set({
           'supabaseUrl': 'https://avmoixumqzdydqrzquon.supabase.co',
-          'supabaseKey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk'
+          'supabaseKey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk',
+          'googleClientId': '300273679835-tlkrg5omcblg82re4p4glq5mp7bdpbp8.apps.googleusercontent.com'
         }, () => {
           if (chrome.runtime.lastError) {
             reject(new Error(chrome.runtime.lastError.message))
@@ -29,7 +29,7 @@ async function initializeCredentials() {
           }
           SUPABASE_URL = 'https://avmoixumqzdydqrzquon.supabase.co'
           SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk'
-          GOOGLE_CLIENT_ID = result.googleClientId || null
+          GOOGLE_CLIENT_ID = result.googleClientId || '300273679835-tlkrg5omcblg82re4p4glq5mp7bdpbp8.apps.googleusercontent.com'
           console.log("✅ Default credentials stored and loaded")
           resolve()
         })
