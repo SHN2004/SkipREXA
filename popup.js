@@ -4,6 +4,8 @@ console.log("🚀 Popup.js script loading...")
 let SUPABASE_URL = null
 let SUPABASE_ANON_KEY = null
 let GOOGLE_CLIENT_ID = null
+// Fallback Google OAuth Client ID if storage is empty
+const DEFAULT_GOOGLE_CLIENT_ID = '300273679835-tlkrg5omcblg82re4p4glq5mp7bdpbp8.apps.googleusercontent.com'
 const ALLOWED_DOMAIN = 'rajagiri.edu.in'
 let session = null // Supabase session { access_token, refresh_token, expires_at, user? }
 
@@ -21,7 +23,7 @@ async function initializeCredentials() {
         chrome.storage.sync.set({
           'supabaseUrl': 'https://avmoixumqzdydqrzquon.supabase.co',
           'supabaseKey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk',
-          'googleClientId': '300273679835-tlkrg5omcblg82re4p4glq5mp7bdpbp8.apps.googleusercontent.com'
+          'googleClientId': DEFAULT_GOOGLE_CLIENT_ID
         }, () => {
           if (chrome.runtime.lastError) {
             reject(new Error(chrome.runtime.lastError.message))
@@ -29,20 +31,28 @@ async function initializeCredentials() {
           }
           SUPABASE_URL = 'https://avmoixumqzdydqrzquon.supabase.co'
           SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk'
-          GOOGLE_CLIENT_ID = result.googleClientId || '300273679835-tlkrg5omcblg82re4p4glq5mp7bdpbp8.apps.googleusercontent.com'
+          GOOGLE_CLIENT_ID = result.googleClientId || DEFAULT_GOOGLE_CLIENT_ID
           console.log("✅ Default credentials stored and loaded")
           resolve()
         })
       } else {
         SUPABASE_URL = result.supabaseUrl
         SUPABASE_ANON_KEY = result.supabaseKey
-        GOOGLE_CLIENT_ID = result.googleClientId || null
+        // Ensure a non-empty Google Client ID; fall back and persist if missing
+        const storedId = (result.googleClientId || '').trim()
+        GOOGLE_CLIENT_ID = storedId || DEFAULT_GOOGLE_CLIENT_ID
+        if (!storedId) {
+          try { chrome.storage.sync.set({ googleClientId: GOOGLE_CLIENT_ID }, () => {}) } catch (_) {}
+        }
         console.log("✅ Credentials loaded from storage")
         resolve()
       }
     })
   })
 }
+
+// Ensure credential initialization is shared across callers
+const credentialsReady = initializeCredentials()
 
 // Session storage helpers
 async function loadSession() {
@@ -1332,6 +1342,10 @@ if (themeToggle) {
 if (loginBtn) {
   loginBtn.addEventListener('click', async () => {
     try {
+      await credentialsReady
+      if (!GOOGLE_CLIENT_ID) {
+        throw new Error('Google Client ID not configured.')
+      }
       await loginWithGoogle()
     } catch (e) {
       console.error('Login failed:', e)
@@ -1403,7 +1417,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     // Initialize credentials first
     console.log("🔐 Initializing credentials...")
-    await initializeCredentials()
+    await credentialsReady
     supabase = createSupabaseClient()
     console.log("✅ Supabase client created")
     await loadSession()
