@@ -185,7 +185,7 @@ async function uploadPDFsToChatGPT(pdfs) {
             // Longer delay between uploads to let ChatGPT stabilize
             if (i < pdfs.length - 1) {
                 console.log('⏳ Waiting before next upload...');
-                await delay(3000);
+                await delay(2000);
             }
             
         } catch (error) {

@@ -1,167 +1,5 @@
 console.log("🚀 Popup.js script loading...")
 
-// Configuration will be loaded from Chrome storage
-let SUPABASE_URL = null
-let SUPABASE_ANON_KEY = null
-
-// Initialize credentials from Chrome storage
-async function initializeCredentials() {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(['supabaseUrl', 'supabaseKey'], (result) => {
-      if (chrome.runtime.lastError) {
-        reject(new Error(chrome.runtime.lastError.message))
-        return
-      }
-      
-      // Set up default credentials if not found
-      if (!result.supabaseUrl || !result.supabaseKey) {
-        console.log("🔧 Setting up default credentials...")
-        chrome.storage.sync.set({
-          'supabaseUrl': 'https://avmoixumqzdydqrzquon.supabase.co',
-          'supabaseKey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk'
-        }, () => {
-          if (chrome.runtime.lastError) {
-            reject(new Error(chrome.runtime.lastError.message))
-            return
-          }
-          SUPABASE_URL = 'https://avmoixumqzdydqrzquon.supabase.co'
-          SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bW9peHVtcXpkeWRxcnpxdW9uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1ODE2MjYsImV4cCI6MjA3MDE1NzYyNn0.nwJgP7j9s78OGdJpj8Gmle_hHX8Hdk7Ro0hNOEmFFVk'
-          console.log("✅ Default credentials stored and loaded")
-          resolve()
-        })
-      } else {
-        SUPABASE_URL = result.supabaseUrl
-        SUPABASE_ANON_KEY = result.supabaseKey
-        console.log("✅ Credentials loaded from storage")
-        resolve()
-      }
-    })
-  })
-}
-
-// Initialize Supabase client
-function createSupabaseClient() {
-  return {
-    from: (table) => ({
-      select: (columns = "*") => {
-        const query = {
-          table,
-          columns,
-          filters: [],
-        }
-
-        return {
-          eq: (column, value) => {
-            query.filters.push(`${column}=eq.${value}`)
-            return {
-              eq: (column2, value2) => {
-                query.filters.push(`${column2}=eq.${value2}`)
-                return {
-                  async data(options = {}) {
-                    let url = `${SUPABASE_URL}/rest/v1/${query.table}?select=${query.columns}`
-                    if (query.filters.length > 0) {
-                      url += "&" + query.filters.join("&")
-                    }
-                    
-                    // Add pagination parameters if provided
-                    if (options.limit) {
-                      url += `&limit=${options.limit}`
-                    }
-                    if (options.offset) {
-                      url += `&offset=${options.offset}`
-                    }
-
-                    const headers = {
-                      apikey: SUPABASE_ANON_KEY,
-                      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-                      "Content-Type": "application/json",
-                    }
-                    
-                    // Add Range header for pagination
-                    if (options.offset !== undefined && options.limit !== undefined) {
-                      const rangeStart = options.offset
-                      const rangeEnd = options.offset + options.limit - 1
-                      headers['Range'] = `${rangeStart}-${rangeEnd}`
-                    }
-
-                    const response = await fetch(url, { headers })
-                    const data = await response.json()
-                    return data
-                  },
-                }
-              },
-              async data(options = {}) {
-                let url = `${SUPABASE_URL}/rest/v1/${query.table}?select=${query.columns}`
-                if (query.filters.length > 0) {
-                  url += "&" + query.filters.join("&")
-                }
-                
-                // Add pagination parameters if provided
-                if (options.limit) {
-                  url += `&limit=${options.limit}`
-                }
-                if (options.offset) {
-                  url += `&offset=${options.offset}`
-                }
-
-                const headers = {
-                  apikey: SUPABASE_ANON_KEY,
-                  Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-                  "Content-Type": "application/json",
-                }
-                
-                // Add Range header for pagination
-                if (options.offset !== undefined && options.limit !== undefined) {
-                  const rangeStart = options.offset
-                  const rangeEnd = options.offset + options.limit - 1
-                  headers['Range'] = `${rangeStart}-${rangeEnd}`
-                }
-
-                const response = await fetch(url, { headers })
-                const data = await response.json()
-                return data
-              },
-            }
-          },
-          async data(options = {}) {
-            let url = `${SUPABASE_URL}/rest/v1/${query.table}?select=${query.columns}`
-            if (query.filters.length > 0) {
-              url += "&" + query.filters.join("&")
-            }
-            
-            // Add pagination parameters if provided
-            if (options.limit) {
-              url += `&limit=${options.limit}`
-            }
-            if (options.offset) {
-              url += `&offset=${options.offset}`
-            }
-
-            const headers = {
-              apikey: SUPABASE_ANON_KEY,
-              Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-              "Content-Type": "application/json",
-            }
-            
-            // Add Range header for pagination
-            if (options.offset !== undefined && options.limit !== undefined) {
-              const rangeStart = options.offset
-              const rangeEnd = options.offset + options.limit - 1
-              headers['Range'] = `${rangeStart}-${rangeEnd}`
-            }
-
-            const response = await fetch(url, { headers })
-            const data = await response.json()
-            return data
-          },
-        }
-      },
-    }),
-  }
-}
-
-let supabase = null
-
 // DOM elements with error checking
 console.log("🔍 Looking for DOM elements...")
 
@@ -324,50 +162,6 @@ function toggleTheme() {
   console.log(`🔄 Toggled theme to: ${newTheme}`)
 }
 
-// Fetch all records with pagination support
-async function fetchAllRecords(table, columns = "*", batchSize = 1000) {
-  console.log(`📥 Fetching all records from ${table}...`)
-  
-  let allRecords = []
-  let offset = 0
-  let hasMore = true
-  
-  while (hasMore) {
-    try {
-      console.log(`📦 Fetching batch ${Math.floor(offset / batchSize) + 1} (offset: ${offset})`)
-      showStatus(`Loading courses... (${allRecords.length} fetched)`, "loading")
-      
-      const batchData = await supabase
-        .from(table)
-        .select(columns)
-        .data({ limit: batchSize, offset })
-      
-      console.log(`📊 Received ${batchData.length} records in this batch`)
-      
-      if (batchData.length === 0) {
-        hasMore = false
-        console.log("📝 No more records to fetch")
-      } else {
-        allRecords = allRecords.concat(batchData)
-        offset += batchSize
-        
-        // If we got less than batchSize records, we've reached the end
-        if (batchData.length < batchSize) {
-          hasMore = false
-          console.log("📝 Reached end of records (partial batch)")
-        }
-      }
-      
-    } catch (error) {
-      console.error(`❌ Error fetching batch at offset ${offset}:`, error)
-      throw new Error(`Failed to fetch records: ${error.message}`)
-    }
-  }
-  
-  console.log(`✅ Successfully fetched all ${allRecords.length} records from ${table}`)
-  return allRecords
-}
-
 // Background script health check functions
 async function checkBackgroundScriptHealth() {
   console.log("🔍 Checking background script health...")
@@ -434,8 +228,39 @@ async function loadAllCourses() {
     console.log("🔄 Starting to load courses...")
     showStatus("Loading courses...", "loading")
 
+    // 1. Check Cache First
+    const CACHE_KEY_COURSES = 'cached_courses';
+    const CACHE_KEY_TIMESTAMP = 'courses_last_fetch';
+    const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+
+    const cache = await new Promise(resolve => {
+        chrome.storage.local.get([CACHE_KEY_COURSES, CACHE_KEY_TIMESTAMP], resolve);
+    });
+
+    const now = Date.now();
+    const lastFetch = cache[CACHE_KEY_TIMESTAMP] || 0;
+    
+    if (cache[CACHE_KEY_COURSES] && (now - lastFetch < CACHE_DURATION)) {
+        console.log("✅ Using cached courses data");
+        allCourses = cache[CACHE_KEY_COURSES];
+        
+        // Sort again just to be sure
+        allCourses.sort((a, b) => a.name.localeCompare(b.name));
+        
+        console.log(`Loaded ${allCourses.length} courses from cache`);
+        statusDiv.classList.add("hidden");
+        return;
+    }
+
+    // 2. If No Cache or Expired, Fetch from Network
+    console.log("🌐 Cache expired or missing, fetching from Supabase...");
+
     // Check if credentials are loaded
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    const supabaseUrl = window.getSupabaseUrl();
+    const supabaseKey = window.getSupabaseKey();
+    const supabase = window.getSupabase();
+
+    if (!supabaseUrl || !supabaseKey) {
       throw new Error("Supabase credentials not loaded")
     }
 
@@ -443,34 +268,12 @@ async function loadAllCourses() {
       throw new Error("Supabase client not initialized")
     }
 
-    // Test network connectivity first
-    console.log("🌐 Testing Supabase connectivity...")
-    console.log(`📍 Supabase URL: ${SUPABASE_URL}`)
-    
-    const testUrl = `${SUPABASE_URL}/rest/v1/question_papers?select=course_name&limit=1`
-    console.log(`🔗 Test URL: ${testUrl}`)
-    
-    const response = await fetch(testUrl, {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json'
-      }
-    })
-    
-    console.log(`📡 Response status: ${response.status}`)
-    console.log(`📡 Response headers:`, [...response.headers.entries()])
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-    }
-    
-    const testData = await response.json()
-    console.log("🧪 Test data received:", testData)
-
-    // Now get ALL data using pagination
+    // Now get ALL data using pagination via the helper in supabase-client.js
     console.log("📥 Fetching ALL course data with pagination...")
-    const data = await fetchAllRecords("question_papers", "course_name, actual_subject_code, semester")
+    const data = await window.fetchAllRecords("question_papers", "course_name, actual_subject_code, semester", 1000, (count) => {
+        showStatus(`Loading courses... (${count} fetched)`, "loading");
+    });
+    
     console.log("📊 All data from Supabase:", data?.length, "records")
 
     if (!data || data.length === 0) {
@@ -501,6 +304,17 @@ async function loadAllCourses() {
         semesters: Array.from(course.semesters).sort(),
       }))
       .sort((a, b) => a.name.localeCompare(b.name))
+
+    // 3. Save to Cache
+    try {
+        await chrome.storage.local.set({
+            [CACHE_KEY_COURSES]: allCourses,
+            [CACHE_KEY_TIMESTAMP]: now
+        });
+        console.log("💾 Courses cached successfully");
+    } catch (cacheError) {
+        console.warn("⚠️ Failed to cache courses:", cacheError);
+    }
 
     console.log(`Loaded ${allCourses.length} unique courses:`, allCourses.slice(0, 3))
     statusDiv.classList.add("hidden")
@@ -637,6 +451,10 @@ async function updatePaperDisplay() {
   }
 
   // Check if credentials and supabase client are available
+  const supabase = window.getSupabase();
+  const SUPABASE_URL = window.getSupabaseUrl();
+  const SUPABASE_ANON_KEY = window.getSupabaseKey();
+
   if (!supabase || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
     showStatus("Extension credentials not available", "error")
     return
@@ -1320,8 +1138,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     // Initialize credentials first
     console.log("🔐 Initializing credentials...")
-    await initializeCredentials()
-    supabase = createSupabaseClient()
+    await window.initializeCredentials()
+    // supabase = createSupabaseClient() // Already handled in initializeCredentials via initSupabase
     console.log("✅ Supabase client created")
     
     // Load theme preference
