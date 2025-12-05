@@ -15,7 +15,8 @@ function getElementSafely(id) {
 
 const courseSearchInput = getElementSafely("courseSearch")
 const courseDropdown = getElementSafely("courseDropdown") 
-const selectedCourseDiv = getElementSafely("selectedCourse")
+const selectedCoursesContainer = getElementSafely("selectedCoursesContainer")
+const fetchPapersBtn = getElementSafely("fetchPapersBtn")
 const paperCountDiv = getElementSafely("paperCount")
 const uploadBtn = getElementSafely("uploadBtn")
 const downloadBtn = getElementSafely("downloadBtn")
@@ -37,7 +38,7 @@ console.log("📋 DOM elements check complete")
 
 // Global variables
 let allCourses = []
-let selectedCourse = null
+let selectedCourses = new Set() // Set to store selected course objects
 let highlightedIndex = -1
 
 // Show status message
@@ -342,6 +343,9 @@ async function loadAllCourses() {
 function showCourseSuggestions(searchTerm) {
   console.log("Searching for:", searchTerm, "Total courses available:", allCourses.length)
   
+  // Always show dropdown if there is text, or if explicit request? 
+  // Current logic: if (!searchTerm.trim()) hide.
+  // We might want to show all if clicked? But let's stick to filtering for now.
   if (!searchTerm.trim()) {
     courseDropdown.classList.add("hidden")
     highlightedIndex = -1
@@ -359,24 +363,35 @@ function showCourseSuggestions(searchTerm) {
 
   courseDropdown.innerHTML = filtered
     .map(
-      (course, index) => `
+      (course, index) => {
+        const isSelected = selectedCourses.has(course)
+        return `
         <div class="dropdown-item" data-index="${index}">
-            <div class="course-name">${highlightMatch(course.name, searchTerm)}</div>
-            <div class="course-details">
-                Code: ${course.code} • Semesters: ${course.semesters.join(", ")}
+            <input type="checkbox" class="course-checkbox" ${isSelected ? 'checked' : ''}>
+            <div class="dropdown-item-content">
+                <div class="course-name">${highlightMatch(course.name, searchTerm)}</div>
+                <div class="course-details">
+                    Code: ${course.code} • Semesters: ${course.semesters.join(", ")}
+                </div>
             </div>
         </div>
-    `,
+    `},
     )
     .join("")
 
   courseDropdown.classList.remove("hidden")
   highlightedIndex = -1
-  console.log("Dropdown should now be visible")
 
   // Add click listeners to dropdown items
   courseDropdown.querySelectorAll(".dropdown-item").forEach((item, index) => {
-    item.addEventListener("click", () => selectCourse(filtered[index]))
+    item.addEventListener("click", (e) => {
+      e.preventDefault() 
+      e.stopPropagation() // Prevent document click listener from closing dropdown
+      toggleCourseSelection(filtered[index])
+      
+      // Keep input focus so user can continue typing/selecting
+      courseSearchInput.focus()
+    })
   })
 }
 
@@ -386,22 +401,62 @@ function highlightMatch(text, searchTerm) {
   return text.replace(regex, "<strong>$1</strong>")
 }
 
-// Select a course
-function selectCourse(course) {
-  console.log("Selecting course:", course)
-  selectedCourse = course
-  courseSearchInput.value = course.name
-  courseDropdown.classList.add("hidden")
+// Toggle course selection
+function toggleCourseSelection(course) {
+  console.log("Toggling course:", course.name)
+  
+  if (selectedCourses.has(course)) {
+    selectedCourses.delete(course)
+  } else {
+    selectedCourses.add(course)
+  }
 
-  // Show selected course info
-  selectedCourseDiv.innerHTML = `
-        <div class="course-title">${course.name}</div>
-        <div class="course-meta">Code: ${course.code} • Available in: ${course.semesters.join(", ")}</div>
-    `
-  selectedCourseDiv.classList.remove("hidden")
-  console.log("Course selected, now updating paper display...")
+  updateSelectedCoursesDisplay()
+  saveState() // Save selection state
+  
+  // Re-render dropdown to update checkbox states if it's open and has search term
+  const searchTerm = courseSearchInput.value
+  if (searchTerm.trim()) {
+    showCourseSuggestions(searchTerm)
+  }
+}
 
-  updatePaperCount()
+// Update selected courses chips display
+function updateSelectedCoursesDisplay() {
+  if (selectedCourses.size === 0) {
+    selectedCoursesContainer.innerHTML = ''
+    selectedCoursesContainer.classList.add('hidden')
+    return
+  }
+
+  const sortedCourses = Array.from(selectedCourses).sort((a, b) => a.name.localeCompare(b.name))
+
+  selectedCoursesContainer.innerHTML = sortedCourses.map(course => `
+    <div class="course-chip">
+      <span>${course.name}</span>
+      <span class="chip-remove" data-code="${course.code}">×</span>
+    </div>
+  `).join('')
+  
+  selectedCoursesContainer.classList.remove('hidden')
+
+  // Add listeners to remove buttons
+  selectedCoursesContainer.querySelectorAll('.chip-remove').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const code = e.target.dataset.code
+      // Find course by code (assuming code is unique enough or we iterate)
+      const courseToRemove = Array.from(selectedCourses).find(c => c.code === code)
+      if (courseToRemove) {
+        toggleCourseSelection(courseToRemove)
+      }
+    })
+  })
+  
+  // Hide paper display if selection changes? 
+  // User might want to fetch again.
+  // Let's hide papers to force re-fetch to ensure consistency
+  document.getElementById("paperSelectionGroup").style.display = "none"
+  paperCountDiv.classList.add("hidden")
 }
 
 // Handle keyboard navigation
@@ -422,7 +477,7 @@ function handleKeyNavigation(e) {
       const index = Number.parseInt(items[highlightedIndex].dataset.index)
       const filtered = allCourses.filter((course) => course.searchText.includes(courseSearchInput.value.toLowerCase()))
       if (filtered[index]) {
-        selectCourse(filtered[index])
+        toggleCourseSelection(filtered[index])
       }
     }
   } else if (e.key === "Escape") {
@@ -443,10 +498,11 @@ async function updatePaperDisplay() {
   const paperSelectionGroup = document.getElementById("paperSelectionGroup")
   const paperList = document.getElementById("paperList")
 
-  if (!selectedCourse) {
-    console.log("No course selected, hiding paper display")
+  if (selectedCourses.size === 0) {
+    console.log("No courses selected, hiding paper display")
     paperCountDiv.classList.add("hidden")
     paperSelectionGroup.style.display = "none"
+    showStatus("Please select at least one course", "error")
     return
   }
 
@@ -461,22 +517,30 @@ async function updatePaperDisplay() {
   }
 
   try {
-    console.log("Fetching papers for course:", selectedCourse.name, selectedCourse.code)
+    const courseNames = Array.from(selectedCourses).map(c => c.name)
+    console.log("Fetching papers for courses:", courseNames)
     showStatus("Loading papers...", "loading")
     
-    // URL-encode the course name to handle # and other special characters
-    const encodedCourseName = encodeURIComponent(selectedCourse.name);
-    console.log("Querying for course_name:", selectedCourse.name);
-    console.log("URL-encoded course_name:", encodedCourseName);
-
+    // Use .in() for multiple courses
     const data = await supabase
       .from("question_papers")
       .select("*")
-      .eq("course_name", encodedCourseName)
+      .in("course_name", courseNames)
       .data()
 
     console.log("Fetched papers data:", data)
-    const filteredPapers = data || []
+    
+    // Ensure data is an array before sorting
+    const papersArray = Array.isArray(data) ? data : [];
+
+    // Sort papers by course name then year/sem
+    const filteredPapers = papersArray.sort((a, b) => {
+        if (a.course_name !== b.course_name) return a.course_name.localeCompare(b.course_name);
+        // Handle exam_year robustly - convert to string for safe comparison
+        const yearA = String(a.exam_year || "");
+        const yearB = String(b.exam_year || "");
+        return yearB.localeCompare(yearA, undefined, { numeric: true });
+    })
 
     paperCountDiv.textContent = `${filteredPapers.length} papers available`
     paperCountDiv.classList.remove("hidden")
@@ -488,10 +552,15 @@ async function updatePaperDisplay() {
       console.log("Displaying paper list...")
       displayPaperList(filteredPapers)
       paperSelectionGroup.style.display = "block"
+      
+      // Auto-scroll to the available papers section
+      setTimeout(() => {
+        paperSelectionGroup.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
     } else {
       console.log("No papers found, hiding selection group")
       paperSelectionGroup.style.display = "none"
-      showStatus("No papers found for this course", "error")
+      showStatus("No papers found for selected courses", "error")
     }
   } catch (error) {
     console.error("Error fetching papers:", error)
@@ -516,9 +585,9 @@ function displayPaperList(papers) {
         <div class="paper-item">
             <input type="checkbox" id="paper-${index}" value="${index}" class="paper-checkbox">
             <div class="paper-info">
-                <div class="paper-details">${paper.raw_exam_details || "No details available"}</div>
+                <div class="paper-details">${paper.course_name}</div>
                 <div class="paper-meta">
-                    ${paper.exam_type} • ${paper.exam_month} ${paper.exam_year} • ${paper.semester}
+                     ${paper.exam_type} • ${paper.exam_month} ${paper.exam_year} • ${paper.semester}
                 </div>
             </div>
         </div>
@@ -593,7 +662,10 @@ function generateCustomPrompt(studyPurpose, selectedPapers) {
     return "" // No prompt for general analysis
   }
 
-  const courseName = selectedCourse ? selectedCourse.name : "this course"
+  const courseName = selectedCourses.size > 0 
+      ? Array.from(selectedCourses).map(c => c.name).join(", ") 
+      : "these courses";
+      
   const paperCount = selectedPapers.length
 
   const promptTemplates = {
@@ -663,8 +735,8 @@ async function uploadPapers() {
     console.log("🔄 Checking background script before starting upload...")
     await ensureBackgroundScriptReady()
 
-    if (!selectedCourse) {
-      showStatus("Please select a course first", "error")
+    if (selectedCourses.size === 0) {
+      showStatus("Please select at least one course first", "error")
       return
     }
 
@@ -925,8 +997,8 @@ async function downloadPapersDirectly() {
     const downloadBtn = document.getElementById("downloadBtn")
     downloadBtn.disabled = true
 
-    if (!selectedCourse) {
-      showStatus("Please select a course first", "error")
+    if (selectedCourses.size === 0) {
+      showStatus("Please select at least one course first", "error")
       return
     }
 
@@ -1042,6 +1114,61 @@ function blobToBase64(blob) {
   })
 }
 
+// State Management
+const STORAGE_KEY_STATE = 'popup_state';
+const STATE_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
+
+function saveState() {
+  const state = {
+    timestamp: Date.now(),
+    searchText: courseSearchInput.value,
+    selectedCourses: Array.from(selectedCourses), // Store full course objects
+    studyPurpose: getSelectedStudyPurpose()
+  };
+  chrome.storage.local.set({ [STORAGE_KEY_STATE]: state });
+}
+
+async function loadState() {
+  try {
+    const result = await new Promise(resolve => chrome.storage.local.get([STORAGE_KEY_STATE], resolve));
+    const state = result[STORAGE_KEY_STATE];
+    
+    if (state) {
+      // Check for timeout
+      const now = Date.now();
+      if (now - state.timestamp > STATE_TIMEOUT_MS) {
+        console.log("🕒 Saved state expired (>10 mins), clearing...");
+        chrome.storage.local.remove(STORAGE_KEY_STATE);
+        return;
+      }
+
+      console.log("📥 Restoring state...", state);
+      
+      if (state.searchText) {
+        courseSearchInput.value = state.searchText;
+      }
+      
+      if (state.selectedCourses && Array.isArray(state.selectedCourses)) {
+        selectedCourses = new Set(state.selectedCourses);
+        updateSelectedCoursesDisplay();
+        
+        // If we have selected courses, auto-fetch papers
+        if (selectedCourses.size > 0) {
+            // Small delay to ensure auth is ready? Should be fine if called after init
+            updatePaperDisplay(); 
+        }
+      }
+      
+      if (state.studyPurpose) {
+        const radio = document.querySelector(`input[name="studyPurpose"][value="${state.studyPurpose}"]`);
+        if (radio) radio.checked = true;
+      }
+    }
+  } catch (error) {
+    console.error("❌ Error loading state:", error);
+  }
+}
+
 // Event listeners with error handling
 console.log("🎯 Setting up event listeners...")
 
@@ -1051,19 +1178,26 @@ if (courseSearchInput) {
       try {
         const searchTerm = e.target.value
         console.log("🔍 Input event triggered, search term:", searchTerm)
-        if (searchTerm !== selectedCourse?.name) {
-          selectedCourse = null
-          if (selectedCourseDiv) selectedCourseDiv.classList.add("hidden")
-          if (paperCountDiv) paperCountDiv.classList.add("hidden")
-          const paperGroup = document.getElementById("paperSelectionGroup")
-          if (paperGroup) paperGroup.style.display = "none"
-        }
         showCourseSuggestions(searchTerm)
+        saveState(); // Save search text
       } catch (error) {
         console.error("❌ Error in input event handler:", error)
       }
     })
     console.log("✅ Input event listener added")
+
+    // Add click listener to show dropdown when clicking back into the search box
+    courseSearchInput.addEventListener("click", (e) => {
+      try {
+        const searchTerm = e.target.value
+        if (searchTerm.trim()) {
+            showCourseSuggestions(searchTerm)
+        }
+      } catch (error) {
+        console.error("❌ Error in click event handler:", error)
+      }
+    })
+    console.log("✅ Click event listener added")
     
     courseSearchInput.addEventListener("keydown", handleKeyNavigation)
     console.log("✅ Keydown event listener added")
@@ -1072,6 +1206,21 @@ if (courseSearchInput) {
   }
 } else {
   console.error("❌ Cannot add event listeners - courseSearchInput not found!")
+}
+
+// Add listener for study purpose changes
+document.querySelectorAll('input[name="studyPurpose"]').forEach(radio => {
+    radio.addEventListener('change', saveState);
+});
+
+// Fetch papers button listener
+if (fetchPapersBtn) {
+    try {
+        fetchPapersBtn.addEventListener('click', updatePaperDisplay)
+        console.log("✅ Fetch button event listener added")
+    } catch (error) {
+        console.error("❌ Error setting up fetch button listener:", error)
+    }
 }
 
 // Theme toggle event listener
@@ -1115,7 +1264,7 @@ document.getElementById("deselectAllBtn").addEventListener("click", deselectAllP
 form.addEventListener("submit", (e) => {
   e.preventDefault()
 
-  if (!selectedCourse) {
+  if (selectedCourses.size === 0) {
     showStatus("Please select a course first", "error")
     return
   }
@@ -1147,7 +1296,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     // Verify all critical elements exist
     const criticalElements = {
-      courseSearchInput, courseDropdown, selectedCourseDiv, 
+      courseSearchInput, courseDropdown, selectedCoursesContainer, fetchPapersBtn,
       paperCountDiv, uploadBtn, downloadBtn, statusDiv, form
     }
     
@@ -1167,6 +1316,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     console.log("✅ All critical elements found")
     
+    // Restore previous state (selected courses, search text, study purpose)
+    await loadState();
+
     // Check if we're on ChatGPT
     if (chrome?.tabs) {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

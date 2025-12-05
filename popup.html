@@ -103,7 +103,7 @@
         }
 
         .container {
-            padding: 24px;
+            padding: 24px 24px 100px 24px;
         }
 
         .header {
@@ -303,6 +303,97 @@
 
         .dropdown-item:last-child {
             border-bottom: none;
+        }
+
+        /* Multi-select Styles */
+        .search-row {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+        }
+        
+        .search-wrapper {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        .btn-fetch {
+            padding: 0 16px;
+            background: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-fetch:hover {
+            background: #553C9A;
+        }
+
+        .course-checkbox {
+            width: 16px;
+            height: 16px;
+            margin-right: 10px;
+            accent-color: var(--primary);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .dropdown-item-content {
+            flex: 1;
+        }
+
+        .selected-courses-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            min-height: 0;
+        }
+        
+        .selected-courses-container:not(:empty) {
+            padding: 8px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .course-chip {
+            display: flex;
+            align-items: center;
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+            padding: 6px 10px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .chip-remove {
+            margin-left: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .chip-remove:hover {
+            opacity: 1;
+            background: rgba(0,0,0,0.2);
         }
 
         .course-name {
@@ -537,6 +628,15 @@
             display: flex;
             gap: 8px;
             width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            padding: 16px 24px;
+            background: var(--background);
+            border-top: 1px solid var(--border);
+            z-index: 100;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .btn-upload {
@@ -675,13 +775,18 @@
 
         <form id="paperForm">
             <div class="form-section">
-                <label class="form-label" for="courseSearch">Search Course</label>
-                <div class="search-container">
-                    <div class="search-icon">🔍</div>
-                    <input type="text" id="courseSearch" class="search-input" placeholder="Type course name..." autocomplete="off" required>
-                    <div id="courseDropdown" class="dropdown hidden"></div>
+                <label class="form-label" for="courseSearch">Search Courses</label>
+                <div class="search-row">
+                    <div class="search-wrapper">
+                        <div class="search-icon">🔍</div>
+                        <input type="text" id="courseSearch" class="search-input" placeholder="Type to filter courses..." autocomplete="off">
+                        <div id="courseDropdown" class="dropdown hidden"></div>
+                    </div>
+                    <button type="button" id="fetchPapersBtn" class="btn-fetch" title="Fetch papers for selected courses">
+                        🔍
+                    </button>
                 </div>
-                <div id="selectedCourse" class="selected-course hidden"></div>
+                <div id="selectedCoursesContainer" class="selected-courses-container hidden"></div>
                 <div id="paperCount" class="paper-count hidden"></div>
             </div>
 

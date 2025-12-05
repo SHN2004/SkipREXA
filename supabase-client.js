@@ -60,10 +60,11 @@ function createSupabaseClient() {
 
         return {
           eq: (column, value) => {
-            query.filters.push(`${column}=eq.${value}`)
+            // Encode the value to handle special characters (like #, &, etc.)
+            query.filters.push(`${column}=eq.${encodeURIComponent(value)}`)
             return {
               eq: (column2, value2) => {
-                query.filters.push(`${column2}=eq.${value2}`)
+                query.filters.push(`${column2}=eq.${encodeURIComponent(value2)}`)
                 return {
                   async data(options = {}) {
                     return executeQuery(query, options);
@@ -73,6 +74,21 @@ function createSupabaseClient() {
               async data(options = {}) {
                 return executeQuery(query, options);
               },
+            }
+          },
+          in: (column, values) => {
+            if (Array.isArray(values) && values.length > 0) {
+                // Format values: quote strings, join with comma
+                // We escape double quotes with backslash (common for JSON/PostgREST)
+                const formatted = values.map(v => `"${v.toString().replace(/"/g, '\\"')}"`).join(',');
+                // Encode the entire RHS (in.(...)) to ensure safety
+                const filterValue = `in.(${formatted})`;
+                query.filters.push(`${column}=${encodeURIComponent(filterValue)}`);
+            }
+            return {
+                async data(options = {}) {
+                    return executeQuery(query, options);
+                }
             }
           },
           async data(options = {}) {
