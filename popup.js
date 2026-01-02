@@ -429,6 +429,9 @@ function updateSelectedCoursesDisplay() {
   if (selectedCourses.size === 0) {
     selectedCoursesContainer.innerHTML = ''
     selectedCoursesContainer.classList.add('hidden')
+    if (fetchPapersBtn) {
+      fetchPapersBtn.classList.add('hidden')
+    }
     return
   }
 
@@ -442,6 +445,9 @@ function updateSelectedCoursesDisplay() {
   `).join('')
   
   selectedCoursesContainer.classList.remove('hidden')
+  if (fetchPapersBtn) {
+    fetchPapersBtn.classList.remove('hidden')
+  }
 
   // Add listeners to remove buttons
   selectedCoursesContainer.querySelectorAll('.chip-remove').forEach(btn => {
