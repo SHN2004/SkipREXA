@@ -97,6 +97,28 @@ function createSupabaseClient() {
         }
       },
     }),
+    // RPC method for calling Postgres functions
+    rpc: (functionName, params = {}) => ({
+      async data() {
+        const url = `${SUPABASE_URL}/rest/v1/rpc/${functionName}`;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(params)
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`RPC Error (${response.status}): ${errorText}`);
+        }
+
+        return await response.json();
+      }
+    })
   }
 }
 

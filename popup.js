@@ -243,42 +243,31 @@ async function loadAllCourses() {
 
     const now = Date.now();
     const lastFetch = cache[CACHE_KEY_TIMESTAMP] || 0;
-    
+
     if (cache[CACHE_KEY_COURSES] && (now - lastFetch < CACHE_DURATION)) {
         console.log("✅ Using cached courses data");
         allCourses = cache[CACHE_KEY_COURSES];
-        
+
         // Sort again just to be sure
         allCourses.sort((a, b) => a.name.localeCompare(b.name));
-        
+
         console.log(`Loaded ${allCourses.length} courses from cache`);
         statusDiv.classList.add("hidden");
         return;
     }
 
-    // 2. If No Cache or Expired, Fetch from Network
-    console.log("🌐 Cache expired or missing, fetching from Supabase...");
+    // 2. Fetch using RPC function (server-side aggregation)
+    console.log("🌐 Cache expired or missing, fetching from Supabase RPC...");
 
-    // Check if credentials are loaded
-    const supabaseUrl = window.getSupabaseUrl();
-    const supabaseKey = window.getSupabaseKey();
     const supabase = window.getSupabase();
-
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error("Supabase credentials not loaded")
-    }
-
     if (!supabase) {
       throw new Error("Supabase client not initialized")
     }
 
-    // Now get ALL data using pagination via the helper in supabase-client.js
-    console.log("📥 Fetching ALL course data with pagination...")
-    const data = await window.fetchAllRecords("question_papers", "course_name, actual_subject_code, semester", 1000, (count) => {
-        showStatus(`Loading courses... (${count} fetched)`, "loading");
-    });
-    
-    console.log("📊 All data from Supabase:", data?.length, "records")
+    // Call the RPC function - uses server-side aggregation for optimal performance
+    const data = await supabase.rpc('get_distinct_courses').data();
+
+    console.log("📊 Distinct courses from RPC:", data?.length, "courses")
 
     if (!data || data.length === 0) {
       console.error("❌ No data received from Supabase")
@@ -286,28 +275,13 @@ async function loadAllCourses() {
       return
     }
 
-    // Create unique courses with metadata
-    const coursesMap = new Map()
-    data.forEach((item) => {
-      const key = `${item.course_name}_${item.actual_subject_code}`
-      if (!coursesMap.has(key)) {
-        coursesMap.set(key, {
-          name: item.course_name,
-          code: item.actual_subject_code,
-          semesters: new Set(),
-          searchText: `${item.course_name} ${item.actual_subject_code}`.toLowerCase(),
-        })
-      }
-      coursesMap.get(key).semesters.add(item.semester)
-    })
-
-    // Convert to array and sort
-    allCourses = Array.from(coursesMap.values())
-      .map((course) => ({
-        ...course,
-        semesters: Array.from(course.semesters).sort(),
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name))
+    // Transform RPC result to match expected format
+    allCourses = data.map((course) => ({
+      name: course.course_name,
+      code: course.actual_subject_code,
+      semesters: course.semesters, // Already aggregated by RPC!
+      searchText: `${course.course_name} ${course.actual_subject_code}`.toLowerCase(),
+    })).sort((a, b) => a.name.localeCompare(b.name))
 
     // 3. Save to Cache
     try {
@@ -320,24 +294,22 @@ async function loadAllCourses() {
         console.warn("⚠️ Failed to cache courses:", cacheError);
     }
 
-    console.log(`Loaded ${allCourses.length} unique courses:`, allCourses.slice(0, 3))
+    console.log(`✅ Loaded ${allCourses.length} unique courses using RPC`)
     statusDiv.classList.add("hidden")
-    
+
     // Test search functionality after loading
     console.log("Courses loaded successfully, ready for search")
   } catch (error) {
     console.error("❌ Critical error loading courses:", error)
     console.error("❌ Error stack:", error.stack)
-    
+
     let errorMessage = "Failed to load courses"
-    if (error.message.includes("fetch")) {
-      errorMessage = "Network error - check internet connection"
-    } else if (error.message.includes("HTTP")) {
-      errorMessage = `Server error: ${error.message}`
+    if (error.message.includes("fetch") || error.message.includes("HTTP") || error.message.includes("RPC")) {
+      errorMessage = "Network error - check internet connection or verify RPC function exists"
     } else if (error.name === "TypeError") {
       errorMessage = "Extension configuration error"
     }
-    
+
     showStatus(`Error: ${errorMessage}`, "error")
   }
 }
