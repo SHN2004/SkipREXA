@@ -504,6 +504,12 @@ async function updatePaperDisplay() {
     return
   }
 
+  // Show loading spinner on button
+  if (fetchPapersBtn) {
+    fetchPapersBtn.classList.add("loading")
+    fetchPapersBtn.disabled = true
+  }
+
   try {
     const courseNames = Array.from(selectedCourses).map(c => c.name)
     console.log("Fetching papers for courses:", courseNames)
@@ -554,6 +560,12 @@ async function updatePaperDisplay() {
     console.error("Error fetching papers:", error)
     paperSelectionGroup.style.display = "none"
     showStatus(`Error loading papers: ${error.message}`, "error")
+  } finally {
+    // Hide loading spinner on button
+    if (fetchPapersBtn) {
+      fetchPapersBtn.classList.remove("loading")
+      fetchPapersBtn.disabled = false
+    }
   }
 }
 

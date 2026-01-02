@@ -3,33 +3,47 @@
 <head>
     <meta charset="utf-8">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap');
 
         :root {
-            /* Light Theme - Original Purple/Teal Palette */
-            --background: #F5F5F5;
-            --foreground: #2C2C2C;
-            --card: #FFFFFF;
-            --card-accent: #F5F5F5;
-            --primary: #6B46C1;
-            --primary-hover: #553C9A;
-            --primary-light: #8B5FE8;
-            --secondary: #2CA6A4;
-            --secondary-hover: #228B8D;
-            --accent: #2CA6A4;
-            --muted: #F5F5F5;
-            --muted-foreground: #666666;
-            --border: #DDDDDD;
-            --border-light: #EEEEEE;
-            --success: #2CA6A4;
-            --success-bg: #E0F7F7;
-            --error: #dc2626;
-            --error-bg: #FEE2E2;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
-            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
-            --radius: 6px;
-            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Light Theme - Modern Violet/Slate */
+            --background: #fafafa;
+            --foreground: #18181b;
+            --card: #ffffff;
+            --card-accent: #f4f4f5;
+            
+            /* Primary - Violet */
+            --primary: #7c3aed;
+            --primary-hover: #6d28d9;
+            --primary-light: #8b5cf6;
+            
+            /* Secondary - Cyan (Accent) */
+            --secondary: #06b6d4;
+            --secondary-hover: #0891b2;
+            
+            --accent: #d8b4fe;
+            
+            --muted: #f4f4f5;
+            --muted-foreground: #71717a;
+            
+            --border: #e4e4e7;
+            --border-light: #f4f4f5;
+            
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            
+            --error: #ef4444;
+            --error-bg: #fef2f2;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-glow: 0 0 15px rgba(124, 58, 237, 0.3);
+
+            --radius: 12px;
+            --font-main: 'Inter', sans-serif;
+            --font-display: 'Outfit', sans-serif;
+            --transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
         }
 
         .dark-theme {
@@ -38,23 +52,32 @@
             --foreground: #E4E4E4;
             --card: #333333;
             --card-accent: #3A3A3A;
+            
             --primary: #B39CD0;
             --primary-hover: #C5AEE0;
             --primary-light: #D4BFE8;
+            
             --secondary: #A8DADC;
             --secondary-hover: #B8E5E7;
+            
             --accent: #A8DADC;
+            
             --muted: #333333;
             --muted-foreground: #9E9E9E;
+            
             --border: #444444;
             --border-light: #4A4A4A;
+            
             --success: #A8DADC;
             --success-bg: rgba(168, 218, 220, 0.1);
+            
             --error: #ef4444;
             --error-bg: rgba(239, 68, 68, 0.1);
+            
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
             --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
             --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 20px rgba(179, 156, 208, 0.2); /* Adjusted to match primary */
         }
 
         * {
@@ -66,91 +89,76 @@
         body {
             width: 400px;
             min-height: 500px;
-            font-family: 'DM Sans', sans-serif;
+            font-family: var(--font-main);
             background: var(--background);
             color: var(--foreground);
             line-height: 1.6;
             transition: background-color 0.3s ease, color 0.3s ease;
             position: relative;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Subtle paper texture overlay */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image:
-                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(107, 70, 193, 0.015) 2px, rgba(107, 70, 193, 0.015) 4px);
-            pointer-events: none;
-            z-index: 1;
-            opacity: 0.5;
-        }
 
-        .dark-theme body::before {
-            background-image:
-                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(179, 156, 208, 0.02) 2px, rgba(179, 156, 208, 0.02) 4px);
-        }
 
         .container {
-            padding: 0 0 90px 0;
+            padding: 85px 0 90px 0;
             position: relative;
             z-index: 2;
         }
 
-        /* Header with refined typography */
+        /* Header with glassmorphism */
         .header {
-            background: var(--card);
-            border-bottom: 2px solid var(--primary);
-            padding: 16px 20px 14px;
-            position: relative;
+            background: color-mix(in srgb, var(--card) 90%, transparent);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-light);
+            padding: 16px 24px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            transition: var(--transition);
         }
 
         .header::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 20px;
-            right: 20px;
-            height: 1px;
-            background: linear-gradient(90deg,
-                transparent,
-                var(--accent) 20%,
-                var(--accent) 80%,
-                transparent
-            );
-            opacity: 0.3;
+            display: none;
         }
 
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
 
         .brand {
             flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .brand h1 {
-            font-family: 'Crimson Pro', serif;
+            font-family: var(--font-display);
             font-weight: 700;
-            font-size: 22px;
-            color: var(--primary);
-            margin: 0 0 2px 0;
-            letter-spacing: -0.5px;
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            letter-spacing: -0.02em;
             line-height: 1.1;
         }
 
         .brand-subtitle {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--muted-foreground);
-            font-weight: 500;
-            letter-spacing: 0.3px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
+            margin-top: 2px;
+            opacity: 0.8;
         }
 
         /* Refined Toggle Slider */
@@ -291,7 +299,7 @@
         }
 
         .form-label {
-            font-family: 'Crimson Pro', serif;
+            font-family: var(--font-display);
             font-weight: 600;
             font-size: 15px;
             color: var(--foreground);
@@ -307,21 +315,22 @@
 
         .search-input {
             width: 100%;
-            padding: 11px 14px 11px 40px;
-            border: 2px solid var(--border);
+            padding: 14px 16px 14px 44px;
+            border: 2px solid var(--border-light);
             border-radius: var(--radius);
             font-size: 14px;
-            font-family: 'DM Sans', sans-serif;
-            background: var(--card);
+            font-family: var(--font-main);
+            background: var(--card-accent);
             color: var(--foreground);
             transition: var(--transition);
-            box-shadow: var(--shadow-sm);
+            box-shadow: none;
         }
 
         .search-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(107, 70, 193, 0.15), var(--shadow-md);
+            background: var(--card);
+            box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15), var(--shadow-md);
         }
 
         .dark-theme .search-input:focus {
@@ -441,61 +450,97 @@
         }
 
         /* Fetch button with prominent full-width style */
+        /* Fetch button with prominent full-width style */
         .btn-fetch {
             width: 100%;
-            padding: 13px 20px;
-            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            padding: 14px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: white;
-            border: 2px solid var(--secondary);
+            border: none;
             border-radius: var(--radius);
             cursor: pointer;
             font-size: 14px;
             font-weight: 700;
-            font-family: 'DM Sans', sans-serif;
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             transition: var(--transition);
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.25);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin-top: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            gap: 10px;
+            margin-top: 18px;
             animation: fadeInUp 0.3s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Shine effect */
+        .btn-fetch::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: skewX(-20deg);
+            transition: 0.5s;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .btn-fetch:hover::after {
+            left: 150%;
+            transition: 0.7s;
         }
 
         .btn-fetch:hover {
-            background: linear-gradient(135deg, var(--secondary-hover), var(--secondary));
-            border-color: var(--secondary-hover);
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+            filter: brightness(1.1);
         }
 
         .btn-fetch:active {
             transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(124, 58, 237, 0.2);
         }
 
         .btn-fetch svg {
-            transition: transform 0.3s ease;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .btn-fetch:hover svg {
-            transform: scale(1.1) rotate(5deg);
+            transform: scale(1.1);
         }
 
         .btn-fetch.hidden {
             display: none;
+        }
+
+        /* Loader Spinner */
+        .btn-fetch .loader {
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            display: none;
+            box-sizing: border-box;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        .btn-fetch.loading .loader {
+            display: inline-block;
+        }
+        
+        .btn-fetch.loading .btn-text,
+        .btn-fetch.loading svg {
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Selected courses chips with refined styling */
@@ -587,27 +632,59 @@
         .radio-item {
             display: flex;
             align-items: center;
-            padding: 11px 14px;
+            padding: 16px;
             background: var(--card);
-            border: 2px solid var(--border);
+            border: 2px solid var(--border-light); /* Transparent by default or subtle */
             border-radius: var(--radius);
             cursor: pointer;
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
         }
 
         .radio-item:hover {
-            border-color: var(--primary);
+            border-color: var(--primary-light);
             background: var(--card-accent);
-            transform: translateX(3px);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .radio-item:has(input:checked) {
+            border-color: var(--primary);
+            background: color-mix(in srgb, var(--primary) 5%, var(--card));
+            box-shadow: var(--shadow-glow);
         }
 
         .radio-item input[type="radio"] {
-            width: 18px;
-            height: 18px;
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--muted-foreground);
+            border-radius: 50%;
             margin-right: 12px;
-            accent-color: var(--primary);
-            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .radio-item input[type="radio"]:checked {
+            border-color: var(--primary);
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary-light);
+        }
+
+        .radio-item input[type="radio"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
         }
 
         .radio-item input[type="radio"]:checked + label {
@@ -1019,7 +1096,8 @@
                             <path d="m21 21-4.34-4.34"/>
                             <circle cx="11" cy="11" r="8"/>
                         </svg>
-                        <span>Fetch Papers</span>
+                        <span class="btn-text">Fetch Papers</span>
+                        <span class="loader"></span>
                     </button>
                     <div id="paperCount" class="paper-count hidden"></div>
                 </div>
