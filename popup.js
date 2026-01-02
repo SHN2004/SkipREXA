@@ -385,13 +385,20 @@ function showCourseSuggestions(searchTerm) {
   courseDropdown.classList.remove("hidden")
   highlightedIndex = -1
 
-  // Add click listeners to dropdown items
+  // Add click listeners to dropdown items (entire row is clickable)
   courseDropdown.querySelectorAll(".dropdown-item").forEach((item, index) => {
     item.addEventListener("click", (e) => {
-      e.preventDefault() 
+      e.preventDefault()
       e.stopPropagation() // Prevent document click listener from closing dropdown
+
+      // Toggle the checkbox visually
+      const checkbox = item.querySelector('.course-checkbox')
+      if (checkbox && !e.target.classList.contains('course-checkbox')) {
+        checkbox.checked = !checkbox.checked
+      }
+
       toggleCourseSelection(filtered[index])
-      
+
       // Keep input focus so user can continue typing/selecting
       courseSearchInput.focus()
     })
@@ -609,11 +616,33 @@ function displayPaperList(papers) {
   // Store papers data globally for later access
   window.availablePapers = papers
 
-  // Add event listeners to checkboxes
-  const checkboxes = paperList.querySelectorAll(".paper-checkbox")
-  console.log("Found", checkboxes.length, "checkboxes")
-  checkboxes.forEach((checkbox) => {
-    checkbox.addEventListener("change", updateSelectedCount)
+  // Add event listeners to paper items (entire row is clickable)
+  const paperItems = paperList.querySelectorAll(".paper-item")
+  console.log("Found", paperItems.length, "paper items")
+
+  paperItems.forEach((item) => {
+    item.addEventListener("click", (e) => {
+      // Find the checkbox within this item
+      const checkbox = item.querySelector(".paper-checkbox")
+
+      // If checkbox itself was clicked, let it handle naturally
+      if (e.target === checkbox) {
+        updateSelectedCount()
+        return
+      }
+
+      // Otherwise, toggle the checkbox programmatically
+      if (checkbox) {
+        checkbox.checked = !checkbox.checked
+        updateSelectedCount()
+      }
+    })
+
+    // Also add change listener to checkbox for direct clicks
+    const checkbox = item.querySelector(".paper-checkbox")
+    if (checkbox) {
+      checkbox.addEventListener("change", updateSelectedCount)
+    }
   })
 
   updateSelectedCount()

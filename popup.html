@@ -386,6 +386,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            user-select: none;
         }
 
         .dropdown-item:last-child {
@@ -396,6 +397,10 @@
         .dropdown-item.highlighted {
             background: var(--primary);
             color: white;
+        }
+
+        .dropdown-item:active {
+            transform: scale(0.98);
         }
 
         .dropdown-item:hover .course-name,
@@ -410,6 +415,12 @@
             height: 18px;
             accent-color: var(--primary);
             cursor: pointer;
+            flex-shrink: 0;
+            transition: transform 0.2s ease;
+        }
+
+        .course-checkbox:checked {
+            transform: scale(1.1);
         }
 
         .dropdown-item-content {
@@ -661,6 +672,7 @@
             border-bottom: 1px solid var(--border-light);
             transition: var(--transition);
             cursor: pointer;
+            user-select: none;
         }
 
         .paper-item:last-child {
@@ -671,6 +683,16 @@
             background: var(--card-accent);
         }
 
+        .paper-item:active {
+            transform: scale(0.99);
+        }
+
+        .paper-item:has(input[type="checkbox"]:checked) {
+            background: var(--card-accent);
+            border-left: 3px solid var(--primary);
+            padding-left: 13px;
+        }
+
         .paper-item input[type="checkbox"] {
             width: 19px;
             height: 19px;
@@ -679,6 +701,11 @@
             accent-color: var(--primary);
             cursor: pointer;
             flex-shrink: 0;
+            transition: transform 0.2s ease;
+        }
+
+        .paper-item input[type="checkbox"]:checked {
+            transform: scale(1.1);
         }
 
         .paper-info {
