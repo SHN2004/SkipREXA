@@ -405,11 +405,16 @@ function toggleCourseSelection(course) {
 
 // Update selected courses chips display
 function updateSelectedCoursesDisplay() {
+  const clearAllBtn = document.getElementById('clearAllCoursesBtn')
+  
   if (selectedCourses.size === 0) {
     selectedCoursesContainer.innerHTML = ''
     selectedCoursesContainer.classList.add('hidden')
     if (fetchPapersBtn) {
       fetchPapersBtn.classList.add('hidden')
+    }
+    if (clearAllBtn) {
+      clearAllBtn.classList.add('hidden')
     }
     return
   }
@@ -426,6 +431,9 @@ function updateSelectedCoursesDisplay() {
   selectedCoursesContainer.classList.remove('hidden')
   if (fetchPapersBtn) {
     fetchPapersBtn.classList.remove('hidden')
+  }
+  if (clearAllBtn) {
+    clearAllBtn.classList.remove('hidden')
   }
 
   // Add listeners to remove buttons
@@ -1234,6 +1242,18 @@ if (fetchPapersBtn) {
     } catch (error) {
         console.error("❌ Error setting up fetch button listener:", error)
     }
+}
+
+// Clear all courses button listener
+const clearAllCoursesBtn = document.getElementById('clearAllCoursesBtn')
+if (clearAllCoursesBtn) {
+    clearAllCoursesBtn.addEventListener('click', () => {
+        selectedCourses.clear()
+        updateSelectedCoursesDisplay()
+        courseSearchInput.value = ''
+        saveState()
+        console.log("✅ All courses cleared")
+    })
 }
 
 // Theme toggle event listener

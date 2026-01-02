@@ -543,6 +543,36 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Clear All Button */
+        .btn-clear-all {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            padding: 10px 16px;
+            margin-top: 10px;
+            background: transparent;
+            color: var(--muted-foreground);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: var(--font-main);
+            transition: var(--transition);
+        }
+
+        .btn-clear-all:hover {
+            color: var(--error);
+            border-color: var(--error);
+            background: var(--error-bg);
+        }
+
+        .btn-clear-all.hidden {
+            display: none;
+        }
+
         /* Selected courses chips with refined styling */
         .selected-courses-container {
             display: flex;
@@ -1086,6 +1116,18 @@
                         <div id="courseDropdown" class="dropdown hidden"></div>
                     </div>
                     <div id="selectedCoursesContainer" class="selected-courses-container hidden"></div>
+                    <button
+                        type="button"
+                        id="clearAllCoursesBtn"
+                        class="btn-clear-all hidden"
+                        title="Clear all selected courses"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 6 6 18"/>
+                            <path d="m6 6 12 12"/>
+                        </svg>
+                        <span>Clear All</span>
+                    </button>
                     <button
                         type="button"
                         id="fetchPapersBtn"
