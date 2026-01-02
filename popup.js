@@ -787,18 +787,10 @@ async function uploadPapers() {
         })
 
         if (response.success) {
-          // Convert the response back to blob
-          const byteCharacters = atob(response.base64Data)
-          const byteNumbers = new Array(byteCharacters.length)
-          for (let j = 0; j < byteCharacters.length; j++) {
-            byteNumbers[j] = byteCharacters.charCodeAt(j)
-          }
-          const byteArray = new Uint8Array(byteNumbers)
-          const blob = new Blob([byteArray], { type: "application/pdf" })
-
+          // Keep as base64 - no conversion needed
           pdfData.push({
             name: `${paper.course_name}_${paper.exam_type}_${paper.exam_month}_${paper.exam_year}.pdf`,
-            blob: blob,
+            base64Data: response.base64Data,
             info: paper,
           })
 
@@ -915,22 +907,19 @@ async function uploadPapers() {
       }
     }
 
-    // Send to content script for upload
-    const pdfsWithBase64 = await Promise.all(
-      pdfData.map(async (pdf) => ({
-        name: pdf.name,
-        info: pdf.info,
-        // Convert blob to base64 for message passing
-        data: await blobToBase64(pdf.blob),
-      })),
-    )
+    // Send to content script for upload - data already in base64 format
+    const pdfsToSend = pdfData.map((pdf) => ({
+      name: pdf.name,
+      info: pdf.info,
+      data: pdf.base64Data, // Already base64, no conversion needed
+    }))
 
-    console.log(`📤 Sending ${pdfsWithBase64.length} PDFs to content script...`)
+    console.log(`📤 Sending ${pdfsToSend.length} PDFs to content script...`)
 
     try {
       await chrome.tabs.sendMessage(tab.id, {
         action: "uploadPDFs",
-        pdfs: pdfsWithBase64,
+        pdfs: pdfsToSend,
       })
     } catch (error) {
       console.error("Message sending failed:", error)
@@ -1038,7 +1027,7 @@ async function downloadPapersDirectly() {
         })
 
         if (response.success) {
-          // Convert base64 back to blob and create download
+          // Convert base64 to blob only once for download
           const byteCharacters = atob(response.base64Data)
           const byteNumbers = new Array(byteCharacters.length)
           for (let j = 0; j < byteCharacters.length; j++) {
@@ -1046,25 +1035,25 @@ async function downloadPapersDirectly() {
           }
           const byteArray = new Uint8Array(byteNumbers)
           const blob = new Blob([byteArray], { type: "application/pdf" })
-          
+
           // Create filename with proper naming
           const filename = `${paper.course_name}_${paper.exam_type}_${paper.exam_month}_${paper.exam_year}.pdf`
-          
+
           // Create download link and trigger download
           const url = URL.createObjectURL(blob)
           const downloadLink = document.createElement('a')
           downloadLink.href = url
           downloadLink.download = filename
           downloadLink.style.display = 'none'
-          
+
           // Trigger download
           document.body.appendChild(downloadLink)
           downloadLink.click()
           document.body.removeChild(downloadLink)
-          
+
           // Clean up URL after a short delay
           setTimeout(() => URL.revokeObjectURL(url), 1000)
-          
+
           successfulDownloads++
           console.log(`✅ Successfully downloaded: ${filename}`)
         } else {
@@ -1115,6 +1104,8 @@ async function downloadPapersDirectly() {
 }
 
 // Convert blob to base64
+// NOTE: No longer used - optimized to keep data as base64 throughout popup.js
+// Kept for potential future use if needed
 function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
