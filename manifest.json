@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "SkipREXA",
-  "version": "3.0",
-  "description": "Upload relevant question papers to ChatGPT based on subject selection",
+  "version": "4.0",
+  "description": "Exam paper assistant for RSET students - Upload question papers to ChatGPT for smart study prep",
   "icons": {
     "16": "icon16.png",
     "32": "icon32.png",
