@@ -32,7 +32,8 @@ const progressDetails = getElementSafely("progressDetails")
 
 // Theme toggle elements
 const themeToggle = getElementSafely("themeToggle")
-const themeIcon = themeToggle?.querySelector('.theme-icon')
+const sunIcon = themeToggle?.querySelector('.sun-icon')
+const moonIcon = themeToggle?.querySelector('.moon-icon')
 
 console.log("📋 DOM elements check complete")
 
@@ -140,14 +141,16 @@ async function saveThemePreference(theme) {
 
 function applyTheme(theme) {
   const body = document.body
-  
+
   if (theme === 'dark') {
     body.classList.add('dark-theme')
-    if (themeIcon) themeIcon.textContent = '☀️'
+    if (sunIcon) sunIcon.classList.remove('active')
+    if (moonIcon) moonIcon.classList.add('active')
     console.log('🌙 Applied dark theme')
   } else {
     body.classList.remove('dark-theme')
-    if (themeIcon) themeIcon.textContent = '🌙'
+    if (sunIcon) sunIcon.classList.add('active')
+    if (moonIcon) moonIcon.classList.remove('active')
     console.log('☀️ Applied light theme')
   }
 }
