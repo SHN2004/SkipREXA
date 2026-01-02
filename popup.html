@@ -761,6 +761,37 @@
             border-color: var(--primary);
         }
 
+        /* Paper Stats Display */
+        .paper-stats {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-family: var(--font-main);
+            font-size: 13px;
+            color: var(--muted-foreground);
+        }
+
+        .stat-selected {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 15px;
+        }
+
+        .stat-separator {
+            color: var(--border);
+            font-weight: 300;
+        }
+
+        .stat-total {
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        .stat-label {
+            margin-left: 2px;
+            font-weight: 400;
+        }
+
         /* Elegant paper list */
         .paper-list {
             max-height: 300px;
@@ -1179,9 +1210,14 @@
                             <button type="button" id="selectAllBtn" class="control-btn">Select All</button>
                             <button type="button" id="deselectAllBtn" class="control-btn">Deselect All</button>
                         </div>
+                        <div class="paper-stats">
+                            <span id="selectedCount" class="stat-selected">0</span>
+                            <span class="stat-separator">/</span>
+                            <span id="totalPaperCount" class="stat-total">0</span>
+                            <span class="stat-label">selected</span>
+                        </div>
                     </div>
                     <div id="paperList" class="paper-list"></div>
-                    <div id="selectedCount" class="selected-count">0 papers selected</div>
                 </div>
             </div>
 

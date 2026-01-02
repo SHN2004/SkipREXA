@@ -644,10 +644,18 @@ function displayPaperList(papers) {
 // Update selected count display
 function updateSelectedCount() {
   const selectedCheckboxes = document.querySelectorAll(".paper-checkbox:checked")
-  const selectedCount = document.getElementById("selectedCount")
+  const totalCheckboxes = document.querySelectorAll(".paper-checkbox")
+  const selectedCountEl = document.getElementById("selectedCount")
+  const totalCountEl = document.getElementById("totalPaperCount")
   const count = selectedCheckboxes.length
+  const total = totalCheckboxes.length
 
-  selectedCount.textContent = `${count} paper${count !== 1 ? "s" : ""} selected`
+  if (selectedCountEl) {
+    selectedCountEl.textContent = count
+  }
+  if (totalCountEl) {
+    totalCountEl.textContent = total
+  }
 }
 
 // Get selected papers
