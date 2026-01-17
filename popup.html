@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
         :root {
             /* Light Theme - Modern Violet/Slate */
@@ -41,8 +41,8 @@
             --shadow-glow: 0 0 15px rgba(124, 58, 237, 0.3);
 
             --radius: 12px;
-            --font-main: 'Inter', sans-serif;
-            --font-display: 'Outfit', sans-serif;
+            --font-main: 'Space Grotesk', sans-serif;
+            --font-display: 'Fraunces', serif;
             --transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
         }
 
@@ -99,9 +99,8 @@
         }
 
 
-
         .container {
-            padding: 85px 0 90px 0;
+            padding: 72px 0 80px 0;
             position: relative;
             z-index: 2;
         }
@@ -112,7 +111,7 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-light);
-            padding: 16px 24px;
+            padding: 12px 20px;
             position: fixed;
             top: 0;
             left: 0;
@@ -141,7 +140,7 @@
         .brand h1 {
             font-family: var(--font-display);
             font-weight: 700;
-            font-size: 24px;
+            font-size: 22px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             background-clip: text;
             -webkit-background-clip: text;
@@ -264,7 +263,7 @@
 
         /* Form sections with magazine-style spacing */
         .form-content {
-            padding: 18px 20px;
+            padding: 16px 18px;
         }
 
         .form-section {
@@ -316,11 +315,11 @@
         .search-input {
             width: 100%;
             padding: 14px 16px 14px 44px;
-            border: 2px solid var(--border-light);
+            border: 2px solid var(--border);
             border-radius: var(--radius);
             font-size: 14px;
             font-family: var(--font-main);
-            background: var(--card-accent);
+            background: var(--card);
             color: var(--foreground);
             transition: var(--transition);
             box-shadow: none;
@@ -339,7 +338,7 @@
 
         .search-input::placeholder {
             color: var(--muted-foreground);
-            opacity: 0.6;
+            opacity: 0.8;
         }
 
         .search-icon {
@@ -349,7 +348,7 @@
             transform: translateY(-50%);
             width: 16px;
             height: 16px;
-            opacity: 0.5;
+            opacity: 0.7;
             pointer-events: none;
             color: var(--muted-foreground);
         }
@@ -441,12 +440,15 @@
             font-size: 14px;
             color: var(--foreground);
             margin-bottom: 3px;
+            letter-spacing: 0.01em;
         }
 
         .course-details {
             font-size: 12px;
             color: var(--muted-foreground);
             line-height: 1.4;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
         }
 
         /* Fetch button with prominent full-width style */
@@ -454,7 +456,7 @@
         .btn-fetch {
             width: 100%;
             padding: 14px 20px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: var(--radius);
@@ -476,22 +478,20 @@
             overflow: hidden;
         }
         
-        /* Shine effect */
+        /* Subtle gloss line */
         .btn-fetch::after {
             content: '';
             position: absolute;
             top: 0;
-            left: -100%;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transform: skewX(-20deg);
-            transition: 0.5s;
+            left: 8%;
+            right: 8%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.35);
+            opacity: 0.6;
         }
 
         .btn-fetch:hover::after {
-            left: 150%;
-            transition: 0.7s;
+            opacity: 0.85;
         }
 
         .btn-fetch:hover {
@@ -552,8 +552,8 @@
             width: 100%;
             padding: 10px 16px;
             margin-top: 10px;
-            background: transparent;
-            color: var(--muted-foreground);
+            background: var(--card);
+            color: var(--foreground);
             border: 1px dashed var(--border);
             border-radius: var(--radius);
             cursor: pointer;
@@ -637,7 +637,7 @@
 
         .chip-remove:hover {
             background: rgba(255, 255, 255, 0.35);
-            transform: rotate(90deg);
+            transform: scale(1.05);
         }
 
         /* Paper count badge */
@@ -682,7 +682,7 @@
 
         .radio-item:has(input:checked) {
             border-color: var(--primary);
-            background: color-mix(in srgb, var(--primary) 5%, var(--card));
+            background: color-mix(in srgb, var(--primary) 8%, var(--card));
             box-shadow: var(--shadow-glow);
         }
 
@@ -751,7 +751,7 @@
             cursor: pointer;
             font-size: 12px;
             font-weight: 600;
-            font-family: 'DM Sans', sans-serif;
+            font-family: var(--font-main);
             transition: var(--transition);
         }
 
@@ -825,9 +825,10 @@
         }
 
         .paper-item:has(input[type="checkbox"]:checked) {
-            background: var(--card-accent);
-            border-left: 3px solid var(--primary);
-            padding-left: 13px;
+            background: color-mix(in srgb, var(--primary) 8%, var(--card));
+            border-left: 4px solid var(--primary);
+            padding-left: 12px;
+            box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 18%, transparent);
         }
 
         .paper-item input[type="checkbox"] {
@@ -882,9 +883,9 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 12px 20px;
-            background: var(--card);
-            border-top: 2px solid var(--primary);
+            padding: 10px 16px;
+            background: color-mix(in srgb, var(--card) 88%, transparent);
+            border-top: 1px solid var(--border);
             z-index: 100;
             box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
             display: flex;
@@ -919,7 +920,7 @@
             cursor: pointer;
             font-size: 13px;
             font-weight: 700;
-            font-family: 'DM Sans', sans-serif;
+            font-family: var(--font-main);
             transition: var(--transition);
             display: flex;
             align-items: center;
