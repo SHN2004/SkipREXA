@@ -17,6 +17,20 @@ This project has no build step or package manager scripts. Use Chrome’s extens
   - Content script: DevTools on ChatGPT page (filter logs by emoji prefixes).
   - Service worker: `chrome://extensions/` → “Inspect views”.
 
+## Browser Automation (agent-browser)
+Use `agent-browser` for quick, scriptable browser checks while coding.
+
+- Already available in this environment (installed globally); if needed, set up with: `npm install -g agent-browser` then `agent-browser install`
+- Core workflow:
+  - `agent-browser open <url>`
+  - `agent-browser snapshot -i` (use refs like `@e1`, `@e2`)
+  - `agent-browser click @e1` / `agent-browser fill @e2 "text"`
+  - Re-run `snapshot` after navigation or DOM changes
+- Debug helpers: `--headed`, `screenshot`, `console`, `errors`, `trace start` / `trace stop`
+- Control a real Chrome (with this extension loaded) via CDP:
+  - Start Chrome with `--remote-debugging-port=9222`, then run `agent-browser connect 9222`
+- More details/examples: `agent-browser-howtoreadme.md`
+
 ## Coding Style & Naming Conventions
 - Vanilla JS/HTML/CSS; no bundler and no external libraries.
 - Indentation: 2 spaces, no semicolons (match existing style).

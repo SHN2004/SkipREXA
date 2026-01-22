@@ -748,19 +748,243 @@ Once you know this, please help me create a comprehensive study plan covering al
 
 // PDF downloads now handled by background script
 
+function getActivePlatformFromUrl(url) {
+  if (!url) return null
+  if (url.includes("chatgpt.com") || url.includes("chat.openai.com")) return "chatgpt"
+  if (url.includes("gemini.google.com")) return "gemini"
+  return null
+}
+
+function waitForDownloadComplete(downloadId, { timeoutMs = 90000, stallMs = 20000 } = {}) {
+  return new Promise((resolve, reject) => {
+    let finished = false
+    let pollInterval = null
+    let lastBytesReceived = 0
+    let lastProgressAt = Date.now()
+
+    const onChanged = (delta) => {
+      if (delta.id !== downloadId) return
+
+      if (delta.error?.current) {
+        cleanup(new Error(delta.error.current))
+        return
+      }
+
+      if (delta.state?.current === "interrupted") {
+        cleanup(new Error("Download interrupted"))
+        return
+      }
+
+      if (delta.state?.current === "complete") {
+        cleanup(null)
+        return
+      }
+
+      if (typeof delta.bytesReceived?.current === "number") {
+        if (delta.bytesReceived.current > lastBytesReceived) {
+          lastBytesReceived = delta.bytesReceived.current
+          lastProgressAt = Date.now()
+        }
+      }
+    }
+
+    const cleanup = (error) => {
+      if (finished) return
+      finished = true
+      clearTimeout(timeout)
+      if (pollInterval) clearInterval(pollInterval)
+      chrome.downloads.onChanged.removeListener(onChanged)
+      if (error) reject(error)
+      else resolve(true)
+    }
+
+    const timeout = setTimeout(() => {
+      cleanup(new Error("Download timeout"))
+    }, timeoutMs)
+
+    chrome.downloads.onChanged.addListener(onChanged)
+
+    // Fallback polling (downloads can complete before onChanged handler runs)
+    pollInterval = setInterval(async () => {
+      try {
+        const [item] = await chrome.downloads.search({ id: downloadId })
+        if (!item) return
+        if (item.error) cleanup(new Error(item.error))
+        else if (item.state === "interrupted") cleanup(new Error("Download interrupted"))
+        else if (item.state === "complete") cleanup(null)
+        else if (item.state === "in_progress") {
+          if (typeof item.bytesReceived === "number" && item.bytesReceived > lastBytesReceived) {
+            lastBytesReceived = item.bytesReceived
+            lastProgressAt = Date.now()
+          } else if (stallMs && Date.now() - lastProgressAt > stallMs) {
+            cleanup(new Error("Download stalled"))
+          }
+        }
+      } catch (e) {
+        // Ignore polling errors
+      }
+    }, 500)
+  })
+}
+
+function sanitizeDownloadFilename(name) {
+  const raw = String(name || "")
+  const withoutSeparators = raw.replace(/[\\/]+/g, "_")
+  const withoutReserved = withoutSeparators.replace(/[:*?"<>|]+/g, "_")
+  const withoutControlChars = withoutReserved.replace(/[\u0000-\u001f\u007f]/g, "")
+  const collapsedWhitespace = withoutControlChars.replace(/\s+/g, " ").trim()
+
+  const maxLen = 180
+  const trimmed = collapsedWhitespace.length > maxLen ? collapsedWhitespace.slice(0, maxLen).trim() : collapsedWhitespace
+  if (!trimmed) return "paper.pdf"
+  return trimmed
+}
+
+async function saveBase64PdfToDisk(base64Data, filename) {
+  // Yield to let progress UI update before heavy work
+  await new Promise((resolve) => setTimeout(resolve, 0))
+
+  const byteCharacters = atob(base64Data)
+  const sliceSize = 1024 * 1024
+  const slices = []
+
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize)
+    const bytes = new Uint8Array(slice.length)
+    for (let i = 0; i < slice.length; i++) {
+      bytes[i] = slice.charCodeAt(i)
+    }
+    slices.push(bytes)
+
+    // Yield occasionally to keep popup responsive
+    if (offset > 0 && offset % (sliceSize * 4) === 0) {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    }
+  }
+
+  const blob = new Blob(slices, { type: "application/pdf" })
+
+  const blobUrl = URL.createObjectURL(blob)
+
+  const attemptDownload = async (url, label) => {
+    let downloadId
+    console.log(`📥 Saving for Gemini (${label}):`, filename)
+    downloadId = await Promise.race([
+      chrome.downloads.download({
+        url,
+        filename,
+        saveAs: false,
+        conflictAction: "overwrite",
+      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Download start timeout")), 10000)),
+    ])
+    if (!downloadId) throw new Error("Download did not start")
+
+    await waitForDownloadComplete(downloadId, { timeoutMs: 90000, stallMs: 20000 })
+    const [item] = await chrome.downloads.search({ id: downloadId })
+    if (!item?.filename) throw new Error("Could not resolve downloaded file path")
+    return item.filename
+  }
+
+  try {
+    return await attemptDownload(blobUrl, "blob")
+  } catch (error) {
+    console.warn("⚠️ Blob download failed, retrying with data URL:", error?.message || error)
+    const dataUrl = `data:application/pdf;base64,${base64Data}`
+    return await attemptDownload(dataUrl, "data")
+  } finally {
+    URL.revokeObjectURL(blobUrl)
+  }
+}
+
+async function uploadPdfsToGemini(tabId, pdfsToSend) {
+  const filePaths = []
+
+  for (let i = 0; i < pdfsToSend.length; i++) {
+    const pdf = pdfsToSend[i]
+    showProgress(i, pdfsToSend.length, `Preparing for Gemini: ${pdf.name}`)
+    const safeName = sanitizeDownloadFilename(pdf.name)
+    showStatus("Choose a save location to continue Gemini upload", "loading")
+    const downloadId = await startBase64PdfDownload(
+      pdf.data,
+      `SkipREXA/GeminiUploads/${safeName}`,
+    )
+    const path = await resolveDownloadedFilePath(downloadId, 180000)
+    filePaths.push(path)
+  }
+
+  showProgress(pdfsToSend.length, pdfsToSend.length, "Attaching to Gemini…")
+
+  const response = await chrome.runtime.sendMessage({
+    action: "geminiAttachFiles",
+    tabId,
+    filePaths,
+  })
+
+  if (!response?.success) {
+    console.error("❌ Gemini attach response:", response)
+    throw new Error(response?.error || "Gemini attach failed")
+  }
+}
+
+async function startBase64PdfDownload(base64Data, filename) {
+  const dataUrl = `data:application/pdf;base64,${base64Data}`
+  console.log("📥 Saving for Gemini (saveAs):", filename)
+
+  const downloadPromise = new Promise((resolve, reject) => {
+    chrome.downloads.download({
+      url: dataUrl,
+      filename,
+      saveAs: true,
+      conflictAction: "overwrite",
+    }, (id) => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message))
+      } else if (!id) {
+        reject(new Error("Download did not start"))
+      } else {
+        resolve(id)
+      }
+    })
+  })
+
+  return await Promise.race([
+    downloadPromise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error("Download start timeout")), 60000)),
+  ])
+}
+
+async function resolveDownloadedFilePath(downloadId, timeoutMs = 90000) {
+  if (!downloadId) throw new Error("Missing download ID for Gemini save")
+  const start = Date.now()
+
+  while (Date.now() - start < timeoutMs) {
+    const [item] = await chrome.downloads.search({ id: downloadId })
+    if (item?.state === "complete" && item.filename) {
+      return item.filename
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500))
+  }
+
+  const [finalItem] = await chrome.downloads.search({ id: downloadId })
+  if (finalItem?.filename && finalItem?.state === "complete") return finalItem.filename
+  throw new Error("Could not resolve downloaded file path")
+}
+
 
 // Main upload function
 async function uploadPapers() {
   try {
-    // Check if we're on ChatGPT
+    // Check if we're on a supported LLM platform
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
     if (!tab || !tab.url) {
       showStatus("Could not access current tab. Please try again.", "error")
       return
     }
 
-    if (!tab.url.includes("chatgpt.com") && !tab.url.includes("chat.openai.com")) {
-      showStatus("Please open ChatGPT first", "error")
+    const platform = getActivePlatformFromUrl(tab.url)
+    if (!platform) {
+      showStatus("Please open ChatGPT or Gemini first", "error")
       return
     }
 
@@ -866,7 +1090,7 @@ async function uploadPapers() {
       )
     }
 
-    showStatus("Uploading to ChatGPT...", "loading")
+    showStatus(platform === "gemini" ? "Preparing Gemini upload..." : "Uploading to ChatGPT...", "loading")
 
     // Enhanced content script injection with retries
     let contentScriptReady = false
@@ -929,9 +1153,7 @@ async function uploadPapers() {
         console.log("✅ Background injection successful")
       } catch (finalError) {
         console.error("❌ Background injection also failed:", finalError)
-        throw new Error(
-          "Could not establish connection with ChatGPT page. Please refresh the ChatGPT page and try again.",
-        )
+        throw new Error("Could not establish connection with the page. Please refresh and try again.")
       }
     }
 
@@ -942,16 +1164,20 @@ async function uploadPapers() {
       data: pdf.base64Data, // Already base64, no conversion needed
     }))
 
-    console.log(`📤 Sending ${pdfsToSend.length} PDFs to content script...`)
-
-    try {
-      await chrome.tabs.sendMessage(tab.id, {
-        action: "uploadPDFs",
-        pdfs: pdfsToSend,
-      })
-    } catch (error) {
-      console.error("Message sending failed:", error)
-      throw new Error(`Upload communication failed: ${error.message}. Please refresh ChatGPT and try again.`)
+    if (platform === "chatgpt") {
+      console.log(`📤 Sending ${pdfsToSend.length} PDFs to content script...`)
+      try {
+        await chrome.tabs.sendMessage(tab.id, {
+          action: "uploadPDFs",
+          pdfs: pdfsToSend,
+        })
+      } catch (error) {
+        console.error("Message sending failed:", error)
+        throw new Error(`Upload communication failed: ${error.message}. Please refresh and try again.`)
+      }
+    } else {
+      console.log(`📤 Preparing ${pdfsToSend.length} PDFs for Gemini attachment...`)
+      await uploadPdfsToGemini(tab.id, pdfsToSend)
     }
 
     // Hide progress bar and show success
@@ -993,7 +1219,7 @@ async function uploadPapers() {
     
     let errorMessage = "Upload failed. Please try again."
     if (error.message.includes("tab")) {
-      errorMessage = "Could not access ChatGPT tab. Please refresh and try again."
+      errorMessage = "Could not access the current tab. Please refresh and try again."
     } else if (error.message.includes("network") || error.message.includes("fetch")) {
       errorMessage = "Network error. Check your connection and try again."
     } else if (error.message.includes("timeout")) {
@@ -1367,8 +1593,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           const currentTab = tabs[0]
           console.log("🌐 Current tab URL:", currentTab?.url)
           
-          if (!currentTab || (!currentTab.url.includes("chatgpt.com") && !currentTab.url.includes("chat.openai.com"))) {
-            showStatus("Please navigate to ChatGPT to use this extension", "error")
+          const platform = getActivePlatformFromUrl(currentTab?.url)
+          if (!platform) {
+            showStatus("Please navigate to ChatGPT or Gemini to use this extension", "error")
             if (uploadBtn) uploadBtn.disabled = true
             // Still load courses for testing course search functionality
             console.log("📚 Not on supported LLM platform, but loading courses for testing...")

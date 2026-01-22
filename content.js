@@ -1,6 +1,13 @@
 // Content script for ChatGPT file upload
 console.log('Question Paper Helper content script loaded');
 
+function getActivePlatform() {
+  const host = window.location.hostname || ""
+  if (host.includes("gemini.google.com")) return "gemini"
+  if (host.includes("chatgpt.com") || host.includes("chat.openai.com")) return "chatgpt"
+  return "unknown"
+}
+
 
 // Prevent multiple script injections and event listener registration
 if (window.questionPaperHelperLoaded) {
@@ -974,6 +981,12 @@ async function downloadFilesForManualUpload(pdfs) {
 // Inject custom prompt into ChatGPT's input field
 async function injectPromptToChatGPT(promptText) {
     try {
+        const platform = getActivePlatform()
+        if (platform === "gemini") {
+            await injectPromptToGemini(promptText)
+            return
+        }
+
         console.log('🔤 Attempting to inject prompt:', promptText);
         
         // First try to find the ProseMirror editor
@@ -1038,6 +1051,21 @@ async function injectPromptToChatGPT(promptText) {
     }
 }
 
+async function injectPromptToGemini(promptText) {
+  const editor = document.querySelector('.ql-editor[contenteditable="true"][role="textbox"]')
+  if (!editor) throw new Error('Could not find Gemini input field to inject prompt')
+
+  editor.focus()
+
+  try {
+    editor.innerHTML = ""
+    document.execCommand("insertText", false, promptText)
+  } catch (e) {
+    editor.textContent = promptText
+  }
+
+  editor.dispatchEvent(new InputEvent("input", { bubbles: true }))
+}
 
 
 
