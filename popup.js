@@ -807,30 +807,46 @@ async function uploadPapers() {
         const currentPaperName = `${paper.course_name} (${paper.exam_type})`
         showProgress(i, filteredPapers.length, `Downloading: ${currentPaperName}`)
         showStatus(`Downloading ${i + 1}/${filteredPapers.length}: ${paper.course_name}`, 'loading')
+        const targetFilename = `${paper.course_name}_${paper.exam_type}_${paper.exam_month}_${paper.exam_year}.pdf`
         
-        // Use background script to download PDF - ORIGINAL WORKING VERSION
+        // Use background script to download PDF bytes for upload
         const response = await chrome.runtime.sendMessage({
           action: 'downloadPDF',
-          url: paper.download_url
+          url: paper.download_url,
+          mode: 'buffer',
+          filename: targetFilename
         })
 
-        if (response.success) {
+        if (response?.success && response.base64Data) {
           // Keep as base64 - no conversion needed
           pdfData.push({
-            name: `${paper.course_name}_${paper.exam_type}_${paper.exam_month}_${paper.exam_year}.pdf`,
+            name: targetFilename,
             base64Data: response.base64Data,
             info: paper,
           })
 
           console.log(`✅ Successfully downloaded: ${paper.course_name}`)
         } else {
-          throw new Error(response.error)
+          const errorMessage = response?.error || "Download failed"
+          const errorCode = response?.code || "UNKNOWN_DOWNLOAD_ERROR"
+          downloadErrors.push({
+            paper: paper.course_name,
+            error: errorMessage,
+            code: errorCode,
+            url: paper.download_url,
+            nativeDownload: response?.nativeDownload || null
+          })
+          console.error(`❌ Error downloading ${paper.course_name}:`, errorCode, errorMessage)
+
+          // Continue with next paper instead of failing completely
+          continue
         }
       } catch (error) {
         console.error(`❌ Error downloading ${paper.course_name}:`, error)
         downloadErrors.push({
           paper: paper.course_name,
           error: error.message,
+          code: "MESSAGE_ERROR",
           url: paper.download_url
         })
 
@@ -851,7 +867,18 @@ async function uploadPapers() {
     if (pdfData.length === 0) {
       hideProgress()
       if (downloadErrors.length > 0) {
-        showStatus(`All ${filteredPapers.length} papers failed to download. Check console for details.`, "error")
+        const certOrTlsFailuresOnly = downloadErrors.every((entry) =>
+          ["CERT_ERROR", "NATIVE_DOWNLOAD_ONLY", "NETWORK_OR_TLS_ERROR"].includes(entry.code),
+        )
+
+        if (certOrTlsFailuresOnly) {
+          showStatus(
+            "Browser blocked secure fetch. If files were downloaded, attach them manually from Downloads.",
+            "error",
+          )
+        } else {
+          showStatus(`All ${filteredPapers.length} papers failed to download. Check console for details.`, "error")
+        }
       } else {
         showStatus("No papers found to download", "error")
       }
@@ -958,7 +985,16 @@ async function uploadPapers() {
     hideProgress()
 
     if (downloadErrors.length > 0) {
-      showStatus(`Successfully uploaded ${pdfData.length} papers! (${downloadErrors.length} downloads failed)`, "success")
+      const nativeOnlyCount = downloadErrors.filter((entry) => entry.code === "NATIVE_DOWNLOAD_ONLY").length
+
+      if (nativeOnlyCount > 0) {
+        showStatus(
+          `Uploaded ${pdfData.length} papers. ${nativeOnlyCount} files were saved via Chrome Downloads; attach them manually.`,
+          "success",
+        )
+      } else {
+        showStatus(`Successfully uploaded ${pdfData.length} papers! (${downloadErrors.length} downloads failed)`, "success")
+      }
     } else {
       showStatus(`Successfully uploaded ${pdfData.length} papers!`, "success")
     }
@@ -1047,51 +1083,32 @@ async function downloadPapersDirectly() {
       try {
         const currentPaperName = `${paper.course_name} (${paper.exam_type})`
         showProgress(i, selectedPapers.length, `Downloading: ${currentPaperName}`)
+        const targetFilename = `${paper.course_name}_${paper.exam_type}_${paper.exam_month}_${paper.exam_year}.pdf`
         
-        // Use background script to download PDF
+        // Use Chrome native download manager through background script
         const response = await chrome.runtime.sendMessage({
           action: 'downloadPDF',
-          url: paper.download_url
+          url: paper.download_url,
+          mode: 'save',
+          filename: targetFilename
         })
 
-        if (response.success) {
-          // Convert base64 to blob only once for download
-          const byteCharacters = atob(response.base64Data)
-          const byteNumbers = new Array(byteCharacters.length)
-          for (let j = 0; j < byteCharacters.length; j++) {
-            byteNumbers[j] = byteCharacters.charCodeAt(j)
-          }
-          const byteArray = new Uint8Array(byteNumbers)
-          const blob = new Blob([byteArray], { type: "application/pdf" })
-
-          // Create filename with proper naming
-          const filename = `${paper.course_name}_${paper.exam_type}_${paper.exam_month}_${paper.exam_year}.pdf`
-
-          // Create download link and trigger download
-          const url = URL.createObjectURL(blob)
-          const downloadLink = document.createElement('a')
-          downloadLink.href = url
-          downloadLink.download = filename
-          downloadLink.style.display = 'none'
-
-          // Trigger download
-          document.body.appendChild(downloadLink)
-          downloadLink.click()
-          document.body.removeChild(downloadLink)
-
-          // Clean up URL after a short delay
-          setTimeout(() => URL.revokeObjectURL(url), 1000)
-
+        if (response?.success) {
           successfulDownloads++
-          console.log(`✅ Successfully downloaded: ${filename}`)
+          console.log(`✅ Successfully downloaded: ${response?.nativeDownload?.filename || targetFilename}`)
         } else {
-          throw new Error(response.error)
+          failedDownloads.push({
+            paper: paper.course_name,
+            error: response?.error || "Download failed",
+            code: response?.code || "UNKNOWN_DOWNLOAD_ERROR"
+          })
         }
       } catch (error) {
         console.error(`❌ Error downloading ${paper.course_name}:`, error)
         failedDownloads.push({
           paper: paper.course_name,
-          error: error.message
+          error: error.message,
+          code: "MESSAGE_ERROR"
         })
       }
     }
@@ -1108,7 +1125,12 @@ async function downloadPapersDirectly() {
       } else if (successfulDownloads > 0) {
         showStatus(`Downloaded ${successfulDownloads}/${selectedPapers.length} papers (${failedDownloads.length} failed)`, "success")
       } else {
-        showStatus("All downloads failed. Please check your connection and try again.", "error")
+        const certFailuresOnly = failedDownloads.length > 0 && failedDownloads.every((entry) => entry.code === "CERT_ERROR")
+        if (certFailuresOnly) {
+          showStatus("All downloads were blocked by SSL certificate validation in Chrome.", "error")
+        } else {
+          showStatus("All downloads failed. Please check your connection and try again.", "error")
+        }
       }
     }, 1000)
     

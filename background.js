@@ -59,20 +59,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     
     if (message.action === 'downloadPDF') {
-        // Handle PDF download
-        downloadPDF(message.url)
-            .then(async blob => {
-                // Convert blob to base64 for message passing
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    const base64Data = reader.result.split(',')[1];
-                    sendResponse({ success: true, base64Data });
-                };
-                reader.readAsDataURL(blob);
+        const mode = message.mode === 'save' ? 'save' : 'buffer';
+        const filename = typeof message.filename === 'string' ? message.filename : null;
+
+        downloadPDF({ url: message.url, mode, filename })
+            .then((result) => {
+                sendResponse(result);
             })
             .catch(error => {
                 console.error('Background PDF download error:', error);
-                sendResponse({ success: false, error: error.message });
+                sendResponse({
+                    success: false,
+                    code: 'UNEXPECTED_ERROR',
+                    error: error?.message || 'Unexpected download error'
+                });
             });
         return true;
     }
@@ -106,60 +106,319 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     
 });
 
-// Function to download PDF (if needed by other parts of extension)
-async function downloadPDF(url) {
+async function downloadPDF({ url, mode, filename }) {
+    console.log('Background script attempting to download:', { url, mode, filename });
+
+    if (!url || !url.startsWith('http')) {
+        return {
+            success: false,
+            code: 'INVALID_URL',
+            error: `Invalid URL: ${url}`
+        };
+    }
+
+    if (mode === 'save') {
+        return await downloadWithNativeManager(url, filename);
+    }
+
     try {
-        console.log('Background script attempting to download:', url);
-        
-        // Check if URL is valid first
-        if (!url || !url.startsWith('http')) {
-            throw new Error(`Invalid URL: ${url}`);
-        }
-        
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Accept': 'application/pdf,*/*',
-                'Referer': 'https://student.rajagiritech.ac.in/'
-            }
-        });
-        
-        console.log('Response status:', response.status);
-        console.log('Response URL:', response.url);
-        
-        if (!response.ok) {
-            console.error(`HTTP ${response.status} for URL: ${url}`);
-            
-            if (response.status === 404) {
-                throw new Error(`PDF file not found at URL: ${url}. The file may have been moved or deleted.`);
-            } else if (response.status === 403) {
-                throw new Error(`Access denied to PDF: ${url}. Authentication may be required.`);
-            } else {
-                throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
-            }
-        }
-        
-        const blob = await response.blob();
-        
-        // Verify it's actually a PDF
-        if (blob.type && !blob.type.includes('pdf')) {
-            console.warn(`Downloaded file is not a PDF, got: ${blob.type}`);
-        }
-        
-        if (blob.size === 0) {
-            throw new Error(`Downloaded PDF is empty (0 bytes) from: ${url}`);
-        }
-        
-        console.log('Downloaded blob size:', blob.size, 'bytes, type:', blob.type);
-        return blob;
-        
+        const blob = await fetchPdfBlob(url);
+        const base64Data = await blobToBase64(blob);
+        return { success: true, source: 'fetch', base64Data };
     } catch (error) {
-        console.error('Error downloading PDF:', error);
+        console.error('Error downloading PDF via fetch:', error);
         console.error('Failed URL:', url);
-        
+
+        const fetchFailure = normalizeFetchError(error, url);
+        if (!fetchFailure.tryNativeFallback) {
+            return fetchFailure;
+        }
+
+        const nativeResult = await downloadWithNativeManager(url, filename);
+        if (nativeResult.success) {
+            return {
+                success: false,
+                code: 'NATIVE_DOWNLOAD_ONLY',
+                error: 'Downloaded using Chrome download manager. Browser blocked in-memory fetch; attach the file manually from Downloads.',
+                nativeDownload: nativeResult.nativeDownload
+            };
+        }
+
+        if (nativeResult.code === 'CERT_ERROR') {
+            return {
+                success: false,
+                code: 'CERT_ERROR',
+                error: 'Certificate validation failed for this PDF URL. Extension fetch cannot bypass SSL warnings.',
+                details: nativeResult.details
+            };
+        }
+
+        return {
+            success: false,
+            code: fetchFailure.code,
+            error: fetchFailure.error,
+            details: {
+                fetch: fetchFailure.details,
+                native: nativeResult.details
+            }
+        };
+    }
+}
+
+async function fetchPdfBlob(url) {
+    const response = await fetch(url, {
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
+        headers: {
+            'Accept': 'application/pdf,*/*'
+        }
+    });
+
+    if (!response.ok) {
+        let message = `HTTP ${response.status}`;
+        if (response.status === 404) {
+            message = `PDF file not found at URL: ${url}`;
+        } else if (response.status === 403) {
+            message = `Access denied to PDF: ${url}. Authentication may be required.`;
+        } else {
+            message = `HTTP error ${response.status}: ${response.statusText}`;
+        }
+
+        const error = new Error(message);
+        error.code = 'HTTP_ERROR';
         throw error;
     }
+
+    const blob = await response.blob();
+    if (blob.size === 0) {
+        throw new Error(`Downloaded PDF is empty (0 bytes) from: ${url}`);
+    }
+
+    if (blob.type && !blob.type.includes('pdf')) {
+        console.warn(`Downloaded file is not a PDF, got: ${blob.type}`);
+    }
+
+    return blob;
+}
+
+function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const result = typeof reader.result === 'string' ? reader.result : '';
+            const base64Data = result.includes(',') ? result.split(',')[1] : '';
+            if (!base64Data) {
+                reject(new Error('Failed to convert PDF to base64'));
+                return;
+            }
+            resolve(base64Data);
+        };
+        reader.onerror = () => reject(new Error('Failed to read PDF data'));
+        reader.readAsDataURL(blob);
+    });
+}
+
+function normalizeFetchError(error, url) {
+    const message = error?.message || 'Failed to fetch PDF';
+    const code = error?.code || '';
+
+    if (code === 'HTTP_ERROR' || message.startsWith('HTTP ')) {
+        return {
+            success: false,
+            code: 'HTTP_ERROR',
+            error: message,
+            details: { url },
+            tryNativeFallback: false
+        };
+    }
+
+    if (message.includes('Invalid URL')) {
+        return {
+            success: false,
+            code: 'INVALID_URL',
+            error: message,
+            details: { url },
+            tryNativeFallback: false
+        };
+    }
+
+    const likelyNetworkOrTls =
+        message.includes('Failed to fetch') ||
+        message.includes('NetworkError') ||
+        message.includes('ERR_');
+
+    return {
+        success: false,
+        code: likelyNetworkOrTls ? 'NETWORK_OR_TLS_ERROR' : 'FETCH_ERROR',
+        error: likelyNetworkOrTls
+            ? 'Network or TLS handshake failed while fetching the PDF.'
+            : message,
+        details: { url, rawMessage: message },
+        tryNativeFallback: likelyNetworkOrTls
+    };
+}
+
+async function downloadWithNativeManager(url, preferredFilename) {
+    const safeName = sanitizeFilename(preferredFilename) || `paper_${Date.now()}.pdf`;
+    const fullFilename = `SkipREXA/${safeName}`;
+
+    try {
+        const downloadId = await new Promise((resolve, reject) => {
+            chrome.downloads.download(
+                {
+                    url,
+                    filename: fullFilename,
+                    saveAs: false,
+                    conflictAction: 'uniquify'
+                },
+                (id) => {
+                    if (chrome.runtime.lastError || typeof id !== 'number') {
+                        reject(new Error(chrome.runtime.lastError?.message || 'Native download failed to start'));
+                        return;
+                    }
+                    resolve(id);
+                }
+            );
+        });
+
+        return await waitForDownloadOutcome(downloadId, url);
+    } catch (error) {
+        const message = error?.message || 'Native download request failed';
+        const certError = message.includes('CERT');
+        return {
+            success: false,
+            code: certError ? 'CERT_ERROR' : 'NATIVE_DOWNLOAD_START_FAILED',
+            error: certError ? 'Chrome blocked the download because of a certificate problem.' : message,
+            details: { url, rawMessage: message }
+        };
+    }
+}
+
+function waitForDownloadOutcome(downloadId, sourceUrl) {
+    return new Promise((resolve) => {
+        const timeout = setTimeout(async () => {
+            cleanup();
+            const current = await getDownloadItem(downloadId);
+            if (current?.state === 'complete') {
+                resolve({
+                    success: true,
+                    source: 'native',
+                    nativeDownload: {
+                        downloadId,
+                        filename: current.filename,
+                        finalUrl: current.finalUrl || sourceUrl
+                    }
+                });
+                return;
+            }
+
+            resolve({
+                success: false,
+                code: 'NATIVE_DOWNLOAD_TIMEOUT',
+                error: 'Native download timed out before completion.',
+                details: { downloadId, state: current?.state || 'unknown' }
+            });
+        }, 60000);
+
+        const listener = async (delta) => {
+            if (delta.id !== downloadId) {
+                return;
+            }
+
+            if (delta.state?.current === 'complete') {
+                cleanup();
+                const item = await getDownloadItem(downloadId);
+                resolve({
+                    success: true,
+                    source: 'native',
+                    nativeDownload: {
+                        downloadId,
+                        filename: item?.filename || null,
+                        finalUrl: item?.finalUrl || sourceUrl
+                    }
+                });
+                return;
+            }
+
+            if (delta.state?.current === 'interrupted') {
+                cleanup();
+                const reason = delta.error?.current || 'UNKNOWN';
+                const mapped = mapInterruptReason(reason);
+                resolve({
+                    success: false,
+                    code: mapped.code,
+                    error: mapped.error,
+                    details: { downloadId, interruptReason: reason }
+                });
+            }
+        };
+
+        function cleanup() {
+            clearTimeout(timeout);
+            chrome.downloads.onChanged.removeListener(listener);
+        }
+
+        chrome.downloads.onChanged.addListener(listener);
+    });
+}
+
+function getDownloadItem(downloadId) {
+    return new Promise((resolve) => {
+        chrome.downloads.search({ id: downloadId }, (items) => {
+            resolve(items?.[0] || null);
+        });
+    });
+}
+
+function mapInterruptReason(reason) {
+    if (!reason) {
+        return {
+            code: 'DOWNLOAD_INTERRUPTED',
+            error: 'Download was interrupted.'
+        };
+    }
+
+    if (reason.includes('CERT')) {
+        return {
+            code: 'CERT_ERROR',
+            error: 'Chrome blocked the download because of a certificate problem.'
+        };
+    }
+
+    if (
+        reason.includes('NETWORK') ||
+        reason.includes('CONNECTION') ||
+        reason.includes('HOST') ||
+        reason.includes('SERVER')
+    ) {
+        return {
+            code: 'NETWORK_ERROR',
+            error: 'Network error while downloading the PDF.'
+        };
+    }
+
+    return {
+        code: 'DOWNLOAD_INTERRUPTED',
+        error: `Download interrupted: ${reason}`
+    };
+}
+
+function sanitizeFilename(filename) {
+    if (!filename || typeof filename !== 'string') {
+        return null;
+    }
+
+    const trimmed = filename.trim();
+    if (!trimmed) {
+        return null;
+    }
+
+    const sanitized = trimmed
+        .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '_')
+        .replace(/\s+/g, '_');
+
+    return sanitized.toLowerCase().endsWith('.pdf') ? sanitized : `${sanitized}.pdf`;
 }
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
