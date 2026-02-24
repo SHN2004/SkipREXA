@@ -14,7 +14,7 @@ function getElementSafely(id) {
 }
 
 const courseSearchInput = getElementSafely("courseSearch")
-const courseDropdown = getElementSafely("courseDropdown") 
+const courseDropdown = getElementSafely("courseDropdown")
 const selectedCoursesContainer = getElementSafely("selectedCoursesContainer")
 const fetchPapersBtn = getElementSafely("fetchPapersBtn")
 const paperCountDiv = getElementSafely("paperCount")
@@ -45,12 +45,12 @@ let highlightedIndex = -1
 // Show status message
 function showStatus(message, type) {
   console.log(`📢 Status: ${type.toUpperCase()} - ${message}`)
-  
+
   if (!statusDiv) {
     console.error("❌ Cannot show status - statusDiv not found!")
     return
   }
-  
+
   try {
     statusDiv.textContent = message
     statusDiv.className = `status ${type}`
@@ -72,31 +72,31 @@ function showStatus(message, type) {
 // Progress bar functions
 function showProgress(current, total, currentItem = "") {
   if (!progressContainer) return
-  
+
   console.log(`📊 Progress: ${current}/${total} - ${currentItem}`)
-  
+
   try {
     progressContainer.classList.remove("hidden")
     statusDiv.classList.add("hidden") // Hide status when showing progress
-    
+
     if (progressText && currentItem) {
       progressText.textContent = currentItem
     }
-    
+
     if (progressCount) {
       progressCount.textContent = `${current}/${total}`
     }
-    
+
     if (progressFill) {
       const percentage = total > 0 ? (current / total) * 100 : 0
       progressFill.style.width = `${percentage}%`
     }
-    
+
     if (progressDetails) {
       const percentage = total > 0 ? Math.round((current / total) * 100) : 0
       progressDetails.textContent = `${percentage}% complete`
     }
-    
+
   } catch (error) {
     console.error("❌ Error updating progress:", error)
   }
@@ -159,17 +159,17 @@ function toggleTheme() {
   const body = document.body
   const isDark = body.classList.contains('dark-theme')
   const newTheme = isDark ? 'light' : 'dark'
-  
+
   applyTheme(newTheme)
   saveThemePreference(newTheme)
-  
+
   console.log(`🔄 Toggled theme to: ${newTheme}`)
 }
 
 // Background script health check functions
 async function checkBackgroundScriptHealth() {
   console.log("🔍 Checking background script health...")
-  
+
   try {
     const response = await new Promise((resolve, reject) => {
       // Send a test message to background script
@@ -180,16 +180,16 @@ async function checkBackgroundScriptHealth() {
           resolve(response || { success: false, error: 'No response' })
         }
       })
-      
+
       // Set timeout for health check
       setTimeout(() => {
         reject(new Error('Health check timeout'))
       }, 5000)
     })
-    
+
     console.log("✅ Background script health check passed")
     return true
-    
+
   } catch (error) {
     console.error("❌ Background script health check failed:", error)
     return false
@@ -198,28 +198,28 @@ async function checkBackgroundScriptHealth() {
 
 async function ensureBackgroundScriptReady() {
   console.log("🔄 Ensuring background script is ready...")
-  
+
   const isHealthy = await checkBackgroundScriptHealth()
-  
+
   if (!isHealthy) {
     console.log("⚠️ Background script not responding, attempting to wake it up...")
-    
+
     // Try to wake up the service worker by calling chrome.runtime methods
     try {
-      await chrome.runtime.getBackgroundPage?.() 
+      await chrome.runtime.getBackgroundPage?.()
     } catch (e) {
       console.log("getBackgroundPage not available (expected for MV3)")
     }
-    
+
     // Wait a bit and try health check again
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     const retryHealthy = await checkBackgroundScriptHealth()
     if (!retryHealthy) {
       throw new Error("Background script is not responding. Please reload the extension and try again.")
     }
   }
-  
+
   console.log("✅ Background script is ready")
   return true
 }
@@ -238,22 +238,22 @@ async function loadAllCourses() {
     const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
     const cache = await new Promise(resolve => {
-        chrome.storage.local.get([CACHE_KEY_COURSES, CACHE_KEY_TIMESTAMP], resolve);
+      chrome.storage.local.get([CACHE_KEY_COURSES, CACHE_KEY_TIMESTAMP], resolve);
     });
 
     const now = Date.now();
     const lastFetch = cache[CACHE_KEY_TIMESTAMP] || 0;
 
     if (cache[CACHE_KEY_COURSES] && (now - lastFetch < CACHE_DURATION)) {
-        console.log("✅ Using cached courses data");
-        allCourses = cache[CACHE_KEY_COURSES];
+      console.log("✅ Using cached courses data");
+      allCourses = cache[CACHE_KEY_COURSES];
 
-        // Sort again just to be sure
-        allCourses.sort((a, b) => a.name.localeCompare(b.name));
+      // Sort again just to be sure
+      allCourses.sort((a, b) => a.name.localeCompare(b.name));
 
-        console.log(`Loaded ${allCourses.length} courses from cache`);
-        statusDiv.classList.add("hidden");
-        return;
+      console.log(`Loaded ${allCourses.length} courses from cache`);
+      statusDiv.classList.add("hidden");
+      return;
     }
 
     // 2. Fetch using RPC function (server-side aggregation)
@@ -285,13 +285,13 @@ async function loadAllCourses() {
 
     // 3. Save to Cache
     try {
-        await chrome.storage.local.set({
-            [CACHE_KEY_COURSES]: allCourses,
-            [CACHE_KEY_TIMESTAMP]: now
-        });
-        console.log("💾 Courses cached successfully");
+      await chrome.storage.local.set({
+        [CACHE_KEY_COURSES]: allCourses,
+        [CACHE_KEY_TIMESTAMP]: now
+      });
+      console.log("💾 Courses cached successfully");
     } catch (cacheError) {
-        console.warn("⚠️ Failed to cache courses:", cacheError);
+      console.warn("⚠️ Failed to cache courses:", cacheError);
     }
 
     console.log(`✅ Loaded ${allCourses.length} unique courses using RPC`)
@@ -317,7 +317,7 @@ async function loadAllCourses() {
 // Filter and display course suggestions
 function showCourseSuggestions(searchTerm) {
   console.log("Searching for:", searchTerm, "Total courses available:", allCourses.length)
-  
+
   // Always show dropdown if there is text, or if explicit request? 
   // Current logic: if (!searchTerm.trim()) hide.
   // We might want to show all if clicked? But let's stick to filtering for now.
@@ -386,7 +386,7 @@ function highlightMatch(text, searchTerm) {
 // Toggle course selection
 function toggleCourseSelection(course) {
   console.log("Toggling course:", course.name)
-  
+
   if (selectedCourses.has(course)) {
     selectedCourses.delete(course)
   } else {
@@ -395,7 +395,7 @@ function toggleCourseSelection(course) {
 
   updateSelectedCoursesDisplay()
   saveState() // Save selection state
-  
+
   // Re-render dropdown to update checkbox states if it's open and has search term
   const searchTerm = courseSearchInput.value
   if (searchTerm.trim()) {
@@ -406,7 +406,7 @@ function toggleCourseSelection(course) {
 // Update selected courses chips display
 function updateSelectedCoursesDisplay() {
   const clearAllBtn = document.getElementById('clearAllCoursesBtn')
-  
+
   if (selectedCourses.size === 0) {
     selectedCoursesContainer.innerHTML = ''
     selectedCoursesContainer.classList.add('hidden')
@@ -427,7 +427,7 @@ function updateSelectedCoursesDisplay() {
       <span class="chip-remove" data-code="${course.code}">×</span>
     </div>
   `).join('')
-  
+
   selectedCoursesContainer.classList.remove('hidden')
   if (fetchPapersBtn) {
     fetchPapersBtn.classList.remove('hidden')
@@ -447,7 +447,7 @@ function updateSelectedCoursesDisplay() {
       }
     })
   })
-  
+
   // Hide paper display if selection changes? 
   // User might want to fetch again.
   // Let's hide papers to force re-fetch to ensure consistency
@@ -522,7 +522,7 @@ async function updatePaperDisplay() {
     const courseNames = Array.from(selectedCourses).map(c => c.name)
     console.log("Fetching papers for courses:", courseNames)
     showStatus("Loading papers...", "loading")
-    
+
     // Use .in() for multiple courses
     const data = await supabase
       .from("question_papers")
@@ -531,17 +531,17 @@ async function updatePaperDisplay() {
       .data()
 
     console.log("Fetched papers data:", data)
-    
+
     // Ensure data is an array before sorting
     const papersArray = Array.isArray(data) ? data : [];
 
     // Sort papers by course name then year/sem
     const filteredPapers = papersArray.sort((a, b) => {
-        if (a.course_name !== b.course_name) return a.course_name.localeCompare(b.course_name);
-        // Handle exam_year robustly - convert to string for safe comparison
-        const yearA = String(a.exam_year || "");
-        const yearB = String(b.exam_year || "");
-        return yearB.localeCompare(yearA, undefined, { numeric: true });
+      if (a.course_name !== b.course_name) return a.course_name.localeCompare(b.course_name);
+      // Handle exam_year robustly - convert to string for safe comparison
+      const yearA = String(a.exam_year || "");
+      const yearB = String(b.exam_year || "");
+      return yearB.localeCompare(yearA, undefined, { numeric: true });
     })
 
     paperCountDiv.textContent = `${filteredPapers.length} papers available`
@@ -554,7 +554,7 @@ async function updatePaperDisplay() {
       console.log("Displaying paper list...")
       displayPaperList(filteredPapers)
       paperSelectionGroup.style.display = "block"
-      
+
       // Auto-scroll to the available papers section
       setTimeout(() => {
         paperSelectionGroup.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -700,10 +700,10 @@ function generateCustomPrompt(studyPurpose, selectedPapers) {
     return "" // No prompt for general analysis
   }
 
-  const courseName = selectedCourses.size > 0 
-      ? Array.from(selectedCourses).map(c => c.name).join(", ") 
-      : "these courses";
-      
+  const courseName = selectedCourses.size > 0
+    ? Array.from(selectedCourses).map(c => c.name).join(", ")
+    : "these courses";
+
   const paperCount = selectedPapers.length
 
   const promptTemplates = {
@@ -807,7 +807,7 @@ async function uploadPapers() {
         const currentPaperName = `${paper.course_name} (${paper.exam_type})`
         showProgress(i, filteredPapers.length, `Downloading: ${currentPaperName}`)
         showStatus(`Downloading ${i + 1}/${filteredPapers.length}: ${paper.course_name}`, 'loading')
-        
+
         // Use background script to download PDF - ORIGINAL WORKING VERSION
         const response = await chrome.runtime.sendMessage({
           action: 'downloadPDF',
@@ -815,6 +815,9 @@ async function uploadPapers() {
         })
 
         if (response.success) {
+          if (response.isNativeDownload) {
+            throw new Error("Direct upload blocked by SSL. File saved to your computer natively. Please attach it manually to ChatGPT.");
+          }
           // Keep as base64 - no conversion needed
           pdfData.push({
             name: `${paper.course_name}_${paper.exam_type}_${paper.exam_month}_${paper.exam_year}.pdf`,
@@ -838,7 +841,7 @@ async function uploadPapers() {
         continue
       }
     }
-    
+
     // Show final progress
     showProgress(filteredPapers.length, filteredPapers.length, "Downloads complete")
 
@@ -987,10 +990,10 @@ async function uploadPapers() {
   } catch (error) {
     console.error("❌ Critical upload error:", error)
     console.error("❌ Error stack:", error.stack)
-    
+
     // Hide progress and show error
     hideProgress()
-    
+
     let errorMessage = "Upload failed. Please try again."
     if (error.message.includes("tab")) {
       errorMessage = "Could not access ChatGPT tab. Please refresh and try again."
@@ -999,20 +1002,20 @@ async function uploadPapers() {
     } else if (error.message.includes("timeout")) {
       errorMessage = "Upload timeout. Try again with fewer papers."
     }
-    
+
     showStatus(errorMessage, "error")
   } finally {
     // ALWAYS re-enable the button and ensure clean state
     console.log("🔄 Cleaning up upload process...")
-    
+
     if (uploadBtn) {
       uploadBtn.disabled = false
       console.log("✅ Upload button re-enabled")
     }
-    
+
     // Hide progress bar if still showing
     hideProgress()
-    
+
     console.log("✅ Upload process cleanup complete")
   }
 }
@@ -1038,7 +1041,7 @@ async function downloadPapersDirectly() {
 
     // Initialize progress bar
     showProgress(0, selectedPapers.length, "Preparing downloads...")
-    
+
     let successfulDownloads = 0
     let failedDownloads = []
 
@@ -1047,7 +1050,7 @@ async function downloadPapersDirectly() {
       try {
         const currentPaperName = `${paper.course_name} (${paper.exam_type})`
         showProgress(i, selectedPapers.length, `Downloading: ${currentPaperName}`)
-        
+
         // Use background script to download PDF
         const response = await chrome.runtime.sendMessage({
           action: 'downloadPDF',
@@ -1055,35 +1058,40 @@ async function downloadPapersDirectly() {
         })
 
         if (response.success) {
-          // Convert base64 to blob only once for download
-          const byteCharacters = atob(response.base64Data)
-          const byteNumbers = new Array(byteCharacters.length)
-          for (let j = 0; j < byteCharacters.length; j++) {
-            byteNumbers[j] = byteCharacters.charCodeAt(j)
+          if (response.isNativeDownload) {
+            successfulDownloads++
+            console.log(`✅ Chrome download started natively for: ${paper.course_name}`)
+          } else {
+            // Convert base64 to blob only once for download
+            const byteCharacters = atob(response.base64Data)
+            const byteNumbers = new Array(byteCharacters.length)
+            for (let j = 0; j < byteCharacters.length; j++) {
+              byteNumbers[j] = byteCharacters.charCodeAt(j)
+            }
+            const byteArray = new Uint8Array(byteNumbers)
+            const blob = new Blob([byteArray], { type: "application/pdf" })
+
+            // Create filename with proper naming
+            const filename = `${paper.course_name}_${paper.exam_type}_${paper.exam_month}_${paper.exam_year}.pdf`
+
+            // Create download link and trigger download
+            const url = URL.createObjectURL(blob)
+            const downloadLink = document.createElement('a')
+            downloadLink.href = url
+            downloadLink.download = filename
+            downloadLink.style.display = 'none'
+
+            // Trigger download
+            document.body.appendChild(downloadLink)
+            downloadLink.click()
+            document.body.removeChild(downloadLink)
+
+            // Clean up URL after a short delay
+            setTimeout(() => URL.revokeObjectURL(url), 1000)
+
+            successfulDownloads++
+            console.log(`✅ Successfully downloaded: ${filename}`)
           }
-          const byteArray = new Uint8Array(byteNumbers)
-          const blob = new Blob([byteArray], { type: "application/pdf" })
-
-          // Create filename with proper naming
-          const filename = `${paper.course_name}_${paper.exam_type}_${paper.exam_month}_${paper.exam_year}.pdf`
-
-          // Create download link and trigger download
-          const url = URL.createObjectURL(blob)
-          const downloadLink = document.createElement('a')
-          downloadLink.href = url
-          downloadLink.download = filename
-          downloadLink.style.display = 'none'
-
-          // Trigger download
-          document.body.appendChild(downloadLink)
-          downloadLink.click()
-          document.body.removeChild(downloadLink)
-
-          // Clean up URL after a short delay
-          setTimeout(() => URL.revokeObjectURL(url), 1000)
-
-          successfulDownloads++
-          console.log(`✅ Successfully downloaded: ${filename}`)
         } else {
           throw new Error(response.error)
         }
@@ -1095,14 +1103,14 @@ async function downloadPapersDirectly() {
         })
       }
     }
-    
+
     // Show final progress
     showProgress(selectedPapers.length, selectedPapers.length, "Downloads complete")
-    
+
     // Hide progress and show final status
     setTimeout(() => {
       hideProgress()
-      
+
       if (successfulDownloads === selectedPapers.length) {
         showStatus(`Successfully downloaded ${successfulDownloads} papers!`, "success")
       } else if (successfulDownloads > 0) {
@@ -1111,16 +1119,16 @@ async function downloadPapersDirectly() {
         showStatus("All downloads failed. Please check your connection and try again.", "error")
       }
     }, 1000)
-    
+
   } catch (error) {
     console.error("❌ Critical download error:", error)
     hideProgress()
-    
+
     let errorMessage = "Download failed. Please try again."
     if (error.message.includes("network") || error.message.includes("fetch")) {
       errorMessage = "Network error. Check your connection and try again."
     }
-    
+
     showStatus(errorMessage, "error")
   } finally {
     // Re-enable the download button
@@ -1161,7 +1169,7 @@ async function loadState() {
   try {
     const result = await new Promise(resolve => chrome.storage.local.get([STORAGE_KEY_STATE], resolve));
     const state = result[STORAGE_KEY_STATE];
-    
+
     if (state) {
       // Check for timeout
       const now = Date.now();
@@ -1172,22 +1180,22 @@ async function loadState() {
       }
 
       console.log("📥 Restoring state...", state);
-      
+
       if (state.searchText) {
         courseSearchInput.value = state.searchText;
       }
-      
+
       if (state.selectedCourses && Array.isArray(state.selectedCourses)) {
         selectedCourses = new Set(state.selectedCourses);
         updateSelectedCoursesDisplay();
-        
+
         // If we have selected courses, auto-fetch papers
         if (selectedCourses.size > 0) {
-            // Small delay to ensure auth is ready? Should be fine if called after init
-            updatePaperDisplay(); 
+          // Small delay to ensure auth is ready? Should be fine if called after init
+          updatePaperDisplay();
         }
       }
-      
+
       if (state.studyPurpose) {
         const radio = document.querySelector(`input[name="studyPurpose"][value="${state.studyPurpose}"]`);
         if (radio) radio.checked = true;
@@ -1220,14 +1228,14 @@ if (courseSearchInput) {
       try {
         const searchTerm = e.target.value
         if (searchTerm.trim()) {
-            showCourseSuggestions(searchTerm)
+          showCourseSuggestions(searchTerm)
         }
       } catch (error) {
         console.error("❌ Error in click event handler:", error)
       }
     })
     console.log("✅ Click event listener added")
-    
+
     courseSearchInput.addEventListener("keydown", handleKeyNavigation)
     console.log("✅ Keydown event listener added")
   } catch (error) {
@@ -1239,29 +1247,29 @@ if (courseSearchInput) {
 
 // Add listener for study purpose changes
 document.querySelectorAll('input[name="studyPurpose"]').forEach(radio => {
-    radio.addEventListener('change', saveState);
+  radio.addEventListener('change', saveState);
 });
 
 // Fetch papers button listener
 if (fetchPapersBtn) {
-    try {
-        fetchPapersBtn.addEventListener('click', updatePaperDisplay)
-        console.log("✅ Fetch button event listener added")
-    } catch (error) {
-        console.error("❌ Error setting up fetch button listener:", error)
-    }
+  try {
+    fetchPapersBtn.addEventListener('click', updatePaperDisplay)
+    console.log("✅ Fetch button event listener added")
+  } catch (error) {
+    console.error("❌ Error setting up fetch button listener:", error)
+  }
 }
 
 // Clear all courses button listener
 const clearAllCoursesBtn = document.getElementById('clearAllCoursesBtn')
 if (clearAllCoursesBtn) {
-    clearAllCoursesBtn.addEventListener('click', () => {
-        selectedCourses.clear()
-        updateSelectedCoursesDisplay()
-        courseSearchInput.value = ''
-        saveState()
-        console.log("✅ All courses cleared")
-    })
+  clearAllCoursesBtn.addEventListener('click', () => {
+    selectedCourses.clear()
+    updateSelectedCoursesDisplay()
+    courseSearchInput.value = ''
+    saveState()
+    console.log("✅ All courses cleared")
+  })
 }
 
 // Theme toggle event listener
@@ -1324,23 +1332,23 @@ console.log("🎬 Setting up DOMContentLoaded listener...")
 
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("🚀 DOM loaded, initializing extension...")
-  
+
   try {
     // Initialize credentials first
     console.log("🔐 Initializing credentials...")
     await window.initializeCredentials()
     // supabase = createSupabaseClient() // Already handled in initializeCredentials via initSupabase
     console.log("✅ Supabase client created")
-    
+
     // Load theme preference
     loadThemePreference()
-    
+
     // Verify all critical elements exist
     const criticalElements = {
       courseSearchInput, courseDropdown, selectedCoursesContainer, fetchPapersBtn,
       paperCountDiv, uploadBtn, downloadBtn, statusDiv, form
     }
-    
+
     console.log("🔍 Checking critical elements...")
     let missingElements = []
     for (const [name, element] of Object.entries(criticalElements)) {
@@ -1348,15 +1356,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         missingElements.push(name)
       }
     }
-    
+
     if (missingElements.length > 0) {
       console.error("❌ Missing critical elements:", missingElements)
       alert(`Extension error: Missing elements ${missingElements.join(', ')}. Please reload the extension.`)
       return
     }
-    
+
     console.log("✅ All critical elements found")
-    
+
     // Restore previous state (selected courses, search text, study purpose)
     await loadState();
 
@@ -1366,7 +1374,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         try {
           const currentTab = tabs[0]
           console.log("🌐 Current tab URL:", currentTab?.url)
-          
+
           if (!currentTab || (!currentTab.url.includes("chatgpt.com") && !currentTab.url.includes("chat.openai.com"))) {
             showStatus("Please navigate to ChatGPT to use this extension", "error")
             if (uploadBtn) uploadBtn.disabled = true
@@ -1389,11 +1397,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.warn("⚠️ Chrome tabs API not available, loading courses anyway...")
       loadAllCourses()
     }
-    
+
   } catch (error) {
     console.error("❌ Critical error during initialization:", error)
     console.error("❌ Error stack:", error.stack)
-    
+
     if (error.message.includes('credentials') || error.message.includes('storage')) {
       showStatus("Failed to load extension credentials", "error")
     } else if (statusDiv) {
