@@ -29,6 +29,7 @@ const progressText = getElementSafely("progressText")
 const progressCount = getElementSafely("progressCount")
 const progressFill = getElementSafely("progressFill")
 const progressDetails = getElementSafely("progressDetails")
+const keepOpenWarning = getElementSafely("keepOpenWarning")
 
 // Theme toggle elements
 const themeToggle = getElementSafely("themeToggle")
@@ -113,6 +114,11 @@ function updateProgressDetails(details) {
   if (progressDetails && details) {
     progressDetails.textContent = details
   }
+}
+
+function setKeepOpenWarningVisible(visible) {
+  if (!keepOpenWarning) return
+  keepOpenWarning.classList.toggle("hidden", !visible)
 }
 
 function scrollToActivitySection() {
@@ -1320,6 +1326,7 @@ async function uploadPapers() {
     console.log("Current tab:", tab.url)
 
     showStatus("Fetching papers...", "loading")
+    setKeepOpenWarningVisible(true)
     scrollToActivitySection()
     uploadBtn.disabled = true
 
@@ -1669,6 +1676,7 @@ async function uploadPapers() {
     
     // Hide progress bar if still showing
     hideProgress()
+    setKeepOpenWarningVisible(false)
     
     console.log("✅ Upload process cleanup complete")
   }
@@ -1678,6 +1686,7 @@ async function uploadPapers() {
 async function downloadPapersDirectly() {
   try {
     showStatus("Preparing downloads...", "loading")
+    setKeepOpenWarningVisible(true)
     const downloadBtn = document.getElementById("downloadBtn")
     downloadBtn.disabled = true
 
@@ -1771,6 +1780,7 @@ async function downloadPapersDirectly() {
     if (downloadBtn) {
       downloadBtn.disabled = false
     }
+    setKeepOpenWarningVisible(false)
   }
 }
 
