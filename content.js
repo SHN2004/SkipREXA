@@ -1,4 +1,4 @@
-// Content script for ChatGPT file upload
+// Content script for ChatGPT/Claude file upload
 console.log('Question Paper Helper content script loaded');
 
 
@@ -23,10 +23,10 @@ if (window.questionPaperHelperLoaded) {
         if (message.action === 'uploadPDFs') {
             console.log(`Content script received upload request for ${message.pdfs.length} PDFs`);
             
-            uploadPDFsToChatGPT(message.pdfs)
-                .then(() => {
+            uploadPDFsToActiveLLM(message.pdfs)
+                .then((result) => {
                     console.log('Upload completed successfully');
-                    sendResponse({ success: true });
+                    sendResponse({ success: true, ...(result || {}) });
                 })
                 .catch(error => {
                     console.error('Upload error:', error);
@@ -38,7 +38,7 @@ if (window.questionPaperHelperLoaded) {
         if (message.action === 'injectPrompt') {
             console.log('Content script received prompt injection request');
             
-            injectPromptToChatGPT(message.prompt)
+            injectPromptToActiveLLM(message.prompt)
                 .then(() => {
                     console.log('Prompt injection completed successfully');
                     sendResponse({ success: true });
@@ -54,6 +54,131 @@ if (window.questionPaperHelperLoaded) {
     });
     
     console.log('✅ Message listener set up successfully');
+}
+
+function getActiveLLMPlatform() {
+    const hostname = window.location.hostname || '';
+    if (hostname === 'claude.ai') return 'claude';
+    if (hostname === 'chatgpt.com' || hostname === 'chat.openai.com') return 'chatgpt';
+    return 'unknown';
+}
+
+async function uploadPDFsToActiveLLM(pdfs) {
+    const platform = getActiveLLMPlatform();
+    console.log(`📤 Upload target platform: ${platform}`);
+
+    if (platform === 'claude') {
+        return uploadPDFsToClaude(pdfs);
+    }
+
+    if (platform === 'chatgpt') {
+        return uploadPDFsToChatGPT(pdfs);
+    }
+
+    throw new Error(`Unsupported platform: ${window.location.hostname}`);
+}
+
+async function injectPromptToActiveLLM(promptText) {
+    const platform = getActiveLLMPlatform();
+    console.log(`📝 Prompt target platform: ${platform}`);
+
+    if (platform === 'claude') {
+        return injectPromptToClaude(promptText);
+    }
+
+    if (platform === 'chatgpt') {
+        return injectPromptToChatGPT(promptText);
+    }
+
+    throw new Error(`Unsupported platform: ${window.location.hostname}`);
+}
+
+function getClaudeComposerContainer() {
+    return (
+        document.querySelector('[data-testid="chat-input-grid-container"]') ||
+        document.querySelector('[data-testid="chat-input"]') ||
+        document.querySelector('main') ||
+        document.body
+    );
+}
+
+const CLAUDE_KNOWN_TESTIDS = new Set([
+    'chat-input-grid-container',
+    'chat-input-grid-area',
+    'prompt-input-ssr-interactive',
+    'chat-input-ssr',
+    'file-upload',
+    'chat-input',
+    'model-selector-dropdown'
+]);
+
+function getClaudeAttachmentTestIds() {
+    const container = getClaudeComposerContainer();
+    if (!container) return [];
+
+    const ids = new Set();
+    const elements = container.querySelectorAll('[data-testid]');
+    for (const el of elements) {
+        const id = el.getAttribute('data-testid');
+        if (!id) continue;
+        if (CLAUDE_KNOWN_TESTIDS.has(id)) continue;
+        ids.add(id);
+    }
+
+    return Array.from(ids);
+}
+
+function isClaudeAttachmentPresent(fileName) {
+    if (!fileName || typeof fileName !== 'string') return false;
+
+    const targetName = fileName.trim();
+    const targetBaseName = targetName.replace(/\.[^/.]+$/, '');
+    const needle = targetName.toLowerCase();
+    const baseNeedle = targetBaseName.toLowerCase();
+
+    const testIds = getClaudeAttachmentTestIds();
+    for (const id of testIds) {
+        if (id === targetName) return true;
+        if (targetBaseName && id === targetBaseName) return true;
+    }
+
+    const container = getClaudeComposerContainer();
+    const candidates = container.querySelectorAll('img[alt], [aria-label], [title], button');
+    for (const el of candidates) {
+        const alt = (el.getAttribute('alt') || '').toLowerCase();
+        const aria = (el.getAttribute('aria-label') || '').toLowerCase();
+        const title = (el.getAttribute('title') || '').toLowerCase();
+        const text = (el.textContent || '').toLowerCase().replace(/\s+/g, ' ').trim();
+        const haystack = `${alt} ${aria} ${title} ${text}`.trim();
+        if (!haystack) continue;
+        if (haystack.includes(needle)) return true;
+        if (baseNeedle && baseNeedle.length >= 6 && haystack.includes(baseNeedle)) return true;
+    }
+
+    return false;
+}
+
+async function waitForClaudeAttachment(fileName, timeoutMs = 5000) {
+    const startTime = Date.now();
+    while (Date.now() - startTime < timeoutMs) {
+        if (isClaudeAttachmentPresent(fileName)) return true;
+        await delay(200);
+    }
+    return false;
+}
+
+function getClaudeAttachmentCount() {
+    return getClaudeAttachmentTestIds().length;
+}
+
+async function waitForClaudeAttachmentAdded(previousCount, fileName, timeoutMs = 5000) {
+    const startTime = Date.now();
+    while (Date.now() - startTime < timeoutMs) {
+        if (getClaudeAttachmentCount() > previousCount) return true;
+        if (isClaudeAttachmentPresent(fileName)) return true;
+        await delay(200);
+    }
+    return false;
 }
 
 // Test upload methods to find the working one
@@ -384,15 +509,146 @@ async function uploadSinglePDF(pdf) {
     }
 }
 
+function findClaudeDropZone() {
+    const selectors = [
+        'textarea[data-testid="chat-input-ssr"]',
+        'textarea[aria-label="Write your prompt to Claude"]',
+        'textarea[aria-label*="Write your prompt"]',
+        'textarea[placeholder*="help you"]',
+        'textarea'
+    ];
+
+    for (const selector of selectors) {
+        const el = document.querySelector(selector);
+        if (el && !el.disabled) return el;
+    }
+
+    return null;
+}
+
+let claudeDragDropSupported = null;
+
+async function uploadSingleFileToClaude(file) {
+    const fileName = file?.name || 'file';
+    const previousCount = getClaudeAttachmentCount();
+    const sizeBytes = typeof file?.size === 'number' ? file.size : 0;
+    const waitMs = Math.min(60000, Math.max(10000, Math.ceil(sizeBytes / (1024 * 1024)) * 8000));
+
+    // Try drag-and-drop first (matches Claude's UX, if supported)
+    const dropZone = claudeDragDropSupported === false ? null : findClaudeDropZone();
+    if (dropZone) {
+        console.log(`📤 [Claude] Drag-dropping ${fileName}...`);
+        await simulateDragAndDrop(dropZone, file);
+        if (await waitForClaudeAttachmentAdded(previousCount, fileName, 2500)) {
+            claudeDragDropSupported = true;
+            return { method: 'drag_drop' };
+        }
+        if (claudeDragDropSupported === null) claudeDragDropSupported = false;
+        console.log(`⚠️ [Claude] Drag-drop did not show attachment for ${fileName}, falling back to file input...`);
+    }
+
+    // Fallback: hidden file input (works if Claude wires change/input events)
+    const fileInput = findClaudeFileInput() || findFileInput();
+    if (!fileInput) {
+        throw new Error('No Claude file input found. Are you on an active chat and logged in?');
+    }
+
+    console.log(`📤 [Claude] Using file input for ${fileName}...`);
+    await simulateFileUpload(fileInput, file);
+
+    const attached = await waitForClaudeAttachmentAdded(previousCount, fileName, waitMs);
+    if (!attached) {
+        const attachmentIds = getClaudeAttachmentTestIds();
+        const suffix = attachmentIds.length ? ` (found attachments: ${attachmentIds.slice(0, 5).join(', ')})` : '';
+        throw new Error(`Claude did not show an attachment chip for ${fileName}${suffix}`);
+    }
+
+    // Restore the native `files` property for future uploads (prevents interfering with normal selection).
+    if (Object.prototype.hasOwnProperty.call(fileInput, 'files')) {
+        try {
+            delete fileInput.files;
+        } catch (error) {
+            // Best-effort cleanup; safe to ignore.
+        }
+    }
+
+    return { method: 'file_input' };
+}
+
+// Upload PDFs to Claude using its hidden file input
+async function uploadPDFsToClaude(pdfs) {
+    console.log('Starting upload of', pdfs.length, 'PDFs to Claude');
+
+    let successfulUploads = 0;
+    const failures = [];
+
+    for (let i = 0; i < pdfs.length; i++) {
+        const pdf = pdfs[i];
+        console.log(`\n📄 Uploading PDF ${i + 1}/${pdfs.length}: ${pdf.name}`);
+
+        try {
+            const file = base64ToFile(pdf.data, pdf.name, 'application/pdf');
+
+            await uploadSingleFileToClaude(file);
+            successfulUploads++;
+            console.log(`✅ Upload ${i + 1} completed: ${pdf.name}`);
+
+            // Small delay between uploads for UI stabilization
+            if (i < pdfs.length - 1) {
+                await delay(800);
+            }
+        } catch (error) {
+            console.error(`Error uploading ${pdf.name} to Claude:`, error);
+            failures.push({ name: pdf.name, error: error?.message || String(error) });
+        }
+    }
+
+    console.log(`\n📊 Claude Upload Summary:`);
+    console.log(`- Attempted: ${pdfs.length}`);
+    console.log(`- Successful: ${successfulUploads}`);
+
+    if (successfulUploads === 0) {
+        const firstFailure = failures[0];
+        const details = firstFailure ? ` (${firstFailure.name}: ${firstFailure.error})` : '';
+        throw new Error(`No files were uploaded successfully to Claude.${details}`);
+    }
+
+    if (failures.length > 0) {
+        const summaryNames = failures.slice(0, 3).map((f) => f.name).join(', ');
+        const more = failures.length > 3 ? ` (+${failures.length - 3} more)` : '';
+        throw new Error(`Uploaded ${successfulUploads}/${pdfs.length} files to Claude. Failed: ${summaryNames}${more}`);
+    }
+
+    return { uploadedCount: successfulUploads };
+}
+
 // Find file input element
 function findFileInput() {
     const selectors = [
         'input[type="file"]',
+        'input[data-testid="file-upload"]', // Claude
         '[data-testid="file-upload-input"]',
         'input[accept*="pdf"]',
         'input[accept*="/*"]'
     ];
     
+    for (const selector of selectors) {
+        const element = document.querySelector(selector);
+        if (element && !element.disabled) {
+            return element;
+        }
+    }
+    return null;
+}
+
+function findClaudeFileInput() {
+    const selectors = [
+        'input[type="file"][data-testid="file-upload"]',
+        'input[type="file"]#chat-input-file-upload-onpage',
+        'input[type="file"][aria-label*="Upload"]',
+        'input[type="file"][aria-label*="upload"]'
+    ];
+
     for (const selector of selectors) {
         const element = document.querySelector(selector);
         if (element && !element.disabled) {
@@ -408,6 +664,10 @@ function findDropZone() {
     
     // ChatGPT-specific selectors (updated for current interface)
     const selectors = [
+        // Claude
+        'textarea[data-testid="chat-input-ssr"]',
+        'textarea[aria-label*="Write your prompt"]',
+        // ChatGPT
         '[data-testid="file-drop-zone"]',
         '[data-testid="chat-input"]',
         '[data-testid="prompt-textarea"]',
@@ -1038,9 +1298,48 @@ async function injectPromptToChatGPT(promptText) {
     }
 }
 
+// Inject custom prompt into Claude's textarea
+async function injectPromptToClaude(promptText) {
+    try {
+        console.log('🔤 Attempting to inject prompt into Claude:', promptText);
 
+        const selectors = [
+            'textarea[data-testid="chat-input-ssr"]',
+            'textarea[aria-label="Write your prompt to Claude"]',
+            'textarea[aria-label*="Write your prompt"]',
+            'textarea[placeholder*="help you"]',
+            'textarea'
+        ];
 
+        let textarea = null;
+        for (const selector of selectors) {
+            const el = document.querySelector(selector);
+            if (el && el.offsetParent !== null && !el.disabled) {
+                textarea = el;
+                break;
+            }
+        }
 
+        if (!textarea) {
+            throw new Error('Could not find Claude input textarea to inject prompt');
+        }
 
+        textarea.focus();
 
+        // Use the native setter to work with React-controlled inputs
+        const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+        if (valueSetter) {
+            valueSetter.call(textarea, promptText);
+        } else {
+            textarea.value = promptText;
+        }
 
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        textarea.dispatchEvent(new Event('change', { bubbles: true }));
+
+        console.log('✅ Prompt injected into Claude');
+    } catch (error) {
+        console.error('Error injecting prompt into Claude:', error);
+        throw error;
+    }
+}

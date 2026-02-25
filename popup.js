@@ -299,19 +299,22 @@ async function loadAllCourses() {
 
     // Test search functionality after loading
     console.log("Courses loaded successfully, ready for search")
-  } catch (error) {
-    console.error("❌ Critical error loading courses:", error)
-    console.error("❌ Error stack:", error.stack)
+	  } catch (error) {
+	    console.error("❌ Critical error loading courses:", error)
+	    console.error("❌ Error stack:", error.stack)
 
-    let errorMessage = "Failed to load courses"
-    if (error.message.includes("fetch") || error.message.includes("HTTP") || error.message.includes("RPC")) {
-      errorMessage = "Network error - check internet connection or verify RPC function exists"
-    } else if (error.name === "TypeError") {
-      errorMessage = "Extension configuration error"
-    }
+	    let errorMessage = "Failed to load courses"
+	    if (error.message.includes("fetch") || error.message.includes("HTTP") || error.message.includes("RPC")) {
+	      const supabaseUrl = window.getSupabaseUrl?.()
+	      errorMessage = supabaseUrl
+	        ? `Network error reaching Supabase (${supabaseUrl}). If DNS blocks *.supabase.co, enable Secure DNS/DoH (or switch DNS to 1.1.1.1/8.8.8.8) and retry.`
+	        : "Network error - check internet connection or verify Supabase is reachable"
+	    } else if (error.name === "TypeError") {
+	      errorMessage = "Extension configuration error"
+	    }
 
-    showStatus(`Error: ${errorMessage}`, "error")
-  }
+	    showStatus(`Error: ${errorMessage}`, "error")
+	  }
 }
 
 // Filter and display course suggestions
@@ -748,19 +751,249 @@ Once you know this, please help me create a comprehensive study plan covering al
 
 // PDF downloads now handled by background script
 
+async function uploadPdfToClaudeMainWorld(tabId, pdf) {
+  const [{ result }] = await chrome.scripting.executeScript({
+    target: { tabId },
+    world: "MAIN",
+    func: async (pdfArg) => {
+      const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+      const knownTestIds = new Set([
+        "chat-input-grid-container",
+        "chat-input-grid-area",
+        "prompt-input-ssr-interactive",
+        "chat-input-ssr",
+        "file-upload",
+        "chat-input",
+        "model-selector-dropdown",
+      ])
+
+      const getComposerContainer = () =>
+        document.querySelector('[data-testid="chat-input-grid-container"]') ||
+        document.querySelector('[data-testid="chat-input"]') ||
+        document.querySelector("main") ||
+        document.body
+
+      const getAttachmentTestIds = () => {
+        const container = getComposerContainer()
+        const ids = new Set()
+        const elements = container.querySelectorAll("[data-testid]")
+        for (const el of elements) {
+          const id = el.getAttribute("data-testid")
+          if (!id) continue
+          if (knownTestIds.has(id)) continue
+          ids.add(id)
+        }
+        return Array.from(ids)
+      }
+
+      const isFileVisibleInUI = (fileName) => {
+        const container = getComposerContainer()
+
+        const ids = getAttachmentTestIds()
+        if (ids.includes(fileName)) return true
+
+        const baseName = fileName.replace(/\.[^/.]+$/, "")
+        if (baseName && ids.includes(baseName)) return true
+
+        const images = container.querySelectorAll("img[alt]")
+        for (const img of images) {
+          if ((img.getAttribute("alt") || "") === fileName) return true
+        }
+
+        return false
+      }
+
+      const findClaudeFileInput = () => {
+        const selectors = [
+          'input[type="file"][data-testid="file-upload"]',
+          'input[type="file"]#chat-input-file-upload-onpage',
+          'input[type="file"][aria-label*="Upload"]',
+          'input[type="file"][aria-label*="upload"]',
+          'input[type="file"]',
+        ]
+
+        for (const selector of selectors) {
+          const el = document.querySelector(selector)
+          if (el && !el.disabled) return el
+        }
+
+        return null
+      }
+
+      const decodeBase64 = (base64) => {
+        const byteCharacters = atob(base64)
+        const byteNumbers = new Array(byteCharacters.length)
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i)
+        }
+        return new Uint8Array(byteNumbers)
+      }
+
+      const estimateBytesFromBase64 = (base64) => {
+        const len = typeof base64 === "string" ? base64.length : 0
+        const padding = base64?.endsWith("==") ? 2 : base64?.endsWith("=") ? 1 : 0
+        return Math.max(0, Math.floor((len * 3) / 4) - padding)
+      }
+
+      try {
+        if (!pdfArg || typeof pdfArg.name !== "string" || typeof pdfArg.data !== "string") {
+          return { ok: false, error: "Invalid PDF payload for Claude upload" }
+        }
+
+        const fileName = pdfArg.name
+        const base64Data = pdfArg.data
+
+        const input = findClaudeFileInput()
+        if (!input) {
+          return { ok: false, error: "Claude file input not found. Make sure you're on an active chat." }
+        }
+
+        // Restore native property before we override it in the MAIN world.
+        if (Object.prototype.hasOwnProperty.call(input, "files")) {
+          try {
+            delete input.files
+          } catch (error) {
+            // best-effort
+          }
+        }
+
+        const previousIds = new Set(getAttachmentTestIds())
+
+        const bytes = decodeBase64(base64Data)
+        const blob = new Blob([bytes], { type: "application/pdf" })
+        const file = new File([blob], fileName, { type: "application/pdf" })
+
+        const dt = new DataTransfer()
+        dt.items.add(file)
+
+        Object.defineProperty(input, "files", {
+          value: dt.files,
+          writable: false,
+          configurable: true,
+        })
+
+        input.dispatchEvent(new Event("change", { bubbles: true }))
+        input.dispatchEvent(new Event("input", { bubbles: true }))
+
+        const sizeBytes = estimateBytesFromBase64(base64Data)
+        const sizeMb = Math.max(1, Math.ceil(sizeBytes / (1024 * 1024)))
+        const timeoutMs = Math.min(120000, Math.max(15000, sizeMb * 12000))
+
+        const start = Date.now()
+        while (Date.now() - start < timeoutMs) {
+          if (isFileVisibleInUI(fileName)) {
+            // Cleanup the override to avoid breaking future uploads.
+            if (Object.prototype.hasOwnProperty.call(input, "files")) {
+              try {
+                delete input.files
+              } catch (error) {
+                // best-effort
+              }
+            }
+            return { ok: true }
+          }
+
+          const currentIds = getAttachmentTestIds()
+          const newIds = currentIds.filter((id) => !previousIds.has(id))
+          if (newIds.length > 0) {
+            // If Claude sanitized the name, treat a stable new attachment as success.
+            await delay(600)
+            const stableIds = getAttachmentTestIds().filter((id) => !previousIds.has(id))
+            if (stableIds.length > 0) {
+              if (Object.prototype.hasOwnProperty.call(input, "files")) {
+                try {
+                  delete input.files
+                } catch (error) {
+                  // best-effort
+                }
+              }
+              return { ok: true, attachedAs: stableIds[0] }
+            }
+          }
+
+          await delay(250)
+        }
+
+        const attachmentIds = getAttachmentTestIds()
+        return {
+          ok: false,
+          error: `Claude did not show an attachment chip for ${fileName}`,
+          attachmentIds: attachmentIds.slice(0, 6),
+        }
+      } catch (error) {
+        return { ok: false, error: error?.message || String(error) }
+      }
+    },
+    args: [pdf],
+  })
+
+  if (!result?.ok) {
+    const suffix =
+      Array.isArray(result?.attachmentIds) && result.attachmentIds.length > 0
+        ? ` (found attachments: ${result.attachmentIds.join(", ")})`
+        : ""
+    throw new Error(`${result?.error || "Claude upload failed"}${suffix}`)
+  }
+
+  return result
+}
+
+async function injectPromptToClaudeMainWorld(tabId, promptText) {
+  await chrome.scripting.executeScript({
+    target: { tabId },
+    world: "MAIN",
+    func: (text) => {
+      const selectors = [
+        'textarea[data-testid="chat-input-ssr"]',
+        'textarea[aria-label="Write your prompt to Claude"]',
+        'textarea[aria-label*="Write your prompt"]',
+        'textarea[placeholder*="help you"]',
+        "textarea",
+      ]
+
+      let textarea = null
+      for (const selector of selectors) {
+        const el = document.querySelector(selector)
+        if (el && el.offsetParent !== null && !el.disabled) {
+          textarea = el
+          break
+        }
+      }
+
+      if (!textarea) {
+        throw new Error("Could not find Claude input textarea to inject prompt")
+      }
+
+      textarea.focus()
+
+      const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value")?.set
+      if (valueSetter) {
+        valueSetter.call(textarea, text)
+      } else {
+        textarea.value = text
+      }
+
+      textarea.dispatchEvent(new Event("input", { bubbles: true }))
+      textarea.dispatchEvent(new Event("change", { bubbles: true }))
+    },
+    args: [promptText],
+  })
+}
+
 
 // Main upload function
 async function uploadPapers() {
   try {
-    // Check if we're on ChatGPT
+    // Check if we're on a supported LLM platform
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
     if (!tab || !tab.url) {
       showStatus("Could not access current tab. Please try again.", "error")
       return
     }
 
-    if (!tab.url.includes("chatgpt.com") && !tab.url.includes("chat.openai.com")) {
-      showStatus("Please open ChatGPT first", "error")
+    if (!tab.url.includes("chatgpt.com") && !tab.url.includes("chat.openai.com") && !tab.url.includes("claude.ai")) {
+      showStatus("Please open ChatGPT or Claude first", "error")
       return
     }
 
@@ -893,12 +1126,79 @@ async function uploadPapers() {
       )
     }
 
-    showStatus("Uploading to ChatGPT...", "loading")
+	    const llmName = tab.url.includes("claude.ai") ? "Claude" : "ChatGPT"
+	    showStatus(`Uploading to ${llmName}...`, "loading")
 
-    // Enhanced content script injection with retries
-    let contentScriptReady = false
-    let injectionAttempts = 0
-    const maxInjectionAttempts = 3
+	    // Prepare payload once (used by both platforms)
+	    const pdfsToSend = pdfData.map((pdf) => ({
+	      name: pdf.name,
+	      info: pdf.info,
+	      data: pdf.base64Data, // Already base64, no conversion needed
+	    }))
+
+	    // Claude: run upload in MAIN world (content scripts can't reliably set input.files for Claude)
+	    if (tab.url.includes("claude.ai")) {
+	      const failures = []
+
+	      showProgress(0, pdfsToSend.length, "Starting uploads...")
+	      for (let i = 0; i < pdfsToSend.length; i++) {
+	        const pdf = pdfsToSend[i]
+	        showProgress(i, pdfsToSend.length, `Uploading: ${pdf.name}`)
+
+	        try {
+	          await uploadPdfToClaudeMainWorld(tab.id, pdf)
+	        } catch (error) {
+	          failures.push({ name: pdf.name, error: error?.message || String(error) })
+	        }
+
+	        // Small delay to avoid UI flakiness
+	        if (i < pdfsToSend.length - 1) {
+	          await new Promise((resolve) => setTimeout(resolve, 800))
+	        }
+	      }
+
+	      hideProgress()
+
+	      const successCount = pdfsToSend.length - failures.length
+	      if (successCount === 0) {
+	        const first = failures[0]
+	        throw new Error(first?.error || "No files were uploaded successfully to Claude")
+	      }
+
+	      if (downloadErrors.length > 0) {
+	        showStatus(
+	          `Uploaded ${successCount}/${pdfsToSend.length} papers to Claude (${downloadErrors.length} downloads failed)`,
+	          "success",
+	        )
+	      } else if (failures.length > 0) {
+	        showStatus(`Uploaded ${successCount}/${pdfsToSend.length} papers to Claude`, "success")
+	      } else {
+	        showStatus(`Successfully uploaded ${successCount} papers to Claude!`, "success")
+	      }
+
+	      // Inject custom prompt based on study purpose
+	      const studyPurpose = getSelectedStudyPurpose()
+	      const customPrompt = generateCustomPrompt(studyPurpose, selectedPapers)
+
+	      if (customPrompt && customPrompt.trim() !== "") {
+	        console.log(`📝 Injecting custom prompt for study purpose: ${studyPurpose}`)
+	        showStatus("Injecting study prompt...", "loading")
+
+	        try {
+	          await injectPromptToClaudeMainWorld(tab.id, customPrompt)
+	          console.log("✅ Custom prompt injected successfully (Claude)")
+	        } catch (promptError) {
+	          console.error("❌ Failed to inject custom prompt (Claude):", promptError)
+	        }
+	      }
+
+	      return
+	    }
+
+	    // Enhanced content script injection with retries
+	    let contentScriptReady = false
+	    let injectionAttempts = 0
+	    const maxInjectionAttempts = 3
 
     while (!contentScriptReady && injectionAttempts < maxInjectionAttempts) {
       injectionAttempts++
@@ -957,28 +1257,25 @@ async function uploadPapers() {
       } catch (finalError) {
         console.error("❌ Background injection also failed:", finalError)
         throw new Error(
-          "Could not establish connection with ChatGPT page. Please refresh the ChatGPT page and try again.",
+          "Could not establish connection with the LLM page. Please refresh ChatGPT/Claude and try again.",
         )
       }
     }
 
-    // Send to content script for upload - data already in base64 format
-    const pdfsToSend = pdfData.map((pdf) => ({
-      name: pdf.name,
-      info: pdf.info,
-      data: pdf.base64Data, // Already base64, no conversion needed
-    }))
-
-    console.log(`📤 Sending ${pdfsToSend.length} PDFs to content script...`)
+	    console.log(`📤 Sending ${pdfsToSend.length} PDFs to content script...`)
 
     try {
-      await chrome.tabs.sendMessage(tab.id, {
+      const uploadResponse = await chrome.tabs.sendMessage(tab.id, {
         action: "uploadPDFs",
         pdfs: pdfsToSend,
       })
+
+      if (!uploadResponse?.success) {
+        throw new Error(uploadResponse?.error || "Upload failed in content script")
+      }
     } catch (error) {
       console.error("Message sending failed:", error)
-      throw new Error(`Upload communication failed: ${error.message}. Please refresh ChatGPT and try again.`)
+      throw new Error(`Upload communication failed: ${error.message}. Please refresh ChatGPT/Claude and try again.`)
     }
 
     // Hide progress bar and show success
@@ -1027,9 +1324,9 @@ async function uploadPapers() {
     // Hide progress and show error
     hideProgress()
     
-    let errorMessage = "Upload failed. Please try again."
+    let errorMessage = error?.message || "Upload failed. Please try again."
     if (error.message.includes("tab")) {
-      errorMessage = "Could not access ChatGPT tab. Please refresh and try again."
+      errorMessage = "Could not access the LLM tab. Please refresh and try again."
     } else if (error.message.includes("network") || error.message.includes("fetch")) {
       errorMessage = "Network error. Check your connection and try again."
     } else if (error.message.includes("timeout")) {
@@ -1382,15 +1679,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Restore previous state (selected courses, search text, study purpose)
     await loadState();
 
-    // Check if we're on ChatGPT
+    // Check if we're on a supported LLM platform
     if (chrome?.tabs) {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         try {
           const currentTab = tabs[0]
           console.log("🌐 Current tab URL:", currentTab?.url)
           
-          if (!currentTab || (!currentTab.url.includes("chatgpt.com") && !currentTab.url.includes("chat.openai.com"))) {
-            showStatus("Please navigate to ChatGPT to use this extension", "error")
+          if (!currentTab || (!currentTab.url.includes("chatgpt.com") && !currentTab.url.includes("chat.openai.com") && !currentTab.url.includes("claude.ai"))) {
+            showStatus("Please navigate to ChatGPT or Claude to use this extension", "error")
             if (uploadBtn) uploadBtn.disabled = true
             // Still load courses for testing course search functionality
             console.log("📚 Not on supported LLM platform, but loading courses for testing...")
