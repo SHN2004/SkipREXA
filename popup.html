@@ -848,6 +848,7 @@
 
         .paper-info {
             flex: 1;
+            min-width: 0;
         }
 
         .paper-details {
@@ -856,12 +857,16 @@
             color: var(--foreground);
             margin-bottom: 6px;
             line-height: 1.4;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .paper-meta {
             font-size: 12px;
             color: var(--muted-foreground);
             line-height: 1.4;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         /* Selected count indicator */
@@ -979,10 +984,24 @@
         .progress-label {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
+            gap: 10px;
             margin-bottom: 10px;
             font-size: 14px;
             font-weight: 600;
+        }
+
+        #progressText {
+            flex: 1;
+            min-width: 0;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        #progressCount {
+            flex-shrink: 0;
+            white-space: nowrap;
         }
 
         .progress-bar {
@@ -1014,6 +1033,8 @@
             color: var(--muted-foreground);
             text-align: center;
             font-style: italic;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         /* Status messages with editorial style */
@@ -1025,6 +1046,8 @@
             font-size: 13px;
             font-weight: 500;
             animation: fadeIn 0.3s ease-out;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .status.success {

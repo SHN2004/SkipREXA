@@ -115,6 +115,18 @@ function updateProgressDetails(details) {
   }
 }
 
+function scrollToActivitySection() {
+  const progressVisible = progressContainer && !progressContainer.classList.contains("hidden")
+  const statusVisible = statusDiv && !statusDiv.classList.contains("hidden")
+  const target = progressVisible ? progressContainer : (statusVisible ? statusDiv : (progressContainer || statusDiv))
+
+  if (!target) return
+
+  requestAnimationFrame(() => {
+    target.scrollIntoView({ behavior: "smooth", block: "start" })
+  })
+}
+
 // Theme management functions
 async function loadThemePreference() {
   try {
@@ -1308,6 +1320,7 @@ async function uploadPapers() {
     console.log("Current tab:", tab.url)
 
     showStatus("Fetching papers...", "loading")
+    scrollToActivitySection()
     uploadBtn.disabled = true
 
     // First ensure background script is ready
@@ -1337,6 +1350,7 @@ async function uploadPapers() {
     showProgress(0, filteredPapers.length, "Preparing downloads...")
     hideProgress() // Hide first, then show again
     showProgress(0, filteredPapers.length, "Starting downloads...")
+    scrollToActivitySection()
 
     // Download PDFs using background script
     const pdfData = []
