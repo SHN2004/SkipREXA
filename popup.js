@@ -940,45 +940,314 @@ async function uploadPdfToClaudeMainWorld(tabId, pdf) {
 }
 
 async function injectPromptToClaudeMainWorld(tabId, promptText) {
-  await chrome.scripting.executeScript({
+  const [{ result }] = await chrome.scripting.executeScript({
     target: { tabId },
     world: "MAIN",
-    func: (text) => {
-      const selectors = [
-        'textarea[data-testid="chat-input-ssr"]',
-        'textarea[aria-label="Write your prompt to Claude"]',
-        'textarea[aria-label*="Write your prompt"]',
-        'textarea[placeholder*="help you"]',
-        "textarea",
-      ]
+    func: async (text) => {
+      const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+      const normalize = (value) =>
+        String(value || "")
+          .replace(/\r/g, "")
+          .replace(/\n{2,}/g, "\n")
+          .trim()
 
-      let textarea = null
-      for (const selector of selectors) {
-        const el = document.querySelector(selector)
-        if (el && el.offsetParent !== null && !el.disabled) {
-          textarea = el
-          break
+      const isVisible = (el) => {
+        if (!el || !el.isConnected) return false
+        const style = window.getComputedStyle(el)
+        if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") {
+          return false
+        }
+        const rect = el.getBoundingClientRect()
+        return rect.width > 0 && rect.height > 0
+      }
+
+      const getComposerContainer = () =>
+        document.querySelector('[data-testid="chat-input-grid-container"]') ||
+        document.querySelector('[data-testid="chat-input"]') ||
+        document.body
+
+      const hasAttachmentProcessing = () => {
+        const container = getComposerContainer()
+        if (!container) return false
+
+        if (
+          container.querySelector(
+            [
+              '[role="progressbar"]',
+              '[aria-busy="true"]',
+              ".animate-spin",
+              '[data-state="loading"]',
+              '[data-status="uploading"]',
+            ].join(","),
+          )
+        ) {
+          return true
+        }
+
+        const textContent = (container.textContent || "").toLowerCase()
+        return /uploading|processing|finalizing/.test(textContent)
+      }
+
+      const isUsableComposerInput = (el) => {
+        if (!el || !isVisible(el)) return false
+
+        if (el.tagName === "TEXTAREA") {
+          return !el.disabled && !el.readOnly
+        }
+
+        if (el.isContentEditable) {
+          if ((el.getAttribute("contenteditable") || "").toLowerCase() === "false") return false
+          if ((el.getAttribute("aria-disabled") || "").toLowerCase() === "true") return false
+          return true
+        }
+
+        return false
+      }
+
+      const getComposerValue = (el) => {
+        if (!el) return ""
+        if (el.tagName === "TEXTAREA") return el.value || ""
+        if (el.isContentEditable) return el.innerText || ""
+        return el.textContent || ""
+      }
+
+      const waitForComposerQuiet = async () => {
+        let stableTicks = 0
+        for (let i = 0; i < 48; i++) {
+          const input = findComposerInput()
+          const quiet = !hasAttachmentProcessing()
+          const usable = isUsableComposerInput(input)
+
+          if (quiet && usable) {
+            stableTicks++
+            if (stableTicks >= 5) return true
+          } else {
+            stableTicks = 0
+          }
+
+          await delay(250)
+        }
+        return false
+      }
+
+      const getAttachmentIds = () => {
+        const container = getComposerContainer()
+        const known = new Set([
+          "chat-input-grid-container",
+          "chat-input-grid-area",
+          "prompt-input-ssr-interactive",
+          "chat-input-ssr",
+          "file-upload",
+          "chat-input",
+          "model-selector-dropdown",
+        ])
+
+        const ids = new Set()
+        container.querySelectorAll("[data-testid]").forEach((el) => {
+          const id = el.getAttribute("data-testid")
+          if (!id || known.has(id)) return
+          ids.add(id)
+        })
+        return Array.from(ids).sort()
+      }
+
+      const waitForComposerStability = async () => {
+        // Claude can re-render the composer right after attachment; wait until attachment IDs stop changing.
+        let stableTicks = 0
+        let previous = JSON.stringify(getAttachmentIds())
+
+        for (let i = 0; i < 24; i++) {
+          await delay(250)
+          const current = JSON.stringify(getAttachmentIds())
+          if (current === previous) {
+            stableTicks++
+            if (stableTicks >= 4) return
+          } else {
+            stableTicks = 0
+            previous = current
+          }
         }
       }
 
-      if (!textarea) {
-        throw new Error("Could not find Claude input textarea to inject prompt")
+      const findComposerInput = () => {
+        const container = getComposerContainer()
+        const roots = [container, document].filter(Boolean)
+        const selectors = [
+          // Claude's visible composer is typically a contenteditable textbox.
+          '[contenteditable="true"][role="textbox"]',
+          '[contenteditable="true"][aria-label="Write your prompt to Claude"]',
+          '[contenteditable="true"][aria-label*="Write your prompt"]',
+          // Fallbacks (SSR textarea / legacy)
+          'textarea[data-testid="chat-input-ssr"]',
+          'textarea[aria-label="Write your prompt to Claude"]',
+          'textarea[aria-label*="Write your prompt"]',
+          'textarea[placeholder*="help you"]',
+          "textarea",
+        ]
+
+        const candidates = []
+        for (const root of roots) {
+          for (const selector of selectors) {
+            const elements = Array.from(root.querySelectorAll(selector))
+            for (const el of elements) {
+              if (!isUsableComposerInput(el)) continue
+              const rect = el.getBoundingClientRect()
+              const area = rect.width * rect.height
+              const priority = el.isContentEditable ? 2 : 1
+              candidates.push({ el, area, priority })
+            }
+          }
+        }
+
+        if (candidates.length === 0) return null
+        candidates.sort((a, b) => b.priority - a.priority || b.area - a.area)
+        return candidates[0].el
       }
 
-      textarea.focus()
+      const expected = normalize(text)
 
-      const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value")?.set
-      if (valueSetter) {
-        valueSetter.call(textarea, text)
-      } else {
-        textarea.value = text
+      let input = null
+      for (let i = 0; i < 80; i++) {
+        input = findComposerInput()
+        if (input) break
+        await delay(250)
       }
 
-      textarea.dispatchEvent(new Event("input", { bubbles: true }))
-      textarea.dispatchEvent(new Event("change", { bubbles: true }))
+      if (!input) {
+        return { ok: false, error: "Could not find Claude composer input to inject prompt" }
+      }
+
+      await waitForComposerStability()
+      await waitForComposerQuiet()
+
+      const textareaValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value")?.set
+      const applyText = (target) => {
+        if (!target) return
+        target.focus()
+
+        if (target.tagName === "TEXTAREA") {
+          if (typeof target.select === "function") {
+            target.select()
+          }
+
+          if (textareaValueSetter) {
+            textareaValueSetter.call(target, text)
+          } else {
+            target.value = text
+          }
+
+          try {
+            target.dispatchEvent(
+              new InputEvent("beforeinput", {
+                bubbles: true,
+                cancelable: true,
+                inputType: "insertText",
+                data: text,
+              }),
+            )
+          } catch (error) {
+            // InputEvent may not be fully supported; ignore and continue.
+          }
+
+          try {
+            target.dispatchEvent(
+              new InputEvent("input", {
+                bubbles: true,
+                inputType: "insertText",
+                data: text,
+              }),
+            )
+          } catch (error) {
+            target.dispatchEvent(new Event("input", { bubbles: true }))
+          }
+
+          target.dispatchEvent(new Event("change", { bubbles: true }))
+
+          if (typeof target.setSelectionRange === "function") {
+            const end = text.length
+            target.setSelectionRange(end, end)
+          }
+          return
+        }
+
+        if (target.isContentEditable) {
+          // Use execCommand to trigger the same code paths as real typing.
+          let applied = false
+          try {
+            document.execCommand("selectAll")
+            applied = document.execCommand("insertText", false, text)
+          } catch (error) {
+            applied = false
+          }
+
+          if (!applied) {
+            // Fallback: directly set content and dispatch an input event.
+            target.textContent = text
+            target.dispatchEvent(new Event("input", { bubbles: true }))
+          }
+          return
+        }
+      }
+
+      const waitForPersistence = async () => {
+        const observed = []
+        for (let i = 0; i < 16; i++) {
+          const current = findComposerInput()
+          const value = normalize(getComposerValue(current))
+          observed.push(value.length)
+
+          if (!current || value !== expected) {
+            return {
+              ok: false,
+              reason: `changed at check ${i + 1} (${value.length}/${expected.length})`,
+              observed: observed.slice(0, 8),
+            }
+          }
+          await delay(250)
+        }
+        return { ok: true, observed: observed.slice(0, 8) }
+      }
+
+      // Retry to survive late Claude re-renders that clear the composer value.
+      let lastReason = "unknown"
+      for (let attempt = 0; attempt < 5; attempt++) {
+        input = findComposerInput()
+        if (!input) {
+          return { ok: false, error: "Claude composer re-rendered and input was lost" }
+        }
+
+        applyText(input)
+        await delay(220)
+        const persistence = await waitForPersistence()
+        if (persistence.ok) {
+          return {
+            ok: true,
+            length: expected.length,
+            attempts: attempt + 1,
+            observed: persistence.observed,
+            kind: input.isContentEditable ? "contenteditable" : input.tagName === "TEXTAREA" ? "textarea" : "unknown",
+          }
+        }
+        lastReason = persistence.reason || "value changed"
+
+        await waitForComposerQuiet()
+      }
+
+      input = findComposerInput()
+      const finalLen = normalize(getComposerValue(input)).length
+      return {
+        ok: false,
+        error: `Claude prompt did not stick (${finalLen}/${expected.length} chars, ${lastReason})`,
+      }
     },
     args: [promptText],
   })
+
+  if (!result?.ok) {
+    throw new Error(result?.error || "Failed to inject prompt into Claude")
+  }
+
+  return result
 }
 
 
@@ -1182,14 +1451,16 @@ async function uploadPapers() {
 
 	      if (customPrompt && customPrompt.trim() !== "") {
 	        console.log(`📝 Injecting custom prompt for study purpose: ${studyPurpose}`)
-	        showStatus("Injecting study prompt...", "loading")
+		        showStatus("Injecting study prompt...", "loading")
 
-	        try {
-	          await injectPromptToClaudeMainWorld(tab.id, customPrompt)
-	          console.log("✅ Custom prompt injected successfully (Claude)")
-	        } catch (promptError) {
-	          console.error("❌ Failed to inject custom prompt (Claude):", promptError)
-	        }
+		        try {
+		          const injectionResult = await injectPromptToClaudeMainWorld(tab.id, customPrompt)
+		          console.log("✅ Custom prompt injected successfully (Claude):", injectionResult)
+		          showStatus("Prompt injected successfully", "success")
+		        } catch (promptError) {
+		          console.error("❌ Failed to inject custom prompt (Claude):", promptError)
+		          showStatus(`Uploaded files, but prompt injection failed: ${promptError.message}`, "error")
+		        }
 	      }
 
 	      return
