@@ -118,7 +118,7 @@ async function downloadPDF({ url, mode, filename }) {
     }
 
     if (mode === 'save') {
-        return await downloadWithNativeManager(url, filename);
+        return await startNativeDownload(url, filename);
     }
 
     try {
@@ -283,6 +283,47 @@ async function downloadWithNativeManager(url, preferredFilename) {
         });
 
         return await waitForDownloadOutcome(downloadId, url);
+    } catch (error) {
+        const message = error?.message || 'Native download request failed';
+        const certError = message.includes('CERT');
+        return {
+            success: false,
+            code: certError ? 'CERT_ERROR' : 'NATIVE_DOWNLOAD_START_FAILED',
+            error: certError ? 'Chrome blocked the download because of a certificate problem.' : message,
+            details: { url, rawMessage: message }
+        };
+    }
+}
+
+async function startNativeDownload(url, preferredFilename) {
+    const safeName = sanitizeFilename(preferredFilename) || `paper_${Date.now()}.pdf`;
+    const fullFilename = `SkipREXA/${safeName}`;
+
+    try {
+        const downloadId = await new Promise((resolve, reject) => {
+            chrome.downloads.download(
+                {
+                    url,
+                    filename: fullFilename,
+                    conflictAction: 'uniquify',
+                    saveAs: false
+                },
+                (id) => {
+                    if (chrome.runtime.lastError || typeof id !== 'number') {
+                        reject(new Error(chrome.runtime.lastError?.message || 'Native download failed to start'));
+                        return;
+                    }
+                    resolve(id);
+                }
+            );
+        });
+
+        return {
+            success: true,
+            source: 'native',
+            isNativeDownload: true,
+            downloadId
+        };
     } catch (error) {
         const message = error?.message || 'Native download request failed';
         const certError = message.includes('CERT');
