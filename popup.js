@@ -751,28 +751,61 @@ Once you know this, please help me create a comprehensive study plan covering al
 
 // PDF downloads now handled by background script
 
+const CLAUDE_KNOWN_TEST_IDS = [
+  "chat-input-grid-container",
+  "chat-input-grid-area",
+  "prompt-input-ssr-interactive",
+  "chat-input-ssr",
+  "file-upload",
+  "chat-input",
+  "model-selector-dropdown",
+]
+
+const CLAUDE_COMPOSER_CONTAINER_SELECTORS = [
+  '[data-testid="chat-input-grid-container"]',
+  '[data-testid="chat-input"]',
+  "main",
+]
+
+const CLAUDE_FILE_INPUT_SELECTORS = [
+  'input[type="file"][data-testid="file-upload"]',
+  'input[type="file"]#chat-input-file-upload-onpage',
+  'input[type="file"][aria-label*="Upload"]',
+  'input[type="file"][aria-label*="upload"]',
+  'input[type="file"]',
+]
+
+const CLAUDE_COMPOSER_INPUT_SELECTORS = [
+  // Claude's visible composer is typically a contenteditable textbox.
+  '[contenteditable="true"][role="textbox"]',
+  '[contenteditable="true"][aria-label="Write your prompt to Claude"]',
+  '[contenteditable="true"][aria-label*="Write your prompt"]',
+  // Fallbacks (SSR textarea / legacy)
+  'textarea[data-testid="chat-input-ssr"]',
+  'textarea[aria-label="Write your prompt to Claude"]',
+  'textarea[aria-label*="Write your prompt"]',
+  'textarea[placeholder*="help you"]',
+  "textarea",
+]
+
 async function uploadPdfToClaudeMainWorld(tabId, pdf) {
   const [{ result }] = await chrome.scripting.executeScript({
     target: { tabId },
     world: "MAIN",
-    func: async (pdfArg) => {
+    func: async (pdfArg, knownTestIdList, containerSelectorList, fileInputSelectorList) => {
       const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-      const knownTestIds = new Set([
-        "chat-input-grid-container",
-        "chat-input-grid-area",
-        "prompt-input-ssr-interactive",
-        "chat-input-ssr",
-        "file-upload",
-        "chat-input",
-        "model-selector-dropdown",
-      ])
+      const knownTestIds = new Set(Array.isArray(knownTestIdList) ? knownTestIdList : [])
+      const containerSelectors = Array.isArray(containerSelectorList) ? containerSelectorList : []
+      const fileInputSelectors = Array.isArray(fileInputSelectorList) ? fileInputSelectorList : []
 
-      const getComposerContainer = () =>
-        document.querySelector('[data-testid="chat-input-grid-container"]') ||
-        document.querySelector('[data-testid="chat-input"]') ||
-        document.querySelector("main") ||
-        document.body
+      const getComposerContainer = () => {
+        for (const selector of containerSelectors) {
+          const el = document.querySelector(selector)
+          if (el) return el
+        }
+        return document.body
+      }
 
       const getAttachmentTestIds = () => {
         const container = getComposerContainer()
@@ -805,15 +838,7 @@ async function uploadPdfToClaudeMainWorld(tabId, pdf) {
       }
 
       const findClaudeFileInput = () => {
-        const selectors = [
-          'input[type="file"][data-testid="file-upload"]',
-          'input[type="file"]#chat-input-file-upload-onpage',
-          'input[type="file"][aria-label*="Upload"]',
-          'input[type="file"][aria-label*="upload"]',
-          'input[type="file"]',
-        ]
-
-        for (const selector of selectors) {
+        for (const selector of fileInputSelectors) {
           const el = document.querySelector(selector)
           if (el && !el.disabled) return el
         }
@@ -925,7 +950,7 @@ async function uploadPdfToClaudeMainWorld(tabId, pdf) {
         return { ok: false, error: error?.message || String(error) }
       }
     },
-    args: [pdf],
+    args: [pdf, CLAUDE_KNOWN_TEST_IDS, CLAUDE_COMPOSER_CONTAINER_SELECTORS, CLAUDE_FILE_INPUT_SELECTORS],
   })
 
   if (!result?.ok) {
@@ -943,7 +968,7 @@ async function injectPromptToClaudeMainWorld(tabId, promptText) {
   const [{ result }] = await chrome.scripting.executeScript({
     target: { tabId },
     world: "MAIN",
-    func: async (text) => {
+    func: async (text, knownTestIdList, containerSelectorList, composerInputSelectorList) => {
       const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
       const normalize = (value) =>
         String(value || "")
@@ -951,6 +976,17 @@ async function injectPromptToClaudeMainWorld(tabId, promptText) {
           .replace(/\n{2,}/g, "\n")
           .trim()
 
+      // If the user starts editing while we're validating stability, don't fight them by re-inserting.
+      let userInteracted = false
+      const userEventTypes = ["keydown", "mousedown", "pointerdown", "touchstart", "paste", "cut"]
+      const onUserEvent = (event) => {
+        if (event?.isTrusted) userInteracted = true
+      }
+      for (const type of userEventTypes) {
+        document.addEventListener(type, onUserEvent, true)
+      }
+
+      try {
       const isVisible = (el) => {
         if (!el || !el.isConnected) return false
         const style = window.getComputedStyle(el)
@@ -961,10 +997,17 @@ async function injectPromptToClaudeMainWorld(tabId, promptText) {
         return rect.width > 0 && rect.height > 0
       }
 
-      const getComposerContainer = () =>
-        document.querySelector('[data-testid="chat-input-grid-container"]') ||
-        document.querySelector('[data-testid="chat-input"]') ||
-        document.body
+      const knownTestIds = new Set(Array.isArray(knownTestIdList) ? knownTestIdList : [])
+      const containerSelectors = Array.isArray(containerSelectorList) ? containerSelectorList : []
+      const composerInputSelectors = Array.isArray(composerInputSelectorList) ? composerInputSelectorList : []
+
+      const getComposerContainer = () => {
+        for (const selector of containerSelectors) {
+          const el = document.querySelector(selector)
+          if (el) return el
+        }
+        return document.body
+      }
 
       const hasAttachmentProcessing = () => {
         const container = getComposerContainer()
@@ -1014,6 +1057,7 @@ async function injectPromptToClaudeMainWorld(tabId, promptText) {
       const waitForComposerQuiet = async () => {
         let stableTicks = 0
         for (let i = 0; i < 48; i++) {
+          if (userInteracted) return false
           const input = findComposerInput()
           const quiet = !hasAttachmentProcessing()
           const usable = isUsableComposerInput(input)
@@ -1032,20 +1076,10 @@ async function injectPromptToClaudeMainWorld(tabId, promptText) {
 
       const getAttachmentIds = () => {
         const container = getComposerContainer()
-        const known = new Set([
-          "chat-input-grid-container",
-          "chat-input-grid-area",
-          "prompt-input-ssr-interactive",
-          "chat-input-ssr",
-          "file-upload",
-          "chat-input",
-          "model-selector-dropdown",
-        ])
-
         const ids = new Set()
         container.querySelectorAll("[data-testid]").forEach((el) => {
           const id = el.getAttribute("data-testid")
-          if (!id || known.has(id)) return
+          if (!id || knownTestIds.has(id)) return
           ids.add(id)
         })
         return Array.from(ids).sort()
@@ -1057,6 +1091,7 @@ async function injectPromptToClaudeMainWorld(tabId, promptText) {
         let previous = JSON.stringify(getAttachmentIds())
 
         for (let i = 0; i < 24; i++) {
+          if (userInteracted) return false
           await delay(250)
           const current = JSON.stringify(getAttachmentIds())
           if (current === previous) {
@@ -1072,22 +1107,10 @@ async function injectPromptToClaudeMainWorld(tabId, promptText) {
       const findComposerInput = () => {
         const container = getComposerContainer()
         const roots = [container, document].filter(Boolean)
-        const selectors = [
-          // Claude's visible composer is typically a contenteditable textbox.
-          '[contenteditable="true"][role="textbox"]',
-          '[contenteditable="true"][aria-label="Write your prompt to Claude"]',
-          '[contenteditable="true"][aria-label*="Write your prompt"]',
-          // Fallbacks (SSR textarea / legacy)
-          'textarea[data-testid="chat-input-ssr"]',
-          'textarea[aria-label="Write your prompt to Claude"]',
-          'textarea[aria-label*="Write your prompt"]',
-          'textarea[placeholder*="help you"]',
-          "textarea",
-        ]
 
         const candidates = []
         for (const root of roots) {
-          for (const selector of selectors) {
+          for (const selector of composerInputSelectors) {
             const elements = Array.from(root.querySelectorAll(selector))
             for (const el of elements) {
               if (!isUsableComposerInput(el)) continue
@@ -1108,6 +1131,9 @@ async function injectPromptToClaudeMainWorld(tabId, promptText) {
 
       let input = null
       for (let i = 0; i < 80; i++) {
+        if (userInteracted) {
+          return { ok: true, interrupted: true, reason: "User edited composer before injection" }
+        }
         input = findComposerInput()
         if (input) break
         await delay(250)
@@ -1119,6 +1145,10 @@ async function injectPromptToClaudeMainWorld(tabId, promptText) {
 
       await waitForComposerStability()
       await waitForComposerQuiet()
+
+      if (userInteracted) {
+        return { ok: true, interrupted: true, reason: "User edited composer before injection" }
+      }
 
       const textareaValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value")?.set
       const applyText = (target) => {
@@ -1192,6 +1222,9 @@ async function injectPromptToClaudeMainWorld(tabId, promptText) {
       const waitForPersistence = async () => {
         const observed = []
         for (let i = 0; i < 16; i++) {
+          if (userInteracted) {
+            return { ok: true, interrupted: true, observed: observed.slice(0, 8) }
+          }
           const current = findComposerInput()
           const value = normalize(getComposerValue(current))
           observed.push(value.length)
@@ -1226,6 +1259,7 @@ async function injectPromptToClaudeMainWorld(tabId, promptText) {
             attempts: attempt + 1,
             observed: persistence.observed,
             kind: input.isContentEditable ? "contenteditable" : input.tagName === "TEXTAREA" ? "textarea" : "unknown",
+            interrupted: !!persistence.interrupted,
           }
         }
         lastReason = persistence.reason || "value changed"
@@ -1239,8 +1273,13 @@ async function injectPromptToClaudeMainWorld(tabId, promptText) {
         ok: false,
         error: `Claude prompt did not stick (${finalLen}/${expected.length} chars, ${lastReason})`,
       }
+      } finally {
+        for (const type of userEventTypes) {
+          document.removeEventListener(type, onUserEvent, true)
+        }
+      }
     },
-    args: [promptText],
+    args: [promptText, CLAUDE_KNOWN_TEST_IDS, CLAUDE_COMPOSER_CONTAINER_SELECTORS, CLAUDE_COMPOSER_INPUT_SELECTORS],
   })
 
   if (!result?.ok) {
