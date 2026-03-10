@@ -11,6 +11,28 @@ chrome.runtime.onSuspend.addListener(() => {
     console.log('💤 Background service worker suspending');
 });
 
+function getDeclaredContentScriptFiles() {
+    const manifest = chrome.runtime.getManifest();
+    const files = manifest.content_scripts
+        ?.flatMap((entry) => Array.isArray(entry.js) ? entry.js : [])
+        .filter((file, index, allFiles) => typeof file === 'string' && file.length > 0 && allFiles.indexOf(file) === index) ?? [];
+
+    return files;
+}
+
+function injectDeclaredContentScripts(tabId) {
+    const files = getDeclaredContentScriptFiles();
+    if (files.length === 0) {
+        return Promise.reject(new Error('No manifest-declared content scripts found for injection.'));
+    }
+
+    // Resolve script paths from the manifest so CRX/Vite hashed output stays valid after build.
+    return chrome.scripting.executeScript({
+        target: { tabId },
+        files
+    });
+}
+
 chrome.runtime.onInstalled.addListener((details) => {
     console.log('Question Paper Helper extension installed');
     
@@ -37,10 +59,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         
         if (isSupportedPlatform) {
             // Inject content script if not already injected
-            chrome.scripting.executeScript({
-                target: { tabId: tabId },
-                files: ['content.js']
-            }).catch((error) => {
+            injectDeclaredContentScripts(tabId).catch((error) => {
                 // Script might already be injected, ignore error
                 console.log('Content script injection skipped:', error.message);
             });
@@ -81,10 +100,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'injectContentScript') {
         // Handle content script injection from background
         console.log('Background injecting content script for tab:', message.tabId);
-        chrome.scripting.executeScript({
-            target: { tabId: message.tabId },
-            files: ['content.js']
-        })
+        injectDeclaredContentScripts(message.tabId)
         .then(() => {
             console.log('Background injection successful');
             sendResponse({ success: true });
@@ -133,6 +149,16 @@ async function downloadPDF({ url, mode, filename }) {
         const fetchFailure = normalizeFetchError(error, url);
         if (!fetchFailure.tryNativeFallback) {
             return fetchFailure;
+        }
+
+        // Some environments (site access restrictions, CORS edge cases) fail `fetch()` but allow XHR.
+        try {
+            console.log('🔁 Trying XHR fallback for PDF download...');
+            const xhrBlob = await fetchPdfBlobViaXhr(url);
+            const base64Data = await blobToBase64(xhrBlob);
+            return { success: true, source: 'xhr', base64Data };
+        } catch (xhrError) {
+            console.warn('XHR fallback failed:', xhrError);
         }
 
         const nativeResult = await downloadWithNativeManager(url, filename);
@@ -201,6 +227,34 @@ async function fetchPdfBlob(url) {
     }
 
     return blob;
+}
+
+function fetchPdfBlobViaXhr(url) {
+    return new Promise((resolve, reject) => {
+        try {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = 'blob';
+            xhr.withCredentials = true;
+            xhr.setRequestHeader('Accept', 'application/pdf,*/*');
+
+            xhr.onload = () => {
+                if (xhr.status >= 200 && xhr.status < 300 && xhr.response) {
+                    resolve(xhr.response);
+                    return;
+                }
+                reject(new Error(`HTTP ${xhr.status || 0} while downloading PDF via XHR`));
+            };
+
+            xhr.onerror = () => reject(new Error('Network error while downloading PDF via XHR'));
+            xhr.ontimeout = () => reject(new Error('Timeout while downloading PDF via XHR'));
+            xhr.timeout = 30000;
+
+            xhr.send();
+        } catch (error) {
+            reject(error);
+        }
+    });
 }
 
 function blobToBase64(blob) {

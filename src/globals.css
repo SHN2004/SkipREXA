@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius: 0.75rem;
+  --font-main: 'Manrope', sans-serif;
+  --font-display: 'Fraunces', serif;
+}
+
+@layer base {
+  :root {
+    --background: #F5F5F5;
+    --foreground: #2C2C2C;
+    --card: #FFFFFF;
+    --card-foreground: #2C2C2C;
+    --popover: #FFFFFF;
+    --popover-foreground: #2C2C2C;
+    --primary: #7A57C6;
+    --primary-foreground: #FFFFFF;
+    --secondary: #2CA6A4;
+    --secondary-foreground: #FFFFFF;
+    --muted: #EAEAEA;
+    --muted-foreground: #666666;
+    --accent: #2CA6A4;
+    --accent-foreground: #FFFFFF;
+    --destructive: #dc2626;
+    --destructive-foreground: #ffffff;
+    --border: #DDDDDD;
+    --input: #DDDDDD;
+    --ring: #7A57C6;
+  }
+
+  .dark-theme {
+    --background: #1E1E1E;
+    --foreground: #E4E4E4;
+    --card: #2C2C2C;
+    --card-foreground: #E4E4E4;
+    --popover: #2C2C2C;
+    --popover-foreground: #E4E4E4;
+    --primary: #B39CD0;
+    --primary-foreground: #1E1E1E;
+    --secondary: #A8DADC;
+    --secondary-foreground: #1E1E1E;
+    --muted: #383838;
+    --muted-foreground: #A0A0A0;
+    --accent: #333333;
+    --accent-foreground: #A8DADC;
+    --destructive: #EF4444;
+    --destructive-foreground: #ffffff;
+    --border: #444444;
+    --input: #444444;
+    --ring: #B39CD0;
+  }
+}
+
+@layer base {
+
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border, var(--border));
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-main);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Custom scrollbar for SkipREXA */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--muted-foreground);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary);
+}

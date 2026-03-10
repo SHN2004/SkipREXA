@@ -9,7 +9,13 @@
     "48": "icon48.png",
     "128": "icon128.png"
   },
-  "permissions": ["activeTab", "storage", "contextMenus", "scripting", "downloads"],
+  "permissions": [
+    "activeTab",
+    "storage",
+    "contextMenus",
+    "scripting",
+    "downloads"
+  ],
   "host_permissions": [
     "https://chatgpt.com/*",
     "https://chat.openai.com/*",
@@ -17,17 +23,27 @@
     "https://*.supabase.co/*",
     "https://student.rajagiritech.ac.in/*"
   ],
+  "optional_host_permissions": [
+    "https://student.rajagiritech.ac.in/*"
+  ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "src/background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
-      "matches": ["https://chatgpt.com/*", "https://chat.openai.com/*", "https://claude.ai/*"],
-      "js": ["content.js"]
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://claude.ai/*"
+      ],
+      "js": [
+        "src/content.js"
+      ]
     }
   ],
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "index.html",
     "default_title": "SkipREXA"
   }
 }
