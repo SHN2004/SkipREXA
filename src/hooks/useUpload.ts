@@ -37,6 +37,48 @@ const CLAUDE_COMPOSER_INPUT_SELECTORS = [
   "textarea",
 ];
 
+type DownloadPdfResponse =
+  | {
+      success: true;
+      base64Data?: string;
+      source?: string;
+      isNativeDownload?: boolean;
+      downloadId?: number;
+    }
+  | {
+      success?: false;
+      code?: string;
+      error?: string;
+      details?: unknown;
+      nativeDownload?: {
+        downloadId?: number;
+        filename?: string | null;
+        finalUrl?: string | null;
+      };
+    };
+
+function formatDownloadFailureMessage(fileName: string, response: DownloadPdfResponse | null | undefined) {
+  const prefix = fileName ? `${fileName}: ` : "";
+
+  if (!response) {
+    return `${prefix}Download failed with no response from the background script.`;
+  }
+
+  if (response.code === "CERT_ERROR") {
+    return `${prefix}Chrome blocked the PDF because the source site certificate is invalid. Open the PDF in a normal tab, accept the warning only if you trust the site, then attach the downloaded file manually.`;
+  }
+
+  if (response.code === "NATIVE_DOWNLOAD_ONLY") {
+    return `${prefix}${response.error || "Chrome could only save the file to Downloads, not attach it directly."}`;
+  }
+
+  if (typeof response.error === "string" && response.error.trim()) {
+    return `${prefix}${response.error}`;
+  }
+
+  return `${prefix}Download failed.`;
+}
+
 export function generateCustomPrompt(studyPurpose: string, selectedCourses: Course[], selectedPapers: Paper[]) {
   if (studyPurpose === "general") return "";
 
@@ -602,31 +644,44 @@ export async function processUpload(selectedPapers: Paper[], selectedCourses: Co
   }
 
   const pdfData = [];
+  const downloadFailures: string[] = [];
 
   for (let i = 0; i < selectedPapers.length; i++) {
     const paper = selectedPapers[i];
     updateProgress(`Downloading (${i + 1}/${selectedPapers.length}): ${paper.course_name}`);
     const targetFilename = `${paper.course_name}_${paper.exam_type}_${paper.exam_month}_${paper.exam_year}.pdf`;
 
-    // Use background script to download PDF bytes for upload
-    const response = await chrome.runtime.sendMessage({
-      action: 'downloadPDF',
-      url: (paper as any).download_url,
-      mode: 'buffer',
-      filename: targetFilename
-    });
+    try {
+      // Use background script to download PDF bytes for upload
+      const response = await chrome.runtime.sendMessage({
+        action: 'downloadPDF',
+        url: (paper as any).download_url,
+        mode: 'buffer',
+        filename: targetFilename
+      }) as DownloadPdfResponse;
 
-    if (response?.success && response.base64Data) {
-      pdfData.push({
-        name: targetFilename,
-        base64Data: response.base64Data,
-        info: paper,
-      });
+      if (response?.success && response.base64Data) {
+        pdfData.push({
+          name: targetFilename,
+          base64Data: response.base64Data,
+          info: paper,
+        });
+        continue;
+      }
+
+      downloadFailures.push(formatDownloadFailureMessage(targetFilename, response));
+    } catch (error: any) {
+      const message = error?.message || "Unexpected download error.";
+      downloadFailures.push(`${targetFilename}: ${message}`);
     }
   }
 
   if (pdfData.length === 0) {
-    throw new Error("No papers were downloaded successfully.");
+    throw new Error(downloadFailures[0] || "No papers were downloaded successfully.");
+  }
+
+  if (downloadFailures.length > 0) {
+    console.warn("Some papers failed to download:", downloadFailures);
   }
 
   updateProgress("Injecting into LLM...");
@@ -681,6 +736,7 @@ export async function processUpload(selectedPapers: Paper[], selectedCourses: Co
 
 export async function processDirectDownload(selectedPapers: Paper[], updateProgress: (msg: string) => void) {
   let successfulDownloads = 0;
+  const downloadFailures: string[] = [];
 
   for (let i = 0; i < selectedPapers.length; i++) {
     const paper = selectedPapers[i];
@@ -694,14 +750,21 @@ export async function processDirectDownload(selectedPapers: Paper[], updateProgr
         url: (paper as any).download_url,
         mode: 'save',
         filename: targetFilename
-      });
+      }) as DownloadPdfResponse;
 
       if (response?.success) {
         successfulDownloads++;
+      } else {
+        downloadFailures.push(formatDownloadFailureMessage(targetFilename, response));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      downloadFailures.push(`${targetFilename}: ${error?.message || "Unexpected download error."}`);
     }
+  }
+
+  if (successfulDownloads === 0 && downloadFailures.length > 0) {
+    throw new Error(downloadFailures[0]);
   }
 
   return successfulDownloads;

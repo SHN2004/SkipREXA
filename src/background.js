@@ -151,14 +151,18 @@ async function downloadPDF({ url, mode, filename }) {
             return fetchFailure;
         }
 
-        // Some environments (site access restrictions, CORS edge cases) fail `fetch()` but allow XHR.
-        try {
-            console.log('🔁 Trying XHR fallback for PDF download...');
-            const xhrBlob = await fetchPdfBlobViaXhr(url);
-            const base64Data = await blobToBase64(xhrBlob);
-            return { success: true, source: 'xhr', base64Data };
-        } catch (xhrError) {
-            console.warn('XHR fallback failed:', xhrError);
+        if (canUseXhrFallback()) {
+            // Some non-worker environments fail `fetch()` but allow XHR.
+            try {
+                console.log('🔁 Trying XHR fallback for PDF download...');
+                const xhrBlob = await fetchPdfBlobViaXhr(url);
+                const base64Data = await blobToBase64(xhrBlob);
+                return { success: true, source: 'xhr', base64Data };
+            } catch (xhrError) {
+                console.warn('XHR fallback failed:', xhrError);
+            }
+        } else {
+            console.log('XHR fallback unavailable in extension service worker; skipping.');
         }
 
         const nativeResult = await downloadWithNativeManager(url, filename);
@@ -192,11 +196,14 @@ async function downloadPDF({ url, mode, filename }) {
     }
 }
 
+function canUseXhrFallback() {
+    return typeof XMLHttpRequest === 'function';
+}
+
 async function fetchPdfBlob(url) {
     const response = await fetch(url, {
         method: 'GET',
-        credentials: 'include',
-        cache: 'no-store',
+        referrer: 'https://student.rajagiritech.ac.in/',
         headers: {
             'Accept': 'application/pdf,*/*'
         }
