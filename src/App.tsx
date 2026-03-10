@@ -27,6 +27,7 @@ export default function App() {
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
     const [activeLLM, setActiveLLM] = useState('ChatGPT');
+    const isBusy = isLoading || isDownloading;
 
     useEffect(() => {
         if (chrome?.tabs) {
@@ -40,6 +41,9 @@ export default function App() {
     }, []);
 
     const papersSectionRef = useRef<HTMLDivElement>(null);
+    const mainScrollRef = useRef<HTMLElement>(null);
+    const progressPanelRef = useRef<HTMLDivElement>(null);
+    const wasBusyRef = useRef(false);
 
     useEffect(() => {
         if (papers.length > 0 && papersSectionRef.current) {
@@ -48,6 +52,52 @@ export default function App() {
             }, 100);
         }
     }, [papers.length]);
+
+    useEffect(() => {
+        const wasBusy = wasBusyRef.current;
+        wasBusyRef.current = isBusy;
+
+        if (!isBusy || wasBusy) return;
+
+        const frameId = requestAnimationFrame(() => {
+            const scrollContainer = mainScrollRef.current;
+            const progressPanel = progressPanelRef.current;
+
+            if (!scrollContainer || !progressPanel) return;
+
+            const containerRect = scrollContainer.getBoundingClientRect();
+            const panelRect = progressPanel.getBoundingClientRect();
+            const topBuffer = 12;
+            const bottomBuffer = 16;
+            const visibleTop = containerRect.top + topBuffer;
+            const visibleBottom = containerRect.bottom - bottomBuffer;
+            const isFullyVisible = panelRect.top >= visibleTop && panelRect.bottom <= visibleBottom;
+
+            if (isFullyVisible) return;
+
+            let nextScrollTop = scrollContainer.scrollTop;
+
+            if (panelRect.bottom > visibleBottom) {
+                nextScrollTop += panelRect.bottom - visibleBottom;
+            }
+
+            if (panelRect.top < visibleTop) {
+                nextScrollTop += panelRect.top - visibleTop;
+            }
+
+            const maxScrollTop = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+            const targetScrollTop = Math.min(Math.max(nextScrollTop, 0), maxScrollTop);
+
+            if (Math.abs(targetScrollTop - scrollContainer.scrollTop) < 1) return;
+
+            scrollContainer.scrollTo({
+                top: targetScrollTop,
+                behavior: 'smooth',
+            });
+        });
+
+        return () => cancelAnimationFrame(frameId);
+    }, [isBusy]);
 
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -221,7 +271,7 @@ export default function App() {
                 </header>
 
                 {/* Main Content */}
-                <main className="flex-1 mt-[88px] px-5 pb-6 overflow-y-auto overflow-x-hidden relative custom-scrollbar">
+                <main ref={mainScrollRef} className="flex-1 mt-[88px] px-5 pb-6 overflow-y-auto overflow-x-hidden relative custom-scrollbar">
                     {/* Section 1: Search */}
                     <section className="mb-8" >
                         <div className="flex items-end gap-3 mb-4 border-b-2 border-foreground pb-2">
@@ -391,8 +441,8 @@ export default function App() {
                                     Send to {activeLLM}
                                 </Button>
                             </div>
-                            {(isLoading || isDownloading) && (
-                                <div className="mt-4 p-3 border border-primary/50 bg-primary/5 rounded-[16px] flex flex-col items-center justify-center gap-2 animate-in fade-in slide-in-from-bottom-2 shadow-sm">
+                            {isBusy && (
+                                <div ref={progressPanelRef} className="mt-4 p-3 border border-primary/50 bg-primary/5 rounded-[16px] flex flex-col items-center justify-center gap-2 animate-in fade-in slide-in-from-bottom-2 shadow-sm">
                                     <div className="flex items-center gap-2 text-primary font-main tracking-widest uppercase font-bold text-xs">
                                         <Loader2 className="w-4 h-4 animate-spin" /> {progressMsg}
                                     </div>
