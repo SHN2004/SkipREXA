@@ -28,7 +28,7 @@ type PaperIndex = {
 };
 
 const REMOTE_DATA_URL =
-  "https://raw.githubusercontent.com/SHN2004/SkipREXA/main/data/question-papers.json";
+  "https://raw.githubusercontent.com/SHN2004/SkipREXA/refs/heads/no-login/data/question-papers.json";
 const DATA_SOURCE_STRATEGY =
   import.meta.env.VITE_DATA_SOURCE_STRATEGY || "github-first";
 const CACHE_KEY_INDEX = "paper_index_cache_v1";
