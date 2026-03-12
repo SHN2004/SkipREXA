@@ -10,3 +10,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+scraper/.venv/
+scraper/.pytest_cache/
+scraper/.ruff_cache/
+scraper/__pycache__/
+scraper/src/**/__pycache__/
+scraper/tests/**/__pycache__/

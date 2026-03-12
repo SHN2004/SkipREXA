@@ -1,14 +1,7 @@
 import { useState } from 'react';
-import { getSupabase } from '@/supabase-client';
+import { fetchPaperIndex, filterPapersForCourses, type Paper } from '@/data-client';
 
-export type Paper = {
-    id: string;
-    course_name: string;
-    exam_type: string;
-    exam_month: string;
-    exam_year: string;
-    semester: string;
-};
+export type { Paper } from '@/data-client';
 
 export function usePapers() {
     const [papers, setPapers] = useState<Paper[]>([]);
@@ -25,25 +18,8 @@ export function usePapers() {
         setError(null);
 
         try {
-            const supabase = getSupabase() as any;
-            if (!supabase) throw new Error("Supabase client not initialized");
-
-            const data = await supabase
-                .from("question_papers")
-                .select("*")
-                .in("course_name", courseNames)
-                .data();
-
-            const papersArray = Array.isArray(data) ? data : [];
-
-            const filteredPapers = papersArray.sort((a, b) => {
-                if (a.course_name !== b.course_name) return a.course_name.localeCompare(b.course_name);
-                const yearA = String(a.exam_year || "");
-                const yearB = String(b.exam_year || "");
-                return yearB.localeCompare(yearA, undefined, { numeric: true });
-            });
-
-            setPapers(filteredPapers);
+            const index = await fetchPaperIndex();
+            setPapers(filterPapersForCourses(index.papers, courseNames));
         } catch (err: any) {
             console.error("Error fetching papers:", err);
             setError(err.message || "Failed to load papers");

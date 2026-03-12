@@ -20,7 +20,7 @@
     "https://chatgpt.com/*",
     "https://chat.openai.com/*",
     "https://claude.ai/*",
-    "https://*.supabase.co/*",
+    "https://raw.githubusercontent.com/*",
     "https://student.rajagiritech.ac.in/*"
   ],
   "optional_host_permissions": [
