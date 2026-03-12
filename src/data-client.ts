@@ -34,6 +34,20 @@ const DATA_SOURCE_STRATEGY =
 const CACHE_KEY_INDEX = "paper_index_cache_v1";
 const CACHE_KEY_TIMESTAMP = "paper_index_last_fetch_v1";
 const CACHE_DURATION_MS = 24 * 60 * 60 * 1000;
+const MONTH_ORDER: Readonly<Record<string, number>> = {
+  january: 1,
+  february: 2,
+  march: 3,
+  april: 4,
+  may: 5,
+  june: 6,
+  july: 7,
+  august: 8,
+  september: 9,
+  october: 10,
+  november: 11,
+  december: 12,
+};
 
 async function getCachedIndex() {
   if (typeof chrome === "undefined" || !chrome.storage?.local) {
@@ -60,6 +74,14 @@ async function setCachedIndex(index: PaperIndex) {
 
 function isFresh(timestamp: number) {
   return Date.now() - timestamp < CACHE_DURATION_MS;
+}
+
+function getMonthOrder(month: string | null | undefined) {
+  if (!month) {
+    return 0;
+  }
+
+  return MONTH_ORDER[month.trim().toLowerCase()] ?? 0;
 }
 
 function getBundledIndex(): PaperIndex | null {
@@ -92,14 +114,14 @@ async function fetchRemoteIndex() {
 
 export async function fetchPaperIndex(forceRefresh = false): Promise<PaperIndex> {
   const cached = await getCachedIndex();
-  if (!forceRefresh && cached?.index && isFresh(cached.timestamp)) {
-    return cached.index;
-  }
-
   const bundledIndex = getBundledIndex();
 
-  if (DATA_SOURCE_STRATEGY === "local-first" && bundledIndex) {
+  if (!forceRefresh && DATA_SOURCE_STRATEGY === "local-first" && bundledIndex) {
     return bundledIndex;
+  }
+
+  if (!forceRefresh && cached?.index && isFresh(cached.timestamp)) {
+    return cached.index;
   }
 
   try {
@@ -175,6 +197,6 @@ export function filterPapersForCourses(papers: Paper[], courseNames: string[]) {
         return secondYear - firstYear;
       }
 
-      return (first.exam_month || "").localeCompare(second.exam_month || "");
+      return getMonthOrder(second.exam_month) - getMonthOrder(first.exam_month);
     });
 }
