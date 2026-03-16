@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SkipREXA",
-  "version": "4.0.2",
+  "version": "5.0.0",
   "description": "Exam paper assistant for RSET students - Upload question papers to ChatGPT/Claude for smart study prep",
   "icons": {
     "16": "icon16.png",

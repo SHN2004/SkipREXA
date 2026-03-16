@@ -11,16 +11,54 @@
 *   **Multi-LLM Support:** Works with both [ChatGPT](https://chatgpt.com) and [Claude](https://claude.ai).
 *   **Local Download:** Option to save papers directly to your device.
 
-## Installation
+## Setup
 
-1.  Clone this repository.
-2.  Open Chrome and navigate to `chrome://extensions/`.
-3.  Enable **Developer mode** (top right).
-4.  Click **Load unpacked** and select the directory where you cloned this repo.
+### Prerequisites
+
+*   [Node.js](https://nodejs.org/) and `npm`
+*   Google Chrome
+
+### Build the extension
+
+```bash
+git clone https://github.com/SHN2004/SkipREXA.git
+cd SkipREXA
+npm install
+npm run build
+```
+
+This creates the production extension build in the `dist/` folder.
+
+### Load the extension in Chrome
+
+1.  Open Chrome and navigate to `chrome://extensions/`.
+2.  Enable **Developer mode** (top right).
+3.  Click **Load unpacked**.
+4.  Select the generated `dist/` folder from this project.
+
+If you rebuild the project later, run:
+
+```bash
+npm run build
+```
+
+Then go back to `chrome://extensions/` and click **Reload** on the SkipREXA extension card.
+
+### Create a release package
+
+To generate a zip package for distribution or Chrome Web Store upload:
+
+```bash
+npm run package
+```
+
+This creates a versioned zip file inside the `releases/` folder.
 
 ## Data Source & Configuration
 
 This project reads from a JSON index committed to this repository and intended to be refreshed by the scraper workflow.
+
+For scraper setup and usage, see **[`scraper/README.md`](./scraper/README.md)**.
 
 *   **Zero Config:** The extension fetches the latest JSON index directly from GitHub.
 *   **Scraper Project:** The scraping and GitHub Actions workflow live in **[`scraper/`](./scraper/README.md)**.
