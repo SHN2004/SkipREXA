@@ -5,7 +5,7 @@
 ## Core Features
 
 *   **Course Search:** Instantly search for courses by name or code.
-*   **Paper Selection:** Filter and select specific question papers (by exam type, semester, year).
+*   **Paper Selection:** Fetch question papers for selected courses and choose which ones to upload or download.
 *   **Automated Upload:** Downloads selected PDFs and automatically uploads them to the active ChatGPT or Claude conversation.
 *   **Contextual Prompts:** Injects tailored prompts (e.g., "Prepare me for Internal 1") to guide the AI's analysis on either platform.
 *   **Multi-LLM Support:** Works with both [ChatGPT](https://chatgpt.com) and [Claude](https://claude.ai).
