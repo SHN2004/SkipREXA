@@ -8,8 +8,8 @@ export function usePapers() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchPapersForCourses = async (courseNames: string[]) => {
-        if (courseNames.length === 0) {
+    const fetchPapersForCourses = async (courseIds: string[]) => {
+        if (courseIds.length === 0) {
             setPapers([]);
             return;
         }
@@ -19,7 +19,7 @@ export function usePapers() {
 
         try {
             const index = await fetchPaperIndex();
-            setPapers(filterPapersForCourses(index.papers, courseNames));
+            setPapers(filterPapersForCourses(index.papers, courseIds));
         } catch (err: any) {
             console.error("Error fetching papers:", err);
             setError(err.message || "Failed to load papers");

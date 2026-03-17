@@ -27,6 +27,14 @@ type PaperIndex = {
   papers: Paper[];
 };
 
+export type CourseRecord = {
+  id: string;
+  name: string;
+  code: string;
+  semesters: string[];
+  searchText: string;
+};
+
 const REMOTE_DATA_URL =
   "https://raw.githubusercontent.com/SHN2004/SkipREXA/refs/heads/no-login/data/question-papers.json";
 const DATA_SOURCE_STRATEGY =
@@ -84,6 +92,43 @@ function getMonthOrder(month: string | null | undefined) {
   return MONTH_ORDER[month.trim().toLowerCase()] ?? 0;
 }
 
+export function normalizeCourseName(name: string) {
+  return name
+    .replace(/#/g, "")
+    .replace(/&/g, " and ")
+    .replace(/\(\s+/g, "(")
+    .replace(/\s+\)/g, ")")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractCourseSignature(name: string) {
+  const match = name.match(/\(([^)]+)\)\s*$/);
+  if (!match) {
+    return null;
+  }
+
+  return match[1].replace(/\s+/g, "").toUpperCase();
+}
+
+function extractCourseCode(signature: string | null, fallbackCode: string) {
+  if (!signature) {
+    return fallbackCode;
+  }
+
+  const [primaryCode] = signature.split("/");
+  return primaryCode || fallbackCode;
+}
+
+export function getCourseId(courseName: string, fallbackCode = "") {
+  const normalizedName = normalizeCourseName(courseName);
+  const signature = extractCourseSignature(normalizedName);
+
+  return signature
+    ? `${normalizedName.toLowerCase()}::${signature}`
+    : `${normalizedName.toLowerCase()}::${fallbackCode.trim().toLowerCase()}`;
+}
+
 function getBundledIndex(): PaperIndex | null {
   if (bundledPaperIndex && Array.isArray(bundledPaperIndex.papers)) {
     return bundledPaperIndex as PaperIndex;
@@ -139,10 +184,11 @@ export async function fetchPaperIndex(forceRefresh = false): Promise<PaperIndex>
   }
 }
 
-export function buildCourses(papers: Paper[]) {
+export function buildCourses(papers: Paper[]): CourseRecord[] {
   const byCourse = new Map<
     string,
     {
+      id: string;
       name: string;
       code: string;
       semesters: Set<string>;
@@ -151,11 +197,15 @@ export function buildCourses(papers: Paper[]) {
   >();
 
   for (const paper of papers) {
-    const name = paper.course_name?.trim();
-    if (!name) continue;
+    const rawName = paper.course_name?.trim();
+    if (!rawName) continue;
 
-    const code = (paper.actual_subject_code || paper.course_code || paper.question_paper_code || "").trim();
-    const key = `${name}::${code}`;
+    const fallbackCode = (paper.actual_subject_code || paper.course_code || paper.question_paper_code || "").trim();
+    const name = normalizeCourseName(rawName);
+    const signature = extractCourseSignature(name);
+    const code = extractCourseCode(signature, fallbackCode);
+    const id = getCourseId(name, fallbackCode);
+    const key = id;
     const current = byCourse.get(key);
 
     if (current) {
@@ -166,14 +216,16 @@ export function buildCourses(papers: Paper[]) {
     }
 
     byCourse.set(key, {
+      id,
       name,
       code,
       semesters: new Set(paper.semester ? [paper.semester] : []),
-      searchText: `${name} ${code}`.toLowerCase(),
+      searchText: `${name} ${signature ?? ""} ${code} ${fallbackCode}`.toLowerCase(),
     });
   }
 
   return Array.from(byCourse.values()).map((course) => ({
+    id: course.id,
     name: course.name,
     code: course.code,
     semesters: Array.from(course.semesters).sort(),
@@ -181,11 +233,14 @@ export function buildCourses(papers: Paper[]) {
   }));
 }
 
-export function filterPapersForCourses(papers: Paper[], courseNames: string[]) {
-  const selected = new Set(courseNames);
+export function filterPapersForCourses(papers: Paper[], courseIds: string[]) {
+  const selected = new Set(courseIds);
 
   return papers
-    .filter((paper) => selected.has(paper.course_name))
+    .filter((paper) => {
+      const fallbackCode = (paper.actual_subject_code || paper.course_code || paper.question_paper_code || "").trim();
+      return selected.has(getCourseId(paper.course_name, fallbackCode));
+    })
     .sort((first, second) => {
       if (first.course_name !== second.course_name) {
         return first.course_name.localeCompare(second.course_name);

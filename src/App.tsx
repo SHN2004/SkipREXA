@@ -9,8 +9,40 @@ import { Search, Loader2, X, Download, UploadCloud, CheckCircle2, ChevronRight, 
 import { useCourses, Course } from '@/hooks/useCourses';
 import { usePapers, Paper } from '@/hooks/usePapers';
 import { processUpload, processDirectDownload } from '@/hooks/useUpload';
+import { getCourseId, normalizeCourseName } from '@/data-client';
 import openaiIcon from '@/assets/openai.svg';
 import claudeIcon from '@/assets/claude-color.svg';
+
+const getSelectedCourseId = (course: Pick<Course, 'id' | 'name' | 'code'>) =>
+    course.id || getCourseId(course.name, course.code);
+
+const scoreCourseMatch = (course: Course, rawQuery: string) => {
+    const query = normalizeCourseName(rawQuery).toLowerCase();
+    if (!query) return -1;
+
+    const searchText = course.searchText;
+    const normalizedName = course.name.toLowerCase();
+    let score = 0;
+
+    if (normalizedName === query) score += 200;
+    if (normalizedName.startsWith(query)) score += 120;
+    if (course.code.toLowerCase() === query) score += 200;
+    if (course.code.toLowerCase().startsWith(query)) score += 160;
+    if (searchText.includes(`(${query}`) || searchText.includes(`/${query}`)) score += 140;
+
+    const tokenStarts = normalizedName
+        .split(/[^a-z0-9]+/)
+        .filter(Boolean)
+        .some(token => token.startsWith(query));
+
+    if (tokenStarts) score += 80;
+    if (searchText.includes(query)) score += 40;
+
+    const index = searchText.indexOf(query);
+    if (index >= 0) score += Math.max(30 - index, 0);
+
+    return score;
+};
 
 export default function App() {
     const { courses, isLoading: isLoadingCourses, error: courseError } = useCourses();
@@ -131,7 +163,7 @@ export default function App() {
 
                         // Auto-fetch if there were selected courses
                         if (state.selectedCourses.length > 0) {
-                            fetchPapersForCourses(state.selectedCourses.map((c: Course) => c.name));
+                            fetchPapersForCourses(state.selectedCourses.map((c: Course) => getSelectedCourseId(c)));
                         }
                     }
                     if (state.studyIntent) setStudyIntent(state.studyIntent);
@@ -177,18 +209,30 @@ export default function App() {
     }, []);
 
     const filteredCourses = searchTerm.trim()
-        ? courses.filter(c => c.searchText.includes(searchTerm.toLowerCase())).slice(0, 8)
+        ? courses
+            .map(course => ({ course, score: scoreCourseMatch(course, searchTerm) }))
+            .filter(({ score }) => score > 0)
+            .sort((first, second) => {
+                if (first.score !== second.score) {
+                    return second.score - first.score;
+                }
+
+                return first.course.name.localeCompare(second.course.name);
+            })
+            .slice(0, 8)
+            .map(({ course }) => course)
         : [];
 
     const handleFetchPapers = () => {
-        fetchPapersForCourses(selectedCourses.map(c => c.name));
+        fetchPapersForCourses(selectedCourses.map(getSelectedCourseId));
     };
 
     const toggleCourse = (course: Course) => {
         setSelectedCourses(prev => {
-            const isSelected = prev.some(c => c.code === course.code);
+            const targetId = getSelectedCourseId(course);
+            const isSelected = prev.some(c => getSelectedCourseId(c) === targetId);
             if (isSelected) {
-                return prev.filter(c => c.code !== course.code);
+                return prev.filter(c => getSelectedCourseId(c) !== targetId);
             } else {
                 return [...prev, course];
             }
@@ -304,10 +348,10 @@ export default function App() {
                                         <div className="p-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider text-center">No courses found</div>
                                     ) : (
                                         filteredCourses.map((course, index) => {
-                                            const isSelected = selectedCourses.some(c => c.code === course.code);
+                                            const isSelected = selectedCourses.some(c => getSelectedCourseId(c) === getSelectedCourseId(course));
                                             return (
                                                 <div
-                                                    key={course.code}
+                                                    key={getSelectedCourseId(course)}
                                                     className={`p-4 cursor-pointer border-b-2 border-foreground transition-all flex items-start gap-3
                             ${index === filteredCourses.length - 1 ? 'border-b-0' : ''}
                             ${highlightedIndex === index || isSelected ? 'bg-foreground text-background' : 'hover:bg-muted text-foreground'}`}
@@ -334,7 +378,7 @@ export default function App() {
                         {!(showDropdown && searchTerm.trim()) && selectedCourses.length > 0 && (
                             <div className="flex flex-wrap gap-2 mt-4 animate-in fade-in slide-in-from-top-2">
                                 {selectedCourses.map(course => (
-                                    <div key={course.code} className="inline-flex items-center gap-2 bg-foreground text-background border border-foreground/10 py-1.5 pl-4 pr-1.5 shadow-sm rounded-full animate-in zoom-in-95 group hover:shadow-md transition-all duration-300">
+                                    <div key={getSelectedCourseId(course)} className="inline-flex items-center gap-2 bg-foreground text-background border border-foreground/10 py-1.5 pl-4 pr-1.5 shadow-sm rounded-full animate-in zoom-in-95 group hover:shadow-md transition-all duration-300">
                                         <span className="font-main font-bold text-[10px] uppercase tracking-[0.1em]">{course.name}</span>
                                         <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCourse(course); }} className="w-5 h-5 rounded-full bg-background/10 hover:bg-destructive hover:text-destructive-foreground flex items-center justify-center transition-all">
                                             <X className="w-3 h-3" />

@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react';
-import { buildCourses, fetchPaperIndex } from '@/data-client';
+import { buildCourses, fetchPaperIndex, type CourseRecord } from '@/data-client';
 
-export type Course = {
-    name: string;
-    code: string;
-    semesters: string[];
-    searchText: string;
-};
+export type Course = CourseRecord;
 
 export function useCourses() {
     const [courses, setCourses] = useState<Course[]>([]);
