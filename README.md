@@ -1,5 +1,7 @@
 # SkipREXA (Exam Paper Assistant)
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/SHN2004/SkipREXA)
+
 **SkipREXA** is a Chrome Extension designed to streamline the process of uploading exam question papers to ChatGPT and Claude for study and analysis. It acts as a bridge between a GitHub-hosted JSON index of university question papers and the LLM's file upload interface.
 
 ## Core Features
