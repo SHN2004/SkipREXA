@@ -1,6 +1,6 @@
 {
   "name": "skiprexa",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "**SkipREXA** is a Chrome Extension designed to streamline the process of uploading exam question papers to ChatGPT or Claude for study and analysis. It acts as a bridge between a database of university question papers and the LLM's file upload interface.",
   "main": "background.js",
   "scripts": {
