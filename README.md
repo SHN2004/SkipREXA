@@ -65,6 +65,7 @@ For scraper setup and usage, see **[`scraper/README.md`](./scraper/README.md)**.
 *   **Zero Config:** The extension fetches the latest JSON index directly from GitHub.
 *   **Scraper Project:** The scraping and GitHub Actions workflow live in **[`scraper/`](./scraper/README.md)**.
 *   **Data File:** The generated paper index is stored in **[`data/question-papers.json`](./data/question-papers.json)**.
+*   **OpenClaw Local Search:** For OpenClaw server integration, this repo also ships **[`data/openclaw-paper-index.json`](./data/openclaw-paper-index.json)** and **[`OPENCLAW_INTEGRATION.md`](./OPENCLAW_INTEGRATION.md)**.
 *   **Source Priority:** The extension uses `github-first` by default so scheduled scraper updates are picked up without rebuilding the extension. For unpacked local Chromium testing, build with `VITE_DATA_SOURCE_STRATEGY=local-first` to prefer the bundled local JSON first.
 
 ## Usage

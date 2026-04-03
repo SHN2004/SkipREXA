@@ -2,6 +2,8 @@
 
 SkipREXA now reads question-paper metadata from a JSON index stored in this repository at [`data/question-papers.json`](./data/question-papers.json).
 
+For OpenClaw server integrations that need a local searchable artifact, this repo also ships a derived index at [`data/openclaw-paper-index.json`](./data/openclaw-paper-index.json). It is generated from the source question-paper index and is intended for fixed CLI search wrappers rather than browser use.
+
 ## Source of Truth
 
 - The scraper in [`scraper/`](./scraper/README.md) logs into the Rajagiri portal and rebuilds the JSON index from `https://student.rajagiritech.ac.in/qp_downloads`.

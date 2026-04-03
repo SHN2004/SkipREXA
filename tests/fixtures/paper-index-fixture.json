@@ -1,0 +1,59 @@
+{
+  "metadata": {
+    "generated_at": "2026-03-30T05:24:44.243025+00:00",
+    "source": "student.rajagiritech.ac.in",
+    "page_url": "https://student.rajagiritech.ac.in/qp_downloads",
+    "paper_count": 4,
+    "notes": []
+  },
+  "papers": [
+    {
+      "id": "alpha-2025",
+      "question_paper_code": "215536",
+      "course_name": "3D Design to Digital Fabrication: CAD, CAM & AM Essentials (102907/ME531M)",
+      "course_code": "215536",
+      "actual_subject_code": "102907",
+      "semester": "S5",
+      "exam_type": "Regular",
+      "exam_month": "November",
+      "exam_year": 2025,
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215536.pdf"
+    },
+    {
+      "id": "alpha-2024",
+      "question_paper_code": "214468",
+      "course_name": "3D Design to Digital Fabrication: CAD, CAM & AM Essentials (102907/ME531M)",
+      "course_code": "214468",
+      "actual_subject_code": "102907",
+      "semester": "S5",
+      "exam_type": "Regular",
+      "exam_month": "June",
+      "exam_year": 2024,
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214468.pdf"
+    },
+    {
+      "id": "ds-2024-supp",
+      "question_paper_code": "212319",
+      "course_name": "Data Structures (100201/CS201)",
+      "course_code": "212319",
+      "actual_subject_code": "100201",
+      "semester": "S3",
+      "exam_type": "Supplementary",
+      "exam_month": "June",
+      "exam_year": 2024,
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/212319.pdf"
+    },
+    {
+      "id": "dcs-2023",
+      "question_paper_code": "211001",
+      "course_name": "Digital Control Systems (102001/EE301)",
+      "course_code": "211001",
+      "actual_subject_code": "102001",
+      "semester": "S5",
+      "exam_type": "Regular",
+      "exam_month": "April",
+      "exam_year": 2023,
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/211001.pdf"
+    }
+  ]
+}
