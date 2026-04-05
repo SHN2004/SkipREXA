@@ -279,7 +279,7 @@
             <td style="padding:8px 10px;border:1px solid #d9e1e8;vertical-align:top;">
               <details>
                 <summary style="cursor:pointer;font-weight:600;color:#0f4c81;display:flex;align-items:center;gap:8px;list-style:none;">
-                  <span class="skiprexa-chevron" aria-hidden="true">▸</span>
+                  <span class="skiprexa-chevron" aria-hidden="true">&#9656;</span>
                   <span>${entry.subject}</span>
                 </summary>
                 <div style="margin-top:6px;padding-top:6px;border-top:1px dashed #d5deea;color:#334155;">
@@ -307,13 +307,8 @@
         #${PANEL_ID} tr[data-subject]:hover { background: #f8fbff; }
         #${PANEL_ID} .skiprexa-chevron {
           display: inline-block;
-          font-size: 0;
           transition: transform 0.18s ease;
           color: #075985;
-        }
-        #${PANEL_ID} .skiprexa-chevron::before {
-          content: "\\25B6";
-          font-size: 12px;
         }
         #${PANEL_ID} details[open] .skiprexa-chevron { transform: rotate(90deg); }
         .${TILE_HIGHLIGHT_CLASS} {
