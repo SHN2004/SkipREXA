@@ -21,10 +21,20 @@
     "https://chat.openai.com/*",
     "https://claude.ai/*",
     "https://raw.githubusercontent.com/*",
-    "https://student.rajagiritech.ac.in/*"
+    "http://rajagiritech.ac.in/*",
+    "http://student.rajagiritech.ac.in/*",
+    "http://www.rajagiritech.ac.in/*",
+    "https://rajagiritech.ac.in/*",
+    "https://student.rajagiritech.ac.in/*",
+    "https://www.rajagiritech.ac.in/*"
   ],
   "optional_host_permissions": [
-    "https://student.rajagiritech.ac.in/*"
+    "http://rajagiritech.ac.in/*",
+    "http://student.rajagiritech.ac.in/*",
+    "http://www.rajagiritech.ac.in/*",
+    "https://rajagiritech.ac.in/*",
+    "https://student.rajagiritech.ac.in/*",
+    "https://www.rajagiritech.ac.in/*"
   ],
   "background": {
     "service_worker": "src/background.js",
@@ -40,6 +50,21 @@
       "js": [
         "src/content.js"
       ]
+    },
+    {
+      "matches": [
+        "http://rajagiritech.ac.in/stud/ktu/Student/*",
+        "http://www.rajagiritech.ac.in/stud/ktu/Student/*",
+        "http://student.rajagiritech.ac.in/stud/ktu/Student/*",
+        "https://rajagiritech.ac.in/stud/ktu/Student/*",
+        "https://www.rajagiritech.ac.in/stud/ktu/Student/*",
+        "https://student.rajagiritech.ac.in/stud/ktu/Student/*"
+      ],
+      "js": [
+        "src/attendance-content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
     }
   ],
   "action": {
