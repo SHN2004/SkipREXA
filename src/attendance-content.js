@@ -6,15 +6,21 @@
   const TILE_HIGHLIGHT_CLASS = "skiprexa-subject-tile-highlight";
   const TILE_HIGHLIGHT_INFO_CLASS = "skiprexa-subject-tile-highlight-info";
   const STORAGE_KEY = "skiprexa-attendance-data";
+  const SUBJECT_CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 14;
   let lastDigest = "";
   let renderTimer = null;
+  let lateUpdateObserver = null;
+  let lateUpdateObserverTimer = null;
   let isSubmitTriggered = new URLSearchParams(window.location.search).has("code");
   let highlightedCells = [];
   let pinnedHighlightSubjects = new Set();
+  const subjectMapPromises = new Map();
+  const subjectMapFailureTimestamps = new Map();
 
   // ── Persisted state ──────────────────────────────────────────────
   let attendanceThreshold = 0.75;
   let totalClassesMap = {};
+  let subjectNameCache = {};
 
   function loadPersistedState() {
     try {
@@ -23,12 +29,17 @@
       const data = JSON.parse(raw);
       if (data.threshold === 0.75 || data.threshold === 0.80) attendanceThreshold = data.threshold;
       if (data.totalClasses && typeof data.totalClasses === "object") totalClassesMap = data.totalClasses;
+      if (data.subjectNameCache && typeof data.subjectNameCache === "object") subjectNameCache = data.subjectNameCache;
     } catch { /* ignore */ }
   }
 
   function savePersistedState() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ threshold: attendanceThreshold, totalClasses: totalClassesMap }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        threshold: attendanceThreshold,
+        totalClasses: totalClassesMap,
+        subjectNameCache
+      }));
     } catch { /* ignore */ }
   }
 
@@ -125,6 +136,178 @@
     const text = cleanText(raw);
     const match = text.match(/[A-Z0-9]+\/([A-Z0-9]+)/i);
     return (match ? match[1] : text).toUpperCase();
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function normalizeSubjectToken(value) {
+    return cleanText(value).replace(/\s+/g, "").toUpperCase();
+  }
+
+  function getCurrentClassCode() {
+    const fromUrl = normalizeSubjectToken(new URLSearchParams(window.location.search).get("code") || "");
+    if (fromUrl) return fromUrl;
+
+    const control = document.querySelector('select[name="code"], input[name="code"], select#list1, input#list1');
+    const fromControl = normalizeSubjectToken(control && "value" in control ? control.value : "");
+    if (fromControl) return fromControl;
+
+    return "";
+  }
+
+  function getValidSubjectCacheEntry(classCode) {
+    const entry = subjectNameCache[classCode];
+    if (!entry || typeof entry !== "object") return null;
+    if (!entry.fetchedAt || (Date.now() - entry.fetchedAt) > SUBJECT_CACHE_TTL_MS) return null;
+    if (!entry.subjects || typeof entry.subjects !== "object") return null;
+    return entry;
+  }
+
+  function getSubjectDisplayMeta(subjectCode) {
+    const normalizedCode = normalizeSubjectToken(subjectCode);
+    const classCode = getCurrentClassCode();
+    const cached = classCode ? getValidSubjectCacheEntry(classCode) : null;
+    const subjectInfo = cached?.subjects?.[normalizedCode] || null;
+    const name = cleanText(subjectInfo?.name || "");
+    return {
+      code: normalizedCode,
+      name,
+      label: name ? `${name} (${normalizedCode})` : normalizedCode
+    };
+  }
+
+  function findSubjectMapTable(doc) {
+    const tables = Array.from(doc.querySelectorAll("table"));
+    let bestMatch = null;
+
+    for (const table of tables) {
+      const firstRow = table.querySelector("tr");
+      if (!firstRow) continue;
+      const headerCells = Array.from(firstRow.querySelectorAll("th,td")).map((cell) => cleanText(cell.textContent).toLowerCase());
+      if (headerCells.length < 3) continue;
+      if (headerCells[1] !== "code" || headerCells[2] !== "subject") continue;
+
+      const rows = Array.from(table.querySelectorAll("tr"))
+        .slice(1)
+        .map((row) => Array.from(row.querySelectorAll("td,th")).map((cell) => cleanText(cell.textContent)))
+        .filter((row) => row.length >= 3 && row[1] && row[2] && /\//.test(row[1]));
+
+      if (!rows.length) continue;
+      if (!bestMatch || rows.length > bestMatch.rows.length) bestMatch = { table, rows };
+    }
+
+    return bestMatch;
+  }
+
+  async function fetchExamIdsForClass(classCode) {
+    const response = await fetch(`gethint4.asp?cc=&q=${encodeURIComponent(classCode)}&sid=${Date.now()}`, {
+      credentials: "include",
+      cache: "no-store"
+    });
+    const html = await response.text();
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return Array.from(doc.querySelectorAll('option[value]'))
+      .map((option) => cleanText(option.getAttribute("value")))
+      .filter(Boolean);
+  }
+
+  async function fetchSubjectMapForClass(classCode) {
+    const examIds = await fetchExamIdsForClass(classCode);
+    if (!examIds.length) return null;
+
+    for (const examId of examIds) {
+      const response = await fetch(`Mark.asp?code=${encodeURIComponent(classCode)}&E_ID=${encodeURIComponent(examId)}`, {
+        credentials: "include",
+        cache: "no-store"
+      });
+      const html = await response.text();
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const match = findSubjectMapTable(doc);
+      if (!match) continue;
+
+      const subjects = {};
+      for (const row of match.rows) {
+        const fullCode = normalizeSubjectToken(row[1]);
+        const shortCode = extractSubject(fullCode);
+        const name = cleanText(row[2]);
+        if (!shortCode || !name) continue;
+        subjects[shortCode] = { fullCode, name };
+      }
+
+      if (Object.keys(subjects).length) {
+        return { fetchedAt: Date.now(), examId, subjects };
+      }
+    }
+
+    return null;
+  }
+
+  function patchSubjectLabels(panel) {
+    if (!panel) return;
+    const rows = panel.querySelectorAll("tr[data-subject]");
+    for (const row of rows) {
+      const subject = row.getAttribute("data-subject") || "";
+      const subjectMeta = getSubjectDisplayMeta(subject);
+      const nameNode = row.querySelector(".skiprexa-subject-name");
+      const metaNode = row.querySelector(".skiprexa-subject-meta");
+      const pinButton = row.querySelector(".skiprexa-highlight-toggle");
+
+      if (nameNode) nameNode.textContent = subjectMeta.name || subject;
+
+      if (subjectMeta.name) {
+        if (metaNode) metaNode.textContent = `(${subject})`;
+        else if (nameNode) {
+          const nextMeta = document.createElement("span");
+          nextMeta.className = "skiprexa-subject-meta";
+          nextMeta.textContent = `(${subject})`;
+          nameNode.insertAdjacentElement("afterend", nextMeta);
+        }
+      } else if (metaNode) {
+        metaNode.remove();
+      }
+
+      if (pinButton) {
+        pinButton.setAttribute("title", `Highlight ${subjectMeta.label} on timetable`);
+      }
+    }
+
+    syncPinnedHighlightButtons(panel);
+  }
+
+  function ensureSubjectNamesForCurrentClass(entries) {
+    const classCode = getCurrentClassCode();
+    if (!classCode || !entries.length) return;
+
+    const cached = getValidSubjectCacheEntry(classCode);
+    const neededSubjects = new Set(entries.map((entry) => normalizeSubjectToken(entry.subject)).filter(Boolean));
+    const hasAllSubjects = cached && Array.from(neededSubjects).every((subject) => cached.subjects[subject]);
+    if (hasAllSubjects) return;
+    if (subjectMapPromises.has(classCode)) return;
+    if ((Date.now() - (subjectMapFailureTimestamps.get(classCode) || 0)) < 60_000) return;
+
+    const promise = fetchSubjectMapForClass(classCode)
+      .then((result) => {
+        if (!result) return;
+        subjectNameCache[classCode] = result;
+        savePersistedState();
+        patchSubjectLabels(document.getElementById(PANEL_ID));
+      })
+      .catch(() => {
+        subjectMapFailureTimestamps.set(classCode, Date.now());
+        // silent fallback to subject codes
+      })
+      .finally(() => {
+        subjectMapPromises.delete(classCode);
+      });
+
+    subjectMapPromises.set(classCode, promise);
   }
 
   function findLeaveTable() {
@@ -268,12 +451,13 @@
     const buttons = panel.querySelectorAll(".skiprexa-highlight-toggle");
     for (const button of buttons) {
       const subject = button.getAttribute("data-subject");
+      const subjectLabel = subject ? getSubjectDisplayMeta(subject).label : "subject";
       const isActive = Boolean(subject) && pinnedHighlightSubjects.has(subject);
       button.classList.toggle("is-active", isActive);
       const row = button.closest("tr[data-subject]");
       if (row) row.classList.toggle("is-pinned-highlight", isActive);
       button.setAttribute("aria-pressed", String(isActive));
-      button.setAttribute("title", isActive ? `Hide ${subject} on timetable` : `Highlight ${subject} on timetable`);
+      button.setAttribute("title", isActive ? `Hide ${subjectLabel} on timetable` : `Highlight ${subjectLabel} on timetable`);
     }
   }
 
@@ -418,7 +602,8 @@
       const badgeSlot = row.querySelector(".skiprexa-danger-slot");
       if (badgeSlot) {
         const danger = computeDangerZone(missed, totalHeld, attendanceThreshold);
-        badgeSlot.innerHTML = dangerBadgeHtml(danger);
+        const nextHtml = dangerBadgeHtml(danger);
+        if (badgeSlot.innerHTML !== nextHtml) badgeSlot.innerHTML = nextHtml;
       }
     }
   }
@@ -429,11 +614,13 @@
     if (!isSubmitTriggered) return;
 
     const entries = parseLeaveEntries();
+    ensureSubjectNamesForCurrentClass(entries);
     const digest = JSON.stringify(entries);
     if (digest === lastDigest) return;
     lastDigest = digest;
 
     const panel = getOrCreatePanel(findAnchorElement());
+    const hasRenderedBefore = panel.getAttribute("data-rendered") === "true";
     clearSubjectHighlight();
 
     if (!entries.length) {
@@ -460,6 +647,7 @@
       const totalHeld = totalClassesMap[entry.subject] || 0;
       const danger = totalHeld > 0 ? computeDangerZone(entry.missedHours, totalHeld, attendanceThreshold) : null;
       const delay = idx * 30;
+      const subjectMeta = getSubjectDisplayMeta(entry.subject);
 
       const sessionListHtml = entry.sessions.map((s) => {
         const lt = leaveTypeLabel[s.leaveType] || leaveTypeLabel.leave;
@@ -480,24 +668,27 @@
         : "";
 
       return `
-        <tr data-subject="${entry.subject}" data-missed="${entry.missedHours}" class="skiprexa-row" style="animation-delay:${delay}ms;">
+        <tr data-subject="${entry.subject}" data-missed="${entry.missedHours}" class="skiprexa-row${hasRenderedBefore ? " skiprexa-row-static" : ""}" style="${hasRenderedBefore ? "" : `animation-delay:${delay}ms;`} ">
           <td class="skiprexa-cell skiprexa-cell-subject">
             <div class="skiprexa-subject-top">
               <details class="skiprexa-details">
                 <summary class="skiprexa-summary">
                   <span class="skiprexa-summary-main">
                     <span class="skiprexa-chevron"></span>
-                    <span class="skiprexa-subject-code">${entry.subject}</span>
+                    <span class="skiprexa-subject-heading">
+                      <span class="skiprexa-subject-name">${escapeHtml(subjectMeta.name || entry.subject)}</span>
+                      ${subjectMeta.name ? `<span class="skiprexa-subject-meta">(${escapeHtml(entry.subject)})</span>` : ""}
+                    </span>
                   </span>
+                  <button type="button" class="skiprexa-highlight-toggle" data-subject="${entry.subject}" aria-pressed="false" title="Highlight ${escapeHtml(subjectMeta.label)} on timetable">
+                    <span class="skiprexa-highlight-toggle-track">
+                      <span class="skiprexa-highlight-toggle-thumb"></span>
+                    </span>
+                    <span class="skiprexa-highlight-toggle-label">Pin</span>
+                  </button>
                 </summary>
                 <div class="skiprexa-session-list">${sessionListHtml}</div>
               </details>
-              <button type="button" class="skiprexa-highlight-toggle" data-subject="${entry.subject}" aria-pressed="false" title="Highlight ${entry.subject} on timetable">
-                <span class="skiprexa-highlight-toggle-track">
-                  <span class="skiprexa-highlight-toggle-thumb"></span>
-                </span>
-                <span class="skiprexa-highlight-toggle-label">Pin</span>
-              </button>
             </div>
             ${breakdownHtml}
             <div class="skiprexa-danger-slot">${dangerBadgeHtml(danger)}</div>
@@ -684,6 +875,9 @@
           animation: skiprexa-row-in 0.25s cubic-bezier(0.4,0,0.2,1) both;
           transition: background-color 0.15s ease;
         }
+        #${PANEL_ID} .skiprexa-row.skiprexa-row-static {
+          animation: none;
+        }
         #${PANEL_ID} .skiprexa-row:hover {
           background: #f8fafb;
         }
@@ -696,21 +890,20 @@
 
         /* ── Subject details ─────────────────────────── */
         #${PANEL_ID} .skiprexa-subject-top {
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          gap: 12px;
+          display: block;
         }
         #${PANEL_ID} .skiprexa-details {
           display: block;
-          flex: 1 1 auto;
           min-width: 0;
         }
         #${PANEL_ID} .skiprexa-details > summary {
           cursor: pointer;
           font-weight: 600;
           color: var(--sx-text);
-          display: block;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
           list-style: none;
           user-select: none;
         }
@@ -751,11 +944,25 @@
         #${PANEL_ID} .skiprexa-details[open] .skiprexa-chevron::after {
           border-left-color: #fff;
         }
-        #${PANEL_ID} .skiprexa-subject-code {
-          font-family: var(--sx-mono);
+        #${PANEL_ID} .skiprexa-subject-heading {
+          display: inline-flex;
+          align-items: baseline;
+          gap: 8px;
+          min-width: 0;
+          flex-wrap: wrap;
+        }
+        #${PANEL_ID} .skiprexa-subject-name {
           font-size: 13px;
           font-weight: 700;
+          letter-spacing: -0.01em;
+          color: var(--sx-text);
+        }
+        #${PANEL_ID} .skiprexa-subject-meta {
+          font-family: var(--sx-mono);
+          font-size: 11px;
+          font-weight: 700;
           letter-spacing: 0.03em;
+          color: var(--sx-text-tertiary);
         }
         #${PANEL_ID} .skiprexa-highlight-toggle {
           display: inline-flex;
@@ -775,7 +982,7 @@
           transition: transform 0.16s ease, border-color 0.16s ease, background-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
           box-shadow: 0 1px 2px rgba(15,23,42,0.04);
           flex: 0 0 auto;
-          margin-top: -2px;
+          margin-top: 0;
         }
         #${PANEL_ID} .skiprexa-highlight-toggle:hover {
           transform: translateY(-1px);
@@ -1060,6 +1267,8 @@
       </div>
     `;
 
+    panel.setAttribute("data-rendered", "true");
+    patchSubjectLabels(panel);
     attachSubjectInteractions(panel);
     attachThresholdToggle(panel);
     attachTotalInputListeners(panel);
@@ -1089,30 +1298,72 @@
 
   // ── Lifecycle ────────────────────────────────────────────────────
 
-  function scheduleRender() {
+  function scheduleRender(delay = 250) {
     if (!isSubmitTriggered) return;
     window.clearTimeout(renderTimer);
-    renderTimer = window.setTimeout(renderSummary, 250);
+    renderTimer = window.setTimeout(renderSummary, delay);
+  }
+
+  function stopLateUpdateObserver() {
+    if (lateUpdateObserver) {
+      lateUpdateObserver.disconnect();
+      lateUpdateObserver = null;
+    }
+    if (lateUpdateObserverTimer) {
+      window.clearTimeout(lateUpdateObserverTimer);
+      lateUpdateObserverTimer = null;
+    }
+  }
+
+  function startLateUpdateObserver(windowMs = 8000) {
+    stopLateUpdateObserver();
+
+    lateUpdateObserver = new MutationObserver((mutations) => {
+      const shouldRender = mutations.some((mutation) => {
+        const target = mutation.target;
+        if (target instanceof Element && target.closest(`#${PANEL_ID}`)) return false;
+        for (const node of mutation.addedNodes) {
+          if (node instanceof Element && node.closest?.(`#${PANEL_ID}`)) continue;
+          return true;
+        }
+        for (const node of mutation.removedNodes) {
+          if (node instanceof Element && node.closest?.(`#${PANEL_ID}`)) continue;
+          return true;
+        }
+        return false;
+      });
+      if (shouldRender) scheduleRender(120);
+    });
+
+    lateUpdateObserver.observe(document.body, { childList: true, subtree: true });
+    lateUpdateObserverTimer = window.setTimeout(stopLateUpdateObserver, windowMs);
+  }
+
+  function scheduleRenderBurst() {
+    if (!isSubmitTriggered) return;
+    startLateUpdateObserver();
+    scheduleRender(250);
+    window.setTimeout(() => renderSummary(), 700);
+    window.setTimeout(() => renderSummary(), 1400);
+    window.setTimeout(() => renderSummary(), 2500);
+    window.setTimeout(() => renderSummary(), 4000);
   }
 
   function attachSubmitListeners() {
-    document.addEventListener("submit", () => { isSubmitTriggered = true; scheduleRender(); }, true);
+    document.addEventListener("submit", () => {
+      isSubmitTriggered = true;
+      scheduleRenderBurst();
+    }, true);
     document.addEventListener("click", (event) => {
       const target = event.target;
       if (!(target instanceof Element)) return;
       const submitTrigger = target.closest('input[type="submit"],button[type="submit"],button[name*="submit"],input[name*="submit"]');
       if (!submitTrigger) return;
       isSubmitTriggered = true;
-      scheduleRender();
+      scheduleRenderBurst();
     }, true);
   }
 
-  function watchDynamicUpdates() {
-    const observer = new MutationObserver(() => scheduleRender());
-    observer.observe(document.body, { childList: true, subtree: true });
-  }
-
   attachSubmitListeners();
-  watchDynamicUpdates();
-  if (isSubmitTriggered) scheduleRender();
+  if (isSubmitTriggered) scheduleRenderBurst();
 })();
