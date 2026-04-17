@@ -12,12 +12,14 @@
   const TILE_HIGHLIGHT_CLASS = "skiprexa-subject-tile-highlight";
   const TILE_HIGHLIGHT_INFO_CLASS = "skiprexa-subject-tile-highlight-info";
   const STORAGE_KEY = "skiprexa-attendance-data";
+  const ATTENDANCE_UI_STORAGE_KEY = "skiprexa_attendance_ui_enabled";
   const SUBJECT_CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 14;
   let lastDigest = "";
   let renderTimer = null;
   let lateUpdateObserver = null;
   let lateUpdateObserverTimer = null;
   let isSubmitTriggered = new URLSearchParams(window.location.search).has("code");
+  let attendanceUiEnabled = true;
   let highlightedCells = [];
   let pinnedHighlightSubjects = new Set();
   const subjectMapPromises = new Map();
@@ -51,6 +53,38 @@
 
   loadPersistedState();
 
+  async function loadAttendanceUiSetting() {
+    try {
+      if (typeof chrome === "undefined" || !chrome.storage?.local) return;
+      const data = await chrome.storage.local.get([ATTENDANCE_UI_STORAGE_KEY]);
+      attendanceUiEnabled = data[ATTENDANCE_UI_STORAGE_KEY] !== false;
+    } catch {
+      attendanceUiEnabled = true;
+    }
+  }
+
+  function removeAttendancePanel() {
+    window.clearTimeout(renderTimer);
+    stopLateUpdateObserver();
+    clearSubjectHighlight();
+    document.getElementById(PANEL_ID)?.remove();
+    lastDigest = "";
+  }
+
+  function subscribeAttendanceUiSetting() {
+    if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName !== "local" || !changes[ATTENDANCE_UI_STORAGE_KEY]) return;
+      attendanceUiEnabled = changes[ATTENDANCE_UI_STORAGE_KEY].newValue !== false;
+      if (!attendanceUiEnabled) {
+        removeAttendancePanel();
+        return;
+      }
+      injectFont();
+      if (isSubmitTriggered) scheduleRenderBurst();
+    });
+  }
+
   // ── Inject typography ────────────────────────────────────────────
   function injectFont() {
     if (document.getElementById("skiprexa-font-link")) return;
@@ -60,7 +94,6 @@
     link.href = "https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700&family=JetBrains+Mono:wght@500;700&display=swap";
     document.head.appendChild(link);
   }
-  injectFont();
 
   // ── Parsing utilities ────────────────────────────────────────────
 
@@ -631,6 +664,10 @@
   // ── Main render ──────────────────────────────────────────────────
 
   function renderSummary() {
+    if (!attendanceUiEnabled) {
+      removeAttendancePanel();
+      return;
+    }
     if (!isSubmitTriggered) return;
 
     const entries = parseLeaveEntries();
@@ -1319,6 +1356,7 @@
   // ── Lifecycle ────────────────────────────────────────────────────
 
   function scheduleRender(delay = 250) {
+    if (!attendanceUiEnabled) return;
     if (!isSubmitTriggered) return;
     window.clearTimeout(renderTimer);
     renderTimer = window.setTimeout(renderSummary, delay);
@@ -1360,6 +1398,7 @@
   }
 
   function scheduleRenderBurst() {
+    if (!attendanceUiEnabled) return;
     if (!isSubmitTriggered) return;
     startLateUpdateObserver();
     scheduleRender(250);
@@ -1384,6 +1423,17 @@
     }, true);
   }
 
-  attachSubmitListeners();
-  if (isSubmitTriggered) scheduleRenderBurst();
+  async function initialize() {
+    await loadAttendanceUiSetting();
+    subscribeAttendanceUiSetting();
+    attachSubmitListeners();
+    if (!attendanceUiEnabled) {
+      removeAttendancePanel();
+      return;
+    }
+    injectFont();
+    if (isSubmitTriggered) scheduleRenderBurst();
+  }
+
+  initialize();
 })();

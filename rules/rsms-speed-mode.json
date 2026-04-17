@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "requestDomains": [
+        "www.googletagmanager.com",
+        "www.google-analytics.com",
+        "ssl.google-analytics.com",
+        "analytics.google.com"
+      ],
+      "initiatorDomains": [
+        "rajagiritech.ac.in",
+        "www.rajagiritech.ac.in",
+        "student.rajagiritech.ac.in"
+      ],
+      "resourceTypes": [
+        "script",
+        "xmlhttprequest",
+        "image",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "requestDomains": [
+        "fonts.googleapis.com",
+        "fonts.gstatic.com"
+      ],
+      "initiatorDomains": [
+        "rajagiritech.ac.in",
+        "www.rajagiritech.ac.in",
+        "student.rajagiritech.ac.in"
+      ],
+      "resourceTypes": [
+        "stylesheet",
+        "font"
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "requestDomains": [
+        "use.fontawesome.com"
+      ],
+      "initiatorDomains": [
+        "rajagiritech.ac.in",
+        "www.rajagiritech.ac.in",
+        "student.rajagiritech.ac.in"
+      ],
+      "resourceTypes": [
+        "stylesheet",
+        "font",
+        "script"
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||cdnjs.cloudflare.com/ajax/libs/font-awesome/",
+      "initiatorDomains": [
+        "rajagiritech.ac.in",
+        "www.rajagiritech.ac.in",
+        "student.rajagiritech.ac.in"
+      ],
+      "resourceTypes": [
+        "stylesheet",
+        "font",
+        "script"
+      ]
+    }
+  }
+]

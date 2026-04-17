@@ -1,9 +1,59 @@
 // Background script for Chrome extension
 console.log('🚀 Background script loaded at:', new Date().toISOString());
 
+const RSMS_SPEED_MODE_STORAGE_KEY = 'skiprexa_rsms_speed_mode_enabled';
+const RSMS_ATTENDANCE_UI_STORAGE_KEY = 'skiprexa_attendance_ui_enabled';
+const RSMS_SPEED_MODE_RULESET_ID = 'rsms_speed_mode';
+
+async function applyRsmsSpeedModeRules(enabled) {
+    await chrome.declarativeNetRequest.updateEnabledRulesets({
+        enableRulesetIds: enabled ? [RSMS_SPEED_MODE_RULESET_ID] : [],
+        disableRulesetIds: enabled ? [] : [RSMS_SPEED_MODE_RULESET_ID]
+    });
+}
+
+async function syncRsmsSpeedModeRuleset() {
+    const result = await chrome.storage.local.get([RSMS_SPEED_MODE_STORAGE_KEY]);
+    const storedValue = result[RSMS_SPEED_MODE_STORAGE_KEY];
+    const enabled = typeof storedValue === 'boolean' ? storedValue : true;
+
+    if (typeof storedValue !== 'boolean') {
+        await chrome.storage.local.set({ [RSMS_SPEED_MODE_STORAGE_KEY]: enabled });
+    }
+
+    await applyRsmsSpeedModeRules(enabled);
+    return enabled;
+}
+
+async function setRsmsSpeedMode(enabled) {
+    await chrome.storage.local.set({ [RSMS_SPEED_MODE_STORAGE_KEY]: enabled });
+    await applyRsmsSpeedModeRules(enabled);
+    return enabled;
+}
+
+async function getRsmsAttendanceUiEnabled() {
+    const result = await chrome.storage.local.get([RSMS_ATTENDANCE_UI_STORAGE_KEY]);
+    const storedValue = result[RSMS_ATTENDANCE_UI_STORAGE_KEY];
+    const enabled = typeof storedValue === 'boolean' ? storedValue : true;
+
+    if (typeof storedValue !== 'boolean') {
+        await chrome.storage.local.set({ [RSMS_ATTENDANCE_UI_STORAGE_KEY]: enabled });
+    }
+
+    return enabled;
+}
+
+async function setRsmsAttendanceUi(enabled) {
+    await chrome.storage.local.set({ [RSMS_ATTENDANCE_UI_STORAGE_KEY]: enabled });
+    return enabled;
+}
+
 // Add service worker startup listener
 chrome.runtime.onStartup.addListener(() => {
     console.log('🔄 Background service worker started');
+    syncRsmsSpeedModeRuleset().catch((error) => {
+        console.warn('Failed to sync RSMS speed mode on startup:', error);
+    });
 });
 
 // Add suspend listener to debug service worker termination
@@ -35,6 +85,9 @@ function injectDeclaredContentScripts(tabId) {
 
 chrome.runtime.onInstalled.addListener((details) => {
     console.log('Question Paper Helper extension installed');
+    syncRsmsSpeedModeRuleset().catch((error) => {
+        console.warn('Failed to sync RSMS speed mode on install:', error);
+    });
     
     if (details.reason === 'install') {
         // Show welcome message or open options page
@@ -75,6 +128,45 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Respond to health check from popup
         console.log('Background script health check - responding OK');
         sendResponse({ success: true, status: 'healthy', timestamp: Date.now() });
+        return true;
+    }
+
+    if (message.action === 'getRsmsSpeedMode') {
+        syncRsmsSpeedModeRuleset()
+            .then((enabled) => sendResponse({ success: true, enabled }))
+            .catch((error) => sendResponse({ success: false, enabled: true, error: error.message }));
+        return true;
+    }
+
+    if (message.action === 'getRsmsOptions') {
+        Promise.all([syncRsmsSpeedModeRuleset(), getRsmsAttendanceUiEnabled()])
+            .then(([speedModeEnabled, attendanceUiEnabled]) => sendResponse({
+                success: true,
+                speedModeEnabled,
+                attendanceUiEnabled
+            }))
+            .catch((error) => sendResponse({
+                success: false,
+                speedModeEnabled: true,
+                attendanceUiEnabled: true,
+                error: error.message
+            }));
+        return true;
+    }
+
+    if (message.action === 'setRsmsSpeedMode') {
+        const enabled = message.enabled !== false;
+        setRsmsSpeedMode(enabled)
+            .then((nextEnabled) => sendResponse({ success: true, enabled: nextEnabled }))
+            .catch((error) => sendResponse({ success: false, enabled, error: error.message }));
+        return true;
+    }
+
+    if (message.action === 'setRsmsAttendanceUi') {
+        const enabled = message.enabled !== false;
+        setRsmsAttendanceUi(enabled)
+            .then((nextEnabled) => sendResponse({ success: true, enabled: nextEnabled }))
+            .catch((error) => sendResponse({ success: false, enabled, error: error.message }));
         return true;
     }
     
