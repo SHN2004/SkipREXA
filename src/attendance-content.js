@@ -1,17 +1,25 @@
 (() => {
+  const PANEL_ID = "skiprexa-attendance-summary";
+  const IS_ATTENDANCE_PAGE = /\/Leave\.asp$/i.test(window.location.pathname);
+  if (!IS_ATTENDANCE_PAGE) {
+    document.getElementById(PANEL_ID)?.remove();
+    return;
+  }
+
   if (window.skiprexaAttendanceHelperLoaded) return;
   window.skiprexaAttendanceHelperLoaded = true;
 
-  const PANEL_ID = "skiprexa-attendance-summary";
   const TILE_HIGHLIGHT_CLASS = "skiprexa-subject-tile-highlight";
   const TILE_HIGHLIGHT_INFO_CLASS = "skiprexa-subject-tile-highlight-info";
   const STORAGE_KEY = "skiprexa-attendance-data";
+  const ATTENDANCE_UI_STORAGE_KEY = "skiprexa_attendance_ui_enabled";
   const SUBJECT_CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 14;
   let lastDigest = "";
   let renderTimer = null;
   let lateUpdateObserver = null;
   let lateUpdateObserverTimer = null;
   let isSubmitTriggered = new URLSearchParams(window.location.search).has("code");
+  let attendanceUiEnabled = true;
   let highlightedCells = [];
   let pinnedHighlightSubjects = new Set();
   const subjectMapPromises = new Map();
@@ -45,6 +53,38 @@
 
   loadPersistedState();
 
+  async function loadAttendanceUiSetting() {
+    try {
+      if (typeof chrome === "undefined" || !chrome.storage?.local) return;
+      const data = await chrome.storage.local.get([ATTENDANCE_UI_STORAGE_KEY]);
+      attendanceUiEnabled = data[ATTENDANCE_UI_STORAGE_KEY] !== false;
+    } catch {
+      attendanceUiEnabled = true;
+    }
+  }
+
+  function removeAttendancePanel() {
+    window.clearTimeout(renderTimer);
+    stopLateUpdateObserver();
+    clearSubjectHighlight();
+    document.getElementById(PANEL_ID)?.remove();
+    lastDigest = "";
+  }
+
+  function subscribeAttendanceUiSetting() {
+    if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName !== "local" || !changes[ATTENDANCE_UI_STORAGE_KEY]) return;
+      attendanceUiEnabled = changes[ATTENDANCE_UI_STORAGE_KEY].newValue !== false;
+      if (!attendanceUiEnabled) {
+        removeAttendancePanel();
+        return;
+      }
+      injectFont();
+      if (isSubmitTriggered) scheduleRenderBurst();
+    });
+  }
+
   // ── Inject typography ────────────────────────────────────────────
   function injectFont() {
     if (document.getElementById("skiprexa-font-link")) return;
@@ -54,7 +94,6 @@
     link.href = "https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700&family=JetBrains+Mono:wght@500;700&display=swap";
     document.head.appendChild(link);
   }
-  injectFont();
 
   // ── Parsing utilities ────────────────────────────────────────────
 
@@ -218,9 +257,16 @@
       .filter(Boolean);
   }
 
-  async function fetchSubjectMapForClass(classCode) {
+  async function fetchSubjectMapForClass(classCode, neededSubjects = null) {
     const examIds = await fetchExamIdsForClass(classCode);
     if (!examIds.length) return null;
+
+    const subjects = {};
+    const sourceExamIds = [];
+    const hasNeededSubjects = () => (
+      neededSubjects &&
+      Array.from(neededSubjects).every((subject) => subjects[subject])
+    );
 
     for (const examId of examIds) {
       const response = await fetch(`Mark.asp?code=${encodeURIComponent(classCode)}&E_ID=${encodeURIComponent(examId)}`, {
@@ -232,21 +278,28 @@
       const match = findSubjectMapTable(doc);
       if (!match) continue;
 
-      const subjects = {};
+      let foundInExam = false;
       for (const row of match.rows) {
         const fullCode = normalizeSubjectToken(row[1]);
         const shortCode = extractSubject(fullCode);
         const name = cleanText(row[2]);
         if (!shortCode || !name) continue;
         subjects[shortCode] = { fullCode, name };
+        foundInExam = true;
       }
 
-      if (Object.keys(subjects).length) {
-        return { fetchedAt: Date.now(), examId, subjects };
-      }
+      if (foundInExam) sourceExamIds.push(examId);
+      if (hasNeededSubjects()) break;
     }
 
-    return null;
+    if (!Object.keys(subjects).length) return null;
+
+    return {
+      fetchedAt: Date.now(),
+      examId: sourceExamIds[0] || "",
+      examIds: sourceExamIds,
+      subjects
+    };
   }
 
   function patchSubjectLabels(panel) {
@@ -292,7 +345,7 @@
     if (subjectMapPromises.has(classCode)) return;
     if ((Date.now() - (subjectMapFailureTimestamps.get(classCode) || 0)) < 60_000) return;
 
-    const promise = fetchSubjectMapForClass(classCode)
+    const promise = fetchSubjectMapForClass(classCode, neededSubjects)
       .then((result) => {
         if (!result) return;
         subjectNameCache[classCode] = result;
@@ -611,6 +664,10 @@
   // ── Main render ──────────────────────────────────────────────────
 
   function renderSummary() {
+    if (!attendanceUiEnabled) {
+      removeAttendancePanel();
+      return;
+    }
     if (!isSubmitTriggered) return;
 
     const entries = parseLeaveEntries();
@@ -1299,6 +1356,7 @@
   // ── Lifecycle ────────────────────────────────────────────────────
 
   function scheduleRender(delay = 250) {
+    if (!attendanceUiEnabled) return;
     if (!isSubmitTriggered) return;
     window.clearTimeout(renderTimer);
     renderTimer = window.setTimeout(renderSummary, delay);
@@ -1340,6 +1398,7 @@
   }
 
   function scheduleRenderBurst() {
+    if (!attendanceUiEnabled) return;
     if (!isSubmitTriggered) return;
     startLateUpdateObserver();
     scheduleRender(250);
@@ -1364,6 +1423,17 @@
     }, true);
   }
 
-  attachSubmitListeners();
-  if (isSubmitTriggered) scheduleRenderBurst();
+  async function initialize() {
+    await loadAttendanceUiSetting();
+    subscribeAttendanceUiSetting();
+    attachSubmitListeners();
+    if (!attendanceUiEnabled) {
+      removeAttendancePanel();
+      return;
+    }
+    injectFont();
+    if (isSubmitTriggered) scheduleRenderBurst();
+  }
+
+  initialize();
 })();

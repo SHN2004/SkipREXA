@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search, Loader2, X, Download, UploadCloud, CheckCircle2, ChevronRight, CheckSquare, Square } from 'lucide-react';
+import { Search, Loader2, X, Download, UploadCloud, CheckCircle2, ChevronRight, CheckSquare, Square, Gauge, Eye, SlidersHorizontal } from 'lucide-react';
 import { useCourses, Course } from '@/hooks/useCourses';
 import { usePapers, Paper } from '@/hooks/usePapers';
 import { processUpload, processDirectDownload } from '@/hooks/useUpload';
@@ -15,6 +15,19 @@ import claudeIcon from '@/assets/claude-color.svg';
 
 const getSelectedCourseId = (course: Pick<Course, 'id' | 'name' | 'code'>) =>
     course.id || getCourseId(course.name, course.code);
+
+type RsmsSpeedModeResponse = {
+    success: boolean;
+    enabled: boolean;
+    error?: string;
+};
+
+type RsmsOptionsResponse = {
+    success: boolean;
+    speedModeEnabled: boolean;
+    attendanceUiEnabled: boolean;
+    error?: string;
+};
 
 const scoreCourseMatch = (course: Course, rawQuery: string) => {
     const query = normalizeCourseName(rawQuery).toLowerCase();
@@ -57,6 +70,12 @@ export default function App() {
     const [progressMsg, setProgressMsg] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
+    const [rsmsSpeedModeEnabled, setRsmsSpeedModeEnabled] = useState(true);
+    const [attendanceUiEnabled, setAttendanceUiEnabled] = useState(true);
+    const [isRsmsOptionsOpen, setIsRsmsOptionsOpen] = useState(false);
+    const [isSpeedModeSaving, setIsSpeedModeSaving] = useState(false);
+    const [isAttendanceUiSaving, setIsAttendanceUiSaving] = useState(false);
+    const [rsmsOptionsError, setRsmsOptionsError] = useState('');
 
     const [activeLLM, setActiveLLM] = useState('ChatGPT');
     const isBusy = isLoading || isDownloading;
@@ -70,6 +89,29 @@ export default function App() {
                 }
             });
         }
+    }, []);
+
+    useEffect(() => {
+        if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) return;
+
+        let isMounted = true;
+
+        chrome.runtime.sendMessage({ action: 'getRsmsOptions' }, (response?: RsmsOptionsResponse) => {
+            if (!isMounted) return;
+
+            if (chrome.runtime.lastError || !response?.success) {
+                setRsmsOptionsError('RSMS options unavailable.');
+                return;
+            }
+
+            setRsmsSpeedModeEnabled(response.speedModeEnabled);
+            setAttendanceUiEnabled(response.attendanceUiEnabled);
+            setRsmsOptionsError('');
+        });
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const papersSectionRef = useRef<HTMLDivElement>(null);
@@ -134,6 +176,7 @@ export default function App() {
 
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const rsmsOptionsRef = useRef<HTMLDivElement>(null);
 
 
     // --- CACHING & MEMORY LOGIC ---
@@ -203,6 +246,9 @@ export default function App() {
             if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
                 setShowDropdown(false);
             }
+            if (rsmsOptionsRef.current && !rsmsOptionsRef.current.contains(event.target as Node)) {
+                setIsRsmsOptionsOpen(false);
+            }
         }
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -255,6 +301,64 @@ export default function App() {
         } else {
             setSelectedPapers(new Set(papers.map((_, i) => i.toString())));
         }
+    };
+
+    const handleRsmsSpeedModeToggle = () => {
+        if (isSpeedModeSaving) return;
+        if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
+            setRsmsOptionsError('RSMS options require the extension runtime.');
+            return;
+        }
+
+        const nextEnabled = !rsmsSpeedModeEnabled;
+        setRsmsSpeedModeEnabled(nextEnabled);
+        setIsSpeedModeSaving(true);
+        setRsmsOptionsError('');
+
+        chrome.runtime.sendMessage(
+            { action: 'setRsmsSpeedMode', enabled: nextEnabled },
+            (response?: RsmsSpeedModeResponse) => {
+                setIsSpeedModeSaving(false);
+
+                if (chrome.runtime.lastError || !response?.success) {
+                    setRsmsSpeedModeEnabled(!nextEnabled);
+                    setRsmsOptionsError('Could not update speed mode.');
+                    return;
+                }
+
+                setRsmsSpeedModeEnabled(response.enabled);
+                setRsmsOptionsError('');
+            }
+        );
+    };
+
+    const handleAttendanceUiToggle = () => {
+        if (isAttendanceUiSaving) return;
+        if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
+            setRsmsOptionsError('RSMS options require the extension runtime.');
+            return;
+        }
+
+        const nextEnabled = !attendanceUiEnabled;
+        setAttendanceUiEnabled(nextEnabled);
+        setIsAttendanceUiSaving(true);
+        setRsmsOptionsError('');
+
+        chrome.runtime.sendMessage(
+            { action: 'setRsmsAttendanceUi', enabled: nextEnabled },
+            (response?: RsmsSpeedModeResponse) => {
+                setIsAttendanceUiSaving(false);
+
+                if (chrome.runtime.lastError || !response?.success) {
+                    setAttendanceUiEnabled(!nextEnabled);
+                    setRsmsOptionsError('Could not update attendance UI.');
+                    return;
+                }
+
+                setAttendanceUiEnabled(response.enabled);
+                setRsmsOptionsError('');
+            }
+        );
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -311,7 +415,83 @@ export default function App() {
                         <h1 className="font-display font-black text-[28px] text-foreground leading-[1] tracking-tight m-0 uppercase italic">Skip<span className="text-primary">REXA</span></h1>
                         <span className="text-[10px] text-muted-foreground font-bold tracking-[0.2em] uppercase mt-[4px]">Study Assistant</span>
                     </div>
-                    <ThemeToggle />
+                    <div className="flex items-center gap-3">
+                        <div ref={rsmsOptionsRef} className="relative">
+                            <button
+                                type="button"
+                                aria-haspopup="dialog"
+                                aria-expanded={isRsmsOptionsOpen}
+                                onClick={() => setIsRsmsOptionsOpen((open) => !open)}
+                                className={`group flex h-10 min-w-[96px] items-center justify-center gap-2 rounded-lg border px-3 font-main text-[10px] font-black uppercase tracking-[0.16em] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${isRsmsOptionsOpen ? 'border-primary bg-primary text-primary-foreground shadow-sm' : 'border-foreground/20 bg-card text-foreground hover:border-primary/50'}`}
+                            >
+                                <span>RSMS</span>
+                                <span className={`flex h-6 w-6 items-center justify-center rounded-md border transition-colors duration-200 ${isRsmsOptionsOpen ? 'border-primary-foreground/25 bg-primary-foreground/15 text-primary-foreground' : 'border-primary/25 bg-primary/10 text-primary group-hover:bg-primary/15'}`}>
+                                    <SlidersHorizontal className="h-3.5 w-3.5" strokeWidth={2.6} />
+                                </span>
+                            </button>
+
+                            {isRsmsOptionsOpen && (
+                                <div className="absolute right-0 top-full z-[200] mt-3 w-[300px] rounded-lg border border-foreground/20 bg-background p-3 text-left shadow-[0_18px_50px_rgba(0,0,0,0.28)] animate-in fade-in zoom-in-95">
+                                    <div className="mb-3 flex items-center justify-between border-b border-foreground/15 pb-2">
+                                        <div>
+                                            <div className="font-main text-[11px] font-black uppercase tracking-[0.2em] text-foreground">RSMS controls</div>
+                                            <div className="mt-0.5 text-[10px] font-semibold text-muted-foreground">Portal tweaks for speed and attendance.</div>
+                                        </div>
+                                        <SlidersHorizontal className="h-4 w-4 text-primary" strokeWidth={2.4} />
+                                    </div>
+
+                                    <div className="grid gap-2">
+                                        <button
+                                            type="button"
+                                            role="switch"
+                                            aria-checked={attendanceUiEnabled}
+                                            disabled={isAttendanceUiSaving}
+                                            onClick={handleAttendanceUiToggle}
+                                            className={`flex min-h-[68px] w-full items-center gap-3 rounded-lg border px-3 py-2 text-left transition-colors duration-200 disabled:cursor-wait ${attendanceUiEnabled ? 'border-primary/50 bg-primary/10' : 'border-foreground/20 bg-card hover:border-foreground/40'}`}
+                                        >
+                                            <span className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border ${attendanceUiEnabled ? 'border-primary/35 bg-primary/10 text-primary' : 'border-foreground/15 bg-foreground/5 text-muted-foreground'}`}>
+                                                <Eye className="h-4 w-4" strokeWidth={2.4} />
+                                            </span>
+                                            <span className="min-w-0 flex-1">
+                                                <span className="block font-main text-[11px] font-black uppercase tracking-[0.12em] text-foreground">Attendance UI</span>
+                                                <span className="mt-0.5 block text-[10px] font-semibold leading-snug text-muted-foreground">Show SkipREXA analyzer on Attendance.</span>
+                                            </span>
+                                            <span className={`relative h-6 w-11 flex-shrink-0 rounded-full border transition-colors ${attendanceUiEnabled ? 'border-primary bg-primary' : 'border-foreground/20 bg-muted'}`}>
+                                                <span className={`absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-background shadow-sm transition-transform ${attendanceUiEnabled ? 'translate-x-[22px]' : 'translate-x-1'}`} />
+                                            </span>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            role="switch"
+                                            aria-checked={rsmsSpeedModeEnabled}
+                                            disabled={isSpeedModeSaving}
+                                            onClick={handleRsmsSpeedModeToggle}
+                                            className={`flex min-h-[68px] w-full items-center gap-3 rounded-lg border px-3 py-2 text-left transition-colors duration-200 disabled:cursor-wait ${rsmsSpeedModeEnabled ? 'border-primary/50 bg-primary/10' : 'border-foreground/20 bg-card hover:border-foreground/40'}`}
+                                        >
+                                            <span className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border ${rsmsSpeedModeEnabled ? 'border-primary/35 bg-primary/10 text-primary' : 'border-foreground/15 bg-foreground/5 text-muted-foreground'}`}>
+                                                <Gauge className="h-4 w-4" strokeWidth={2.4} />
+                                            </span>
+                                            <span className="min-w-0 flex-1">
+                                                <span className="block font-main text-[11px] font-black uppercase tracking-[0.12em] text-foreground">Speed mode</span>
+                                                <span className="mt-0.5 block text-[10px] font-semibold leading-snug text-muted-foreground">Block non-essential RSMS assets.</span>
+                                            </span>
+                                            <span className={`relative h-6 w-11 flex-shrink-0 rounded-full border transition-colors ${rsmsSpeedModeEnabled ? 'border-primary bg-primary' : 'border-foreground/20 bg-muted'}`}>
+                                                <span className={`absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-background shadow-sm transition-transform ${rsmsSpeedModeEnabled ? 'translate-x-[22px]' : 'translate-x-1'}`} />
+                                            </span>
+                                        </button>
+                                    </div>
+
+                                    {rsmsOptionsError && (
+                                        <div className="mt-2 rounded border border-destructive/30 bg-destructive/10 px-3 py-2 text-[10px] font-bold text-destructive">
+                                            {rsmsOptionsError}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        <ThemeToggle />
+                    </div>
                 </header>
 
                 {/* Main Content */}

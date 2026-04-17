@@ -14,7 +14,8 @@
     "storage",
     "contextMenus",
     "scripting",
-    "downloads"
+    "downloads",
+    "declarativeNetRequest"
   ],
   "host_permissions": [
     "https://chatgpt.com/*",
@@ -40,6 +41,15 @@
     "service_worker": "src/background.js",
     "type": "module"
   },
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "rsms_speed_mode",
+        "enabled": true,
+        "path": "rules/rsms-speed-mode.json"
+      }
+    ]
+  },
   "content_scripts": [
     {
       "matches": [
@@ -53,12 +63,12 @@
     },
     {
       "matches": [
-        "http://rajagiritech.ac.in/stud/ktu/Student/*",
-        "http://www.rajagiritech.ac.in/stud/ktu/Student/*",
-        "http://student.rajagiritech.ac.in/stud/ktu/Student/*",
-        "https://rajagiritech.ac.in/stud/ktu/Student/*",
-        "https://www.rajagiritech.ac.in/stud/ktu/Student/*",
-        "https://student.rajagiritech.ac.in/stud/ktu/Student/*"
+        "http://rajagiritech.ac.in/stud/ktu/Student/Leave.asp*",
+        "http://www.rajagiritech.ac.in/stud/ktu/Student/Leave.asp*",
+        "http://student.rajagiritech.ac.in/stud/ktu/Student/Leave.asp*",
+        "https://rajagiritech.ac.in/stud/ktu/Student/Leave.asp*",
+        "https://www.rajagiritech.ac.in/stud/ktu/Student/Leave.asp*",
+        "https://student.rajagiritech.ac.in/stud/ktu/Student/Leave.asp*"
       ],
       "js": [
         "src/attendance-content.js"
