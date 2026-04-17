@@ -16,3 +16,6 @@ scraper/.ruff_cache/
 scraper/__pycache__/
 scraper/src/**/__pycache__/
 scraper/tests/**/__pycache__/
+pin-layout-scout.md
+pin-layout-plan.md
+context.md
