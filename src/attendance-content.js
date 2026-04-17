@@ -1,8 +1,14 @@
 (() => {
+  const PANEL_ID = "skiprexa-attendance-summary";
+  const IS_ATTENDANCE_PAGE = /\/Leave\.asp$/i.test(window.location.pathname);
+  if (!IS_ATTENDANCE_PAGE) {
+    document.getElementById(PANEL_ID)?.remove();
+    return;
+  }
+
   if (window.skiprexaAttendanceHelperLoaded) return;
   window.skiprexaAttendanceHelperLoaded = true;
 
-  const PANEL_ID = "skiprexa-attendance-summary";
   const TILE_HIGHLIGHT_CLASS = "skiprexa-subject-tile-highlight";
   const TILE_HIGHLIGHT_INFO_CLASS = "skiprexa-subject-tile-highlight-info";
   const STORAGE_KEY = "skiprexa-attendance-data";
@@ -218,9 +224,16 @@
       .filter(Boolean);
   }
 
-  async function fetchSubjectMapForClass(classCode) {
+  async function fetchSubjectMapForClass(classCode, neededSubjects = null) {
     const examIds = await fetchExamIdsForClass(classCode);
     if (!examIds.length) return null;
+
+    const subjects = {};
+    const sourceExamIds = [];
+    const hasNeededSubjects = () => (
+      neededSubjects &&
+      Array.from(neededSubjects).every((subject) => subjects[subject])
+    );
 
     for (const examId of examIds) {
       const response = await fetch(`Mark.asp?code=${encodeURIComponent(classCode)}&E_ID=${encodeURIComponent(examId)}`, {
@@ -232,21 +245,28 @@
       const match = findSubjectMapTable(doc);
       if (!match) continue;
 
-      const subjects = {};
+      let foundInExam = false;
       for (const row of match.rows) {
         const fullCode = normalizeSubjectToken(row[1]);
         const shortCode = extractSubject(fullCode);
         const name = cleanText(row[2]);
         if (!shortCode || !name) continue;
         subjects[shortCode] = { fullCode, name };
+        foundInExam = true;
       }
 
-      if (Object.keys(subjects).length) {
-        return { fetchedAt: Date.now(), examId, subjects };
-      }
+      if (foundInExam) sourceExamIds.push(examId);
+      if (hasNeededSubjects()) break;
     }
 
-    return null;
+    if (!Object.keys(subjects).length) return null;
+
+    return {
+      fetchedAt: Date.now(),
+      examId: sourceExamIds[0] || "",
+      examIds: sourceExamIds,
+      subjects
+    };
   }
 
   function patchSubjectLabels(panel) {
@@ -292,7 +312,7 @@
     if (subjectMapPromises.has(classCode)) return;
     if ((Date.now() - (subjectMapFailureTimestamps.get(classCode) || 0)) < 60_000) return;
 
-    const promise = fetchSubjectMapForClass(classCode)
+    const promise = fetchSubjectMapForClass(classCode, neededSubjects)
       .then((result) => {
         if (!result) return;
         subjectNameCache[classCode] = result;
