@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "generated_at": "2026-05-11T06:39:30.059254+00:00",
+    "generated_at": "2026-05-18T06:56:39.146235+00:00",
     "source": "student.rajagiritech.ac.in",
     "page_url": "https://student.rajagiritech.ac.in/qp_downloads",
     "paper_count": 2937,
@@ -76,40 +76,6 @@
       }
     },
     {
-      "id": "d69732fcc5552d84",
-      "sl_no": "2909",
-      "question_paper_code": "215681",
-      "course_name": "Adhoc and Wireless Sensor Networks (101004/IT804C)",
-      "course_code": "215681",
-      "actual_subject_code": "101004",
-      "semester": "S8",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215681.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2909",
-          "215681",
-          "Adhoc and Wireless Sensor Networks (101004/IT804C)",
-          "S8 Btech Regular (2022 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215681.pdf"
-        ]
-      }
-    },
-    {
       "id": "57987e1858364e09",
       "sl_no": "2491",
       "question_paper_code": "214468",
@@ -140,6 +106,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/214468.pdf"
+        ]
+      }
+    },
+    {
+      "id": "d69732fcc5552d84",
+      "sl_no": "2909",
+      "question_paper_code": "215681",
+      "course_name": "Adhoc and Wireless Sensor Networks# (101004/IT804C)",
+      "course_code": "215681",
+      "actual_subject_code": "101004",
+      "semester": "S8",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215681.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2909",
+          "215681",
+          "Adhoc and Wireless Sensor Networks# (101004/IT804C)",
+          "S8 Btech Regular (2022 admns.) March 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215681.pdf"
         ]
       }
     },
@@ -382,40 +382,6 @@
       }
     },
     {
-      "id": "1b8508707ede74ab",
-      "sl_no": "2365",
-      "question_paper_code": "214309",
-      "course_name": "Advanced Concrete Technology (101007/CE605D)",
-      "course_code": "214309",
-      "actual_subject_code": "101007",
-      "semester": "S6",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214309.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2365",
-          "214309",
-          "Advanced Concrete Technology (101007/CE605D)",
-          "S6 Btech Regular (2022 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214309.pdf"
-        ]
-      }
-    },
-    {
       "id": "087121c2782794da",
       "sl_no": "1627",
       "question_paper_code": "213025",
@@ -514,6 +480,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/213024.pdf"
+        ]
+      }
+    },
+    {
+      "id": "1b8508707ede74ab",
+      "sl_no": "2365",
+      "question_paper_code": "214309",
+      "course_name": "Advanced Concrete Technology# (101007/CE605D)",
+      "course_code": "214309",
+      "actual_subject_code": "101007",
+      "semester": "S6",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214309.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2365",
+          "214309",
+          "Advanced Concrete Technology# (101007/CE605D)",
+          "S6 Btech Regular (2022 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214309.pdf"
         ]
       }
     },
@@ -994,40 +994,6 @@
       }
     },
     {
-      "id": "850f57aacc4ffb54",
-      "sl_no": "2243",
-      "question_paper_code": "213946",
-      "course_name": "Advanced Data Structures and Algorithms (202108/IT105D)",
-      "course_code": "213946",
-      "actual_subject_code": "202108",
-      "semester": "S1",
-      "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "December",
-      "exam_year": 2024,
-      "raw_exam_details": "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213946.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2243",
-          "213946",
-          "Advanced Data Structures and Algorithms (202108/IT105D)",
-          "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/213946.pdf"
-        ]
-      }
-    },
-    {
       "id": "2483fcef37cc2bcd",
       "sl_no": "2726",
       "question_paper_code": "215498",
@@ -1058,6 +1024,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/215498.pdf"
+        ]
+      }
+    },
+    {
+      "id": "850f57aacc4ffb54",
+      "sl_no": "2243",
+      "question_paper_code": "213946",
+      "course_name": "Advanced Data Structures and Algorithms# (202108/IT105D)",
+      "course_code": "213946",
+      "actual_subject_code": "202108",
+      "semester": "S1",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "December",
+      "exam_year": 2024,
+      "raw_exam_details": "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213946.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2243",
+          "213946",
+          "Advanced Data Structures and Algorithms# (202108/IT105D)",
+          "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/213946.pdf"
         ]
       }
     },
@@ -1164,40 +1164,6 @@
       }
     },
     {
-      "id": "c2f6dfe760e2e5d0",
-      "sl_no": "2250",
-      "question_paper_code": "213970",
-      "course_name": "Advanced Digital System Design (202105/EC101D)",
-      "course_code": "213970",
-      "actual_subject_code": "202105",
-      "semester": "S1",
-      "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "December",
-      "exam_year": 2024,
-      "raw_exam_details": "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213970.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2250",
-          "213970",
-          "Advanced Digital System Design (202105/EC101D)",
-          "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/213970.pdf"
-        ]
-      }
-    },
-    {
       "id": "a9c104787c983c9e",
       "sl_no": "2717",
       "question_paper_code": "215506",
@@ -1262,6 +1228,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/212767.pdf"
+        ]
+      }
+    },
+    {
+      "id": "c2f6dfe760e2e5d0",
+      "sl_no": "2250",
+      "question_paper_code": "213970",
+      "course_name": "Advanced Digital System Design# (202105/EC101D)",
+      "course_code": "213970",
+      "actual_subject_code": "202105",
+      "semester": "S1",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "December",
+      "exam_year": 2024,
+      "raw_exam_details": "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213970.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2250",
+          "213970",
+          "Advanced Digital System Design# (202105/EC101D)",
+          "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/213970.pdf"
         ]
       }
     },
@@ -2048,40 +2048,6 @@
       }
     },
     {
-      "id": "99971e4cee1d795f",
-      "sl_no": "2247",
-      "question_paper_code": "213944",
-      "course_name": "Advanced Microcontrollers & Real Time Operating Systems (202105/EC100A)",
-      "course_code": "213944",
-      "actual_subject_code": "202105",
-      "semester": "S1",
-      "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "December",
-      "exam_year": 2024,
-      "raw_exam_details": "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213944.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2247",
-          "213944",
-          "Advanced Microcontrollers & Real Time Operating Systems (202105/EC100A)",
-          "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/213944.pdf"
-        ]
-      }
-    },
-    {
       "id": "5f585af4c3936157",
       "sl_no": "2714",
       "question_paper_code": "215507",
@@ -2184,6 +2150,40 @@
       }
     },
     {
+      "id": "99971e4cee1d795f",
+      "sl_no": "2247",
+      "question_paper_code": "213944",
+      "course_name": "Advanced Microcontrollers and Real Time Operating Systems (202105/EC100A)",
+      "course_code": "213944",
+      "actual_subject_code": "202105",
+      "semester": "S1",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "December",
+      "exam_year": 2024,
+      "raw_exam_details": "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213944.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2247",
+          "213944",
+          "Advanced Microcontrollers and Real Time Operating Systems (202105/EC100A)",
+          "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/213944.pdf"
+        ]
+      }
+    },
+    {
       "id": "8691009f89ffaaea",
       "sl_no": "2497",
       "question_paper_code": "214539",
@@ -2255,7 +2255,7 @@
       "id": "14cb165eb0da88c7",
       "sl_no": "2873",
       "question_paper_code": "215638",
-      "course_name": "Advanced Optimization Techniques (101008/MA807B)",
+      "course_name": "Advanced Optimization Techniques# (101008/MA807B)",
       "course_code": "215638",
       "actual_subject_code": "101008",
       "semester": "S8",
@@ -2276,7 +2276,7 @@
         "cells": [
           "2873",
           "215638",
-          "Advanced Optimization Techniques (101008/MA807B)",
+          "Advanced Optimization Techniques# (101008/MA807B)",
           "S8 Btech Regular (2022 admns.) March 2026",
           ""
         ],
@@ -2289,7 +2289,7 @@
       "id": "33ac751805099837",
       "sl_no": "2253",
       "question_paper_code": "213963",
-      "course_name": "Advanced Python for AI & ML (202107/AD103D)",
+      "course_name": "Advanced Python for AI and ML# (202107/AD103D)",
       "course_code": "213963",
       "actual_subject_code": "202107",
       "semester": "S1",
@@ -2310,7 +2310,7 @@
         "cells": [
           "2253",
           "213963",
-          "Advanced Python for AI & ML (202107/AD103D)",
+          "Advanced Python for AI and ML# (202107/AD103D)",
           "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
           ""
         ],
@@ -2799,7 +2799,7 @@
       "id": "bde88f1b9b477f97",
       "sl_no": "2880",
       "question_paper_code": "215674",
-      "course_name": "Air Quality Management (101007/CE806B)",
+      "course_name": "Air Quality Management# (101007/CE806B)",
       "course_code": "215674",
       "actual_subject_code": "101007",
       "semester": "S8",
@@ -2820,7 +2820,7 @@
         "cells": [
           "2880",
           "215674",
-          "Air Quality Management (101007/CE806B)",
+          "Air Quality Management# (101007/CE806B)",
           "S8 Btech Regular (2022 admns.) March 2026",
           ""
         ],
@@ -12078,40 +12078,6 @@
       }
     },
     {
-      "id": "41dfcf956131f934",
-      "sl_no": "2359",
-      "question_paper_code": "214302",
-      "course_name": "Biomedical Instrumentation (101002/AE604D)",
-      "course_code": "214302",
-      "actual_subject_code": "101002",
-      "semester": "S6",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214302.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2359",
-          "214302",
-          "Biomedical Instrumentation (101002/AE604D)",
-          "S6 Btech Regular (2022 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214302.pdf"
-        ]
-      }
-    },
-    {
       "id": "767b1f6a8e3caf12",
       "sl_no": "2825",
       "question_paper_code": "216102",
@@ -12180,10 +12146,44 @@
       }
     },
     {
+      "id": "41dfcf956131f934",
+      "sl_no": "2359",
+      "question_paper_code": "214302",
+      "course_name": "Biomedical Instrumentation# (101002/AE604D)",
+      "course_code": "214302",
+      "actual_subject_code": "101002",
+      "semester": "S6",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214302.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2359",
+          "214302",
+          "Biomedical Instrumentation# (101002/AE604D)",
+          "S6 Btech Regular (2022 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214302.pdf"
+        ]
+      }
+    },
+    {
       "id": "df7418a9953b899d",
       "sl_no": "2875",
       "question_paper_code": "215717",
-      "course_name": "Blockchain and Cybersecurity (101008/IT802C)",
+      "course_name": "Blockchain and Cybersecurity# (101008/IT802C)",
       "course_code": "215717",
       "actual_subject_code": "101008",
       "semester": "S8",
@@ -12204,7 +12204,7 @@
         "cells": [
           "2875",
           "215717",
-          "Blockchain and Cybersecurity (101008/IT802C)",
+          "Blockchain and Cybersecurity# (101008/IT802C)",
           "S8 Btech Regular (2022 admns.) March 2026",
           ""
         ],
@@ -14968,40 +14968,6 @@
       }
     },
     {
-      "id": "cfcab6aae01005f0",
-      "sl_no": "2907",
-      "question_paper_code": "215646",
-      "course_name": "Cloud Computing (101004/IT803B)",
-      "course_code": "215646",
-      "actual_subject_code": "101004",
-      "semester": "S8",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215646.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2907",
-          "215646",
-          "Cloud Computing (101004/IT803B)",
-          "S8 Btech Regular (2022 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215646.pdf"
-        ]
-      }
-    },
-    {
       "id": "c63a640d46d409f3",
       "sl_no": "2257",
       "question_paper_code": "213967",
@@ -15202,6 +15168,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/214426.pdf"
+        ]
+      }
+    },
+    {
+      "id": "cfcab6aae01005f0",
+      "sl_no": "2907",
+      "question_paper_code": "215646",
+      "course_name": "Cloud Computing# (101004/IT803B)",
+      "course_code": "215646",
+      "actual_subject_code": "101004",
+      "semester": "S8",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215646.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2907",
+          "215646",
+          "Cloud Computing# (101004/IT803B)",
+          "S8 Btech Regular (2022 admns.) March 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215646.pdf"
         ]
       }
     },
@@ -17178,40 +17178,6 @@
       }
     },
     {
-      "id": "b6608eb6efcda153",
-      "sl_no": "2914",
-      "question_paper_code": "215725",
-      "course_name": "Composite Materials (101006/ME801C)",
-      "course_code": "215725",
-      "actual_subject_code": "101006",
-      "semester": "S8",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215725.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2914",
-          "215725",
-          "Composite Materials (101006/ME801C)",
-          "S8 Btech Regular (2022 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215725.pdf"
-        ]
-      }
-    },
-    {
       "id": "a0d5d910372678f8",
       "sl_no": "2335",
       "question_paper_code": "214470",
@@ -17280,19 +17246,19 @@
       }
     },
     {
-      "id": "19991dd997aacb30",
-      "sl_no": "2246",
-      "question_paper_code": "213969",
-      "course_name": "Computational Essentials for Data Science (202102/CS102D)",
-      "course_code": "213969",
-      "actual_subject_code": "202102",
-      "semester": "S1",
+      "id": "b6608eb6efcda153",
+      "sl_no": "2914",
+      "question_paper_code": "215725",
+      "course_name": "Composite Materials# (101006/ME801C)",
+      "course_code": "215725",
+      "actual_subject_code": "101006",
+      "semester": "S8",
       "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "December",
-      "exam_year": 2024,
-      "raw_exam_details": "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213969.pdf",
+      "admission_year": 2022,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215725.pdf",
       "source_row": {
         "headers": [
           "Sl.no",
@@ -17302,14 +17268,14 @@
           "Download"
         ],
         "cells": [
-          "2246",
-          "213969",
-          "Computational Essentials for Data Science (202102/CS102D)",
-          "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+          "2914",
+          "215725",
+          "Composite Materials# (101006/ME801C)",
+          "S8 Btech Regular (2022 admns.) March 2026",
           ""
         ],
         "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/213969.pdf"
+          "https://student.rajagiritech.ac.in/storage/qp/215725.pdf"
         ]
       }
     },
@@ -17382,10 +17348,44 @@
       }
     },
     {
+      "id": "19991dd997aacb30",
+      "sl_no": "2246",
+      "question_paper_code": "213969",
+      "course_name": "Computational Essentials for Data Science# (202102/CS102D)",
+      "course_code": "213969",
+      "actual_subject_code": "202102",
+      "semester": "S1",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "December",
+      "exam_year": 2024,
+      "raw_exam_details": "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213969.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2246",
+          "213969",
+          "Computational Essentials for Data Science# (202102/CS102D)",
+          "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/213969.pdf"
+        ]
+      }
+    },
+    {
       "id": "ee93f91a9ac1b66e",
       "sl_no": "1865",
       "question_paper_code": "213443",
-      "course_name": "Computational Fundamentals For Machine Learning (101003/MA402H)",
+      "course_name": "Computational Fundamentals for Machine Learning (101003/MA402H)",
       "course_code": "213443",
       "actual_subject_code": "101003",
       "semester": "S4",
@@ -17406,7 +17406,7 @@
         "cells": [
           "1865",
           "213443",
-          "Computational Fundamentals For Machine Learning (101003/MA402H)",
+          "Computational Fundamentals for Machine Learning (101003/MA402H)",
           "S4 Btech Honours (2022 admns.) June 2024",
           ""
         ],
@@ -17446,40 +17446,6 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/214584.pdf"
-        ]
-      }
-    },
-    {
-      "id": "6fa2aa5065f607b7",
-      "sl_no": "2473",
-      "question_paper_code": "214559",
-      "course_name": "Computational Intelligence (202102/CS202D)",
-      "course_code": "214559",
-      "actual_subject_code": "202102",
-      "semester": "S2",
-      "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214559.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2473",
-          "214559",
-          "Computational Intelligence (202102/CS202D)",
-          "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214559.pdf"
         ]
       }
     },
@@ -17552,6 +17518,40 @@
       }
     },
     {
+      "id": "6fa2aa5065f607b7",
+      "sl_no": "2473",
+      "question_paper_code": "214559",
+      "course_name": "Computational Intelligence# (202102/CS202D)",
+      "course_code": "214559",
+      "actual_subject_code": "202102",
+      "semester": "S2",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214559.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2473",
+          "214559",
+          "Computational Intelligence# (202102/CS202D)",
+          "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214559.pdf"
+        ]
+      }
+    },
+    {
       "id": "0dbbe367ecf76d5a",
       "sl_no": "2826",
       "question_paper_code": "215994",
@@ -17582,40 +17582,6 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/215994.pdf"
-        ]
-      }
-    },
-    {
-      "id": "90393ed9ff1952f4",
-      "sl_no": "2244",
-      "question_paper_code": "213973",
-      "course_name": "Computational Linguistics (202904/CO101E)",
-      "course_code": "213973",
-      "actual_subject_code": "202904",
-      "semester": "S1",
-      "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "December",
-      "exam_year": 2024,
-      "raw_exam_details": "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213973.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2244",
-          "213973",
-          "Computational Linguistics (202904/CO101E)",
-          "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/213973.pdf"
         ]
       }
     },
@@ -17684,6 +17650,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/212771.pdf"
+        ]
+      }
+    },
+    {
+      "id": "90393ed9ff1952f4",
+      "sl_no": "2244",
+      "question_paper_code": "213973",
+      "course_name": "Computational Linguistics# (202904/CO101E)",
+      "course_code": "213973",
+      "actual_subject_code": "202904",
+      "semester": "S1",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "December",
+      "exam_year": 2024,
+      "raw_exam_details": "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213973.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2244",
+          "213973",
+          "Computational Linguistics# (202904/CO101E)",
+          "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/213973.pdf"
         ]
       }
     },
@@ -19660,40 +19660,6 @@
       }
     },
     {
-      "id": "2be435f3b384bffd",
-      "sl_no": "2389",
-      "question_paper_code": "214296",
-      "course_name": "Computer Networks (101008/IT601D)",
-      "course_code": "214296",
-      "actual_subject_code": "101008",
-      "semester": "S6",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214296.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2389",
-          "214296",
-          "Computer Networks (101008/IT601D)",
-          "S6 Btech Regular (2022 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214296.pdf"
-        ]
-      }
-    },
-    {
       "id": "deabaab307a67166",
       "sl_no": "1699",
       "question_paper_code": "213099",
@@ -20200,6 +20166,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/213019.pdf"
+        ]
+      }
+    },
+    {
+      "id": "2be435f3b384bffd",
+      "sl_no": "2389",
+      "question_paper_code": "214296",
+      "course_name": "Computer Networks# (101008/IT601D)",
+      "course_code": "214296",
+      "actual_subject_code": "101008",
+      "semester": "S6",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214296.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2389",
+          "214296",
+          "Computer Networks# (101008/IT601D)",
+          "S6 Btech Regular (2022 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214296.pdf"
         ]
       }
     },
@@ -21802,40 +21802,6 @@
       }
     },
     {
-      "id": "790431bd065089ec",
-      "sl_no": "2906",
-      "question_paper_code": "215662",
-      "course_name": "Computer Vision (101004/IT801B)",
-      "course_code": "215662",
-      "actual_subject_code": "101004",
-      "semester": "S8",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215662.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2906",
-          "215662",
-          "Computer Vision (101004/IT801B)",
-          "S8 Btech Regular (2022 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215662.pdf"
-        ]
-      }
-    },
-    {
       "id": "925212dd036bece5",
       "sl_no": "2270",
       "question_paper_code": "214356",
@@ -21934,74 +21900,6 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/215616.pdf"
-        ]
-      }
-    },
-    {
-      "id": "bc784351d01301cd",
-      "sl_no": "2254",
-      "question_paper_code": "213964",
-      "course_name": "Computer Vision (202903/CO101D)",
-      "course_code": "213964",
-      "actual_subject_code": "202903",
-      "semester": "S1",
-      "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "December",
-      "exam_year": 2024,
-      "raw_exam_details": "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213964.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2254",
-          "213964",
-          "Computer Vision (202903/CO101D)",
-          "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/213964.pdf"
-        ]
-      }
-    },
-    {
-      "id": "fa02531f62126a68",
-      "sl_no": "2255",
-      "question_paper_code": "213965",
-      "course_name": "Computer Vision (202903/CO101D)",
-      "course_code": "213965",
-      "actual_subject_code": "202903",
-      "semester": "S1",
-      "exam_type": "Supplementary",
-      "admission_year": 2024,
-      "exam_month": "July",
-      "exam_year": 2025,
-      "raw_exam_details": "S1 Mtech Supplementary (2024 admns.) July 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213965.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2255",
-          "213965",
-          "Computer Vision (202903/CO101D)",
-          "S1 Mtech Supplementary (2024 admns.) July 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/213965.pdf"
         ]
       }
     },
@@ -22138,6 +22036,108 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/214423.pdf"
+        ]
+      }
+    },
+    {
+      "id": "790431bd065089ec",
+      "sl_no": "2906",
+      "question_paper_code": "215662",
+      "course_name": "Computer Vision# (101004/IT801B)",
+      "course_code": "215662",
+      "actual_subject_code": "101004",
+      "semester": "S8",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215662.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2906",
+          "215662",
+          "Computer Vision# (101004/IT801B)",
+          "S8 Btech Regular (2022 admns.) March 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215662.pdf"
+        ]
+      }
+    },
+    {
+      "id": "bc784351d01301cd",
+      "sl_no": "2254",
+      "question_paper_code": "213964",
+      "course_name": "Computer Vision# (202903/CO101D)",
+      "course_code": "213964",
+      "actual_subject_code": "202903",
+      "semester": "S1",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "December",
+      "exam_year": 2024,
+      "raw_exam_details": "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213964.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2254",
+          "213964",
+          "Computer Vision# (202903/CO101D)",
+          "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/213964.pdf"
+        ]
+      }
+    },
+    {
+      "id": "fa02531f62126a68",
+      "sl_no": "2255",
+      "question_paper_code": "213965",
+      "course_name": "Computer Vision# (202903/CO101D)",
+      "course_code": "213965",
+      "actual_subject_code": "202903",
+      "semester": "S1",
+      "exam_type": "Supplementary",
+      "admission_year": 2024,
+      "exam_month": "July",
+      "exam_year": 2025,
+      "raw_exam_details": "S1 Mtech Supplementary (2024 admns.) July 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213965.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2255",
+          "213965",
+          "Computer Vision# (202903/CO101D)",
+          "S1 Mtech Supplementary (2024 admns.) July 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/213965.pdf"
         ]
       }
     },
@@ -24828,40 +24828,6 @@
       }
     },
     {
-      "id": "e082de4a2ce5a100",
-      "sl_no": "2370",
-      "question_paper_code": "214316",
-      "course_name": "Data Analytics (101003/CS602D)",
-      "course_code": "214316",
-      "actual_subject_code": "101003",
-      "semester": "S6",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214316.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2370",
-          "214316",
-          "Data Analytics (101003/CS602D)",
-          "S6 Btech Regular (2022 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214316.pdf"
-        ]
-      }
-    },
-    {
       "id": "23957b2d3d8323b8",
       "sl_no": "1992",
       "question_paper_code": "213540",
@@ -25198,6 +25164,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/213030.pdf"
+        ]
+      }
+    },
+    {
+      "id": "e082de4a2ce5a100",
+      "sl_no": "2370",
+      "question_paper_code": "214316",
+      "course_name": "Data Analytics# (101003/CS602D)",
+      "course_code": "214316",
+      "actual_subject_code": "101003",
+      "semester": "S6",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214316.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2370",
+          "214316",
+          "Data Analytics# (101003/CS602D)",
+          "S6 Btech Regular (2022 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214316.pdf"
         ]
       }
     },
@@ -30132,74 +30132,6 @@
       }
     },
     {
-      "id": "be81b9d587124c8d",
-      "sl_no": "2881",
-      "question_paper_code": "215631",
-      "course_name": "Deep Learning (101003/CS801B)",
-      "course_code": "215631",
-      "actual_subject_code": "101003",
-      "semester": "S8",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215631.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2881",
-          "215631",
-          "Deep Learning (101003/CS801B)",
-          "S8 Btech Regular (2022 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215631.pdf"
-        ]
-      }
-    },
-    {
-      "id": "c3275f14d8a63533",
-      "sl_no": "2872",
-      "question_paper_code": "215667",
-      "course_name": "Deep Learning (101008/IT802B)",
-      "course_code": "215667",
-      "actual_subject_code": "101008",
-      "semester": "S8",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215667.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2872",
-          "215667",
-          "Deep Learning (101008/IT802B)",
-          "S8 Btech Regular (2022 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215667.pdf"
-        ]
-      }
-    },
-    {
       "id": "750923248ebfc25b",
       "sl_no": "2493",
       "question_paper_code": "214557",
@@ -30268,6 +30200,40 @@
       }
     },
     {
+      "id": "be81b9d587124c8d",
+      "sl_no": "2881",
+      "question_paper_code": "215631",
+      "course_name": "Deep Learning# (101003/CS801B)",
+      "course_code": "215631",
+      "actual_subject_code": "101003",
+      "semester": "S8",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215631.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2881",
+          "215631",
+          "Deep Learning# (101003/CS801B)",
+          "S8 Btech Regular (2022 admns.) March 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215631.pdf"
+        ]
+      }
+    },
+    {
       "id": "c506a0097b0a9994",
       "sl_no": "2271",
       "question_paper_code": "214383",
@@ -30298,6 +30264,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/214383.pdf"
+        ]
+      }
+    },
+    {
+      "id": "c3275f14d8a63533",
+      "sl_no": "2872",
+      "question_paper_code": "215667",
+      "course_name": "Deep Learning# (101008/IT802B)",
+      "course_code": "215667",
+      "actual_subject_code": "101008",
+      "semester": "S8",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215667.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2872",
+          "215667",
+          "Deep Learning# (101008/IT802B)",
+          "S8 Btech Regular (2022 admns.) March 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215667.pdf"
         ]
       }
     },
@@ -33226,74 +33226,6 @@
       }
     },
     {
-      "id": "c829b256438a8642",
-      "sl_no": "2380",
-      "question_paper_code": "214327",
-      "course_name": "Digital Image Processing (101001/EC605D)",
-      "course_code": "214327",
-      "actual_subject_code": "101001",
-      "semester": "S6",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214327.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2380",
-          "214327",
-          "Digital Image Processing (101001/EC605D)",
-          "S6 Btech Regular (2022 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214327.pdf"
-        ]
-      }
-    },
-    {
-      "id": "c72a227e1e279723",
-      "sl_no": "2462",
-      "question_paper_code": "214340",
-      "course_name": "Digital image processing (101004/IT606D)",
-      "course_code": "214340",
-      "actual_subject_code": "101004",
-      "semester": "S6",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214340.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2462",
-          "214340",
-          "Digital image processing (101004/IT606D)",
-          "S6 Btech Regular (2022 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214340.pdf"
-        ]
-      }
-    },
-    {
       "id": "d7c7d022f94efdb6",
       "sl_no": "1866",
       "question_paper_code": "213444",
@@ -33460,6 +33392,74 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/213045.pdf"
+        ]
+      }
+    },
+    {
+      "id": "c829b256438a8642",
+      "sl_no": "2380",
+      "question_paper_code": "214327",
+      "course_name": "Digital Image Processing# (101001/EC605D)",
+      "course_code": "214327",
+      "actual_subject_code": "101001",
+      "semester": "S6",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214327.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2380",
+          "214327",
+          "Digital Image Processing# (101001/EC605D)",
+          "S6 Btech Regular (2022 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214327.pdf"
+        ]
+      }
+    },
+    {
+      "id": "c72a227e1e279723",
+      "sl_no": "2462",
+      "question_paper_code": "214340",
+      "course_name": "Digital image processing# (101004/IT606D)",
+      "course_code": "214340",
+      "actual_subject_code": "101004",
+      "semester": "S6",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214340.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2462",
+          "214340",
+          "Digital image processing# (101004/IT606D)",
+          "S6 Btech Regular (2022 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214340.pdf"
         ]
       }
     },
@@ -38632,40 +38632,6 @@
       }
     },
     {
-      "id": "8c1248ab285a836c",
-      "sl_no": "2731",
-      "question_paper_code": "215357",
-      "course_name": "Embedded System Design (202105/EC301A)",
-      "course_code": "215357",
-      "actual_subject_code": "202105",
-      "semester": "S3",
-      "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "October",
-      "exam_year": 2025,
-      "raw_exam_details": "S3 Mtech Regular (2024 admns.) October 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215357.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2731",
-          "215357",
-          "Embedded System Design (202105/EC301A)",
-          "S3 Mtech Regular (2024 admns.) October 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215357.pdf"
-        ]
-      }
-    },
-    {
       "id": "13ffe967bfd88ec3",
       "sl_no": "2258",
       "question_paper_code": "213976",
@@ -38696,6 +38662,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/213976.pdf"
+        ]
+      }
+    },
+    {
+      "id": "8c1248ab285a836c",
+      "sl_no": "2731",
+      "question_paper_code": "215357",
+      "course_name": "Embedded System Design# (202105/EC301A)",
+      "course_code": "215357",
+      "actual_subject_code": "202105",
+      "semester": "S3",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "October",
+      "exam_year": 2025,
+      "raw_exam_details": "S3 Mtech Regular (2024 admns.) October 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215357.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2731",
+          "215357",
+          "Embedded System Design# (202105/EC301A)",
+          "S3 Mtech Regular (2024 admns.) October 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215357.pdf"
         ]
       }
     },
@@ -38836,40 +38836,6 @@
       }
     },
     {
-      "id": "6b2de47d35652dc4",
-      "sl_no": "2379",
-      "question_paper_code": "214325",
-      "course_name": "Embedded Systems (101001/EC604D)",
-      "course_code": "214325",
-      "actual_subject_code": "101001",
-      "semester": "S6",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214325.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2379",
-          "214325",
-          "Embedded Systems (101001/EC604D)",
-          "S6 Btech Regular (2022 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214325.pdf"
-        ]
-      }
-    },
-    {
       "id": "4a8ed3797b77a99e",
       "sl_no": "1667",
       "question_paper_code": "213043",
@@ -38968,6 +38934,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/213042.pdf"
+        ]
+      }
+    },
+    {
+      "id": "6b2de47d35652dc4",
+      "sl_no": "2379",
+      "question_paper_code": "214325",
+      "course_name": "Embedded Systems# (101001/EC604D)",
+      "course_code": "214325",
+      "actual_subject_code": "101001",
+      "semester": "S6",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214325.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2379",
+          "214325",
+          "Embedded Systems# (101001/EC604D)",
+          "S6 Btech Regular (2022 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214325.pdf"
         ]
       }
     },
@@ -39111,7 +39111,7 @@
       "id": "5d02d8bf0b554cc3",
       "sl_no": "2900",
       "question_paper_code": "215640",
-      "course_name": "Energy Management (101005/EE802B)",
+      "course_name": "Energy Management# (101005/EE802B)",
       "course_code": "215640",
       "actual_subject_code": "101005",
       "semester": "S8",
@@ -39132,7 +39132,7 @@
         "cells": [
           "2900",
           "215640",
-          "Energy Management (101005/EE802B)",
+          "Energy Management# (101005/EE802B)",
           "S8 Btech Regular (2022 admns.) March 2026",
           ""
         ],
@@ -45432,40 +45432,6 @@
       }
     },
     {
-      "id": "ec32e10e005ccb26",
-      "sl_no": "2894",
-      "question_paper_code": "215654",
-      "course_name": "Entrepreneurship (101001/EC807B)",
-      "course_code": "215654",
-      "actual_subject_code": "101001",
-      "semester": "S8",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215654.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2894",
-          "215654",
-          "Entrepreneurship (101001/EC807B)",
-          "S8 Btech Regular (2022 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215654.pdf"
-        ]
-      }
-    },
-    {
       "id": "f1a4a6d3be9b2ee8",
       "sl_no": "2300",
       "question_paper_code": "214418",
@@ -45496,6 +45462,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/214418.pdf"
+        ]
+      }
+    },
+    {
+      "id": "ec32e10e005ccb26",
+      "sl_no": "2894",
+      "question_paper_code": "215654",
+      "course_name": "Entrepreneurship# (101001/EC807B)",
+      "course_code": "215654",
+      "actual_subject_code": "101001",
+      "semester": "S8",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215654.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2894",
+          "215654",
+          "Entrepreneurship# (101001/EC807B)",
+          "S8 Btech Regular (2022 admns.) March 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215654.pdf"
         ]
       }
     },
@@ -45809,7 +45809,7 @@
       "id": "4d1ef8f9db6caffe",
       "sl_no": "2678",
       "question_paper_code": "215069",
-      "course_name": "Environmental Impact Assessment (101907/CE701C)",
+      "course_name": "Environmental Impact Assessment# (101907/CE701C)",
       "course_code": "215069",
       "actual_subject_code": "101907",
       "semester": "S7",
@@ -45830,7 +45830,7 @@
         "cells": [
           "2678",
           "215069",
-          "Environmental Impact Assessment (101907/CE701C)",
+          "Environmental Impact Assessment# (101907/CE701C)",
           "S7 Btech Regular (2022 admns.) October 2025",
           ""
         ],
@@ -49206,40 +49206,6 @@
       }
     },
     {
-      "id": "68efb2c982e584df",
-      "sl_no": "2366",
-      "question_paper_code": "214312",
-      "course_name": "Functional Design of Buildings (101007/CE607D)",
-      "course_code": "214312",
-      "actual_subject_code": "101007",
-      "semester": "S6",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214312.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2366",
-          "214312",
-          "Functional Design of Buildings (101007/CE607D)",
-          "S6 Btech Regular (2022 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214312.pdf"
-        ]
-      }
-    },
-    {
       "id": "79155c4887fb8722",
       "sl_no": "2836",
       "question_paper_code": "216115",
@@ -49308,19 +49274,19 @@
       }
     },
     {
-      "id": "2dbe62a8e90cd4b0",
-      "sl_no": "2251",
-      "question_paper_code": "213975",
-      "course_name": "Functional Verification with System Verilog (202105/EC101E)",
-      "course_code": "213975",
-      "actual_subject_code": "202105",
-      "semester": "S1",
+      "id": "68efb2c982e584df",
+      "sl_no": "2366",
+      "question_paper_code": "214312",
+      "course_name": "Functional Design of Buildings# (101007/CE607D)",
+      "course_code": "214312",
+      "actual_subject_code": "101007",
+      "semester": "S6",
       "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "December",
-      "exam_year": 2024,
-      "raw_exam_details": "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213975.pdf",
+      "admission_year": 2022,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214312.pdf",
       "source_row": {
         "headers": [
           "Sl.no",
@@ -49330,14 +49296,14 @@
           "Download"
         ],
         "cells": [
-          "2251",
-          "213975",
-          "Functional Verification with System Verilog (202105/EC101E)",
-          "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+          "2366",
+          "214312",
+          "Functional Design of Buildings# (101007/CE607D)",
+          "S6 Btech Regular (2022 admns.) April 2025",
           ""
         ],
         "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/213975.pdf"
+          "https://student.rajagiritech.ac.in/storage/qp/214312.pdf"
         ]
       }
     },
@@ -49440,6 +49406,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/212777.pdf"
+        ]
+      }
+    },
+    {
+      "id": "2dbe62a8e90cd4b0",
+      "sl_no": "2251",
+      "question_paper_code": "213975",
+      "course_name": "Functional Verification with System Verilog# (202105/EC101E)",
+      "course_code": "213975",
+      "actual_subject_code": "202105",
+      "semester": "S1",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "December",
+      "exam_year": 2024,
+      "raw_exam_details": "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213975.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2251",
+          "213975",
+          "Functional Verification with System Verilog# (202105/EC101E)",
+          "S1 Mtech End Semester Examinations (2024 admns.) December 2024",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/213975.pdf"
         ]
       }
     },
@@ -50430,40 +50430,6 @@
       }
     },
     {
-      "id": "bc3e37843347d5fc",
-      "sl_no": "2882",
-      "question_paper_code": "215634",
-      "course_name": "Fuzzy Set Theory and Applications (101003/MA805B)",
-      "course_code": "215634",
-      "actual_subject_code": "101003",
-      "semester": "S8",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215634.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2882",
-          "215634",
-          "Fuzzy Set Theory and Applications (101003/MA805B)",
-          "S8 Btech Regular (2022 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215634.pdf"
-        ]
-      }
-    },
-    {
       "id": "b8b5cb605e66d739",
       "sl_no": "2480",
       "question_paper_code": "214404",
@@ -50562,6 +50528,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/214406.pdf"
+        ]
+      }
+    },
+    {
+      "id": "bc3e37843347d5fc",
+      "sl_no": "2882",
+      "question_paper_code": "215634",
+      "course_name": "Fuzzy Set Theory and Applications# (101003/MA805B)",
+      "course_code": "215634",
+      "actual_subject_code": "101003",
+      "semester": "S8",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215634.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2882",
+          "215634",
+          "Fuzzy Set Theory and Applications# (101003/MA805B)",
+          "S8 Btech Regular (2022 admns.) March 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215634.pdf"
         ]
       }
     },
@@ -51008,40 +51008,6 @@
       }
     },
     {
-      "id": "27b8d6f3bc79c10b",
-      "sl_no": "2496",
-      "question_paper_code": "214571",
-      "course_name": "Generative AI and Prompt Engineering (202903/CO203D)",
-      "course_code": "214571",
-      "actual_subject_code": "202903",
-      "semester": "S2",
-      "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214571.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2496",
-          "214571",
-          "Generative AI and Prompt Engineering (202903/CO203D)",
-          "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214571.pdf"
-        ]
-      }
-    },
-    {
       "id": "46822648b3497768",
       "sl_no": "2922",
       "question_paper_code": "216180",
@@ -51072,6 +51038,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/216180.pdf"
+        ]
+      }
+    },
+    {
+      "id": "27b8d6f3bc79c10b",
+      "sl_no": "2496",
+      "question_paper_code": "214571",
+      "course_name": "Generative AI and Prompt Engineering# (202903/CO203D)",
+      "course_code": "214571",
+      "actual_subject_code": "202903",
+      "semester": "S2",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214571.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2496",
+          "214571",
+          "Generative AI and Prompt Engineering# (202903/CO203D)",
+          "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214571.pdf"
         ]
       }
     },
@@ -53085,7 +53085,7 @@
       "id": "0f4775e5f6aeba0c",
       "sl_no": "2901",
       "question_paper_code": "215689",
-      "course_name": "High Voltage Direct Current and Facts (101005/EE806C)",
+      "course_name": "High Voltage Direct Current and Facts# (101005/EE806C)",
       "course_code": "215689",
       "actual_subject_code": "101005",
       "semester": "S8",
@@ -53106,7 +53106,7 @@
         "cells": [
           "2901",
           "215689",
-          "High Voltage Direct Current and Facts (101005/EE806C)",
+          "High Voltage Direct Current and Facts# (101005/EE806C)",
           "S8 Btech Regular (2022 admns.) March 2026",
           ""
         ],
@@ -56822,74 +56822,6 @@
       }
     },
     {
-      "id": "9bfa23d51e6286ec",
-      "sl_no": "2360",
-      "question_paper_code": "214307",
-      "course_name": "Internet of Things (101002/AE607D)",
-      "course_code": "214307",
-      "actual_subject_code": "101002",
-      "semester": "S6",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214307.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2360",
-          "214307",
-          "Internet of Things (101002/AE607D)",
-          "S6 Btech Regular (2022 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214307.pdf"
-        ]
-      }
-    },
-    {
-      "id": "f3ab6c9b26750b59",
-      "sl_no": "2908",
-      "question_paper_code": "215686",
-      "course_name": "Internet of Things (101004/IT802C)",
-      "course_code": "215686",
-      "actual_subject_code": "101004",
-      "semester": "S8",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215686.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2908",
-          "215686",
-          "Internet of Things (101004/IT802C)",
-          "S8 Btech Regular (2022 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215686.pdf"
-        ]
-      }
-    },
-    {
       "id": "a89fe31ccb139dc8",
       "sl_no": "2665",
       "question_paper_code": "215002",
@@ -57026,6 +56958,40 @@
       }
     },
     {
+      "id": "9bfa23d51e6286ec",
+      "sl_no": "2360",
+      "question_paper_code": "214307",
+      "course_name": "Internet of Things# (101002/AE607D)",
+      "course_code": "214307",
+      "actual_subject_code": "101002",
+      "semester": "S6",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214307.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2360",
+          "214307",
+          "Internet of Things# (101002/AE607D)",
+          "S6 Btech Regular (2022 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214307.pdf"
+        ]
+      }
+    },
+    {
       "id": "be776d64675c725f",
       "sl_no": "2326",
       "question_paper_code": "214466",
@@ -57056,6 +57022,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/214466.pdf"
+        ]
+      }
+    },
+    {
+      "id": "f3ab6c9b26750b59",
+      "sl_no": "2908",
+      "question_paper_code": "215686",
+      "course_name": "Internet of Things# (101004/IT802C)",
+      "course_code": "215686",
+      "actual_subject_code": "101004",
+      "semester": "S8",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215686.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2908",
+          "215686",
+          "Internet of Things# (101004/IT802C)",
+          "S8 Btech Regular (2022 admns.) March 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215686.pdf"
         ]
       }
     },
@@ -57301,7 +57301,7 @@
       "id": "efc6f9956737b956",
       "sl_no": "2381",
       "question_paper_code": "214237",
-      "course_name": "Internetworking With TCP/IP (101004/IT600A)",
+      "course_name": "Internetworking with TCP/IP (101004/IT600A)",
       "course_code": "214237",
       "actual_subject_code": "101004",
       "semester": "S6",
@@ -57322,7 +57322,7 @@
         "cells": [
           "2381",
           "214237",
-          "Internetworking With TCP/IP (101004/IT600A)",
+          "Internetworking with TCP/IP (101004/IT600A)",
           "S6 Btech Regular (2022 admns.) April 2025",
           ""
         ],
@@ -59341,7 +59341,7 @@
       "id": "1604d91659978992",
       "sl_no": "785",
       "question_paper_code": "211899",
-      "course_name": "Introductory Topics In Statistics, Probability and Calculus (101009/MA100B)",
+      "course_name": "Introductory Topics in Statistics, Probability and Calculus (101009/MA100B)",
       "course_code": "211899",
       "actual_subject_code": "101009",
       "semester": "S1",
@@ -59362,7 +59362,7 @@
         "cells": [
           "785",
           "211899",
-          "Introductory Topics In Statistics, Probability and Calculus (101009/MA100B)",
+          "Introductory Topics in Statistics, Probability and Calculus (101009/MA100B)",
           "S1 Btech Regular (2022 admns.) March 2023",
           ""
         ],
@@ -59375,7 +59375,7 @@
       "id": "397b0f739b5e36ed",
       "sl_no": "786",
       "question_paper_code": "211901",
-      "course_name": "Introductory Topics In Statistics, Probability and Calculus (101009/MA100B)",
+      "course_name": "Introductory Topics in Statistics, Probability and Calculus (101009/MA100B)",
       "course_code": "211901",
       "actual_subject_code": "101009",
       "semester": "S1",
@@ -59396,7 +59396,7 @@
         "cells": [
           "786",
           "211901",
-          "Introductory Topics In Statistics, Probability and Calculus (101009/MA100B)",
+          "Introductory Topics in Statistics, Probability and Calculus (101009/MA100B)",
           "S1 Btech Supplementary (2021 admns.) September 2023",
           ""
         ],
@@ -59409,7 +59409,7 @@
       "id": "89ea0b0e02732e08",
       "sl_no": "784",
       "question_paper_code": "211900",
-      "course_name": "Introductory Topics In Statistics, Probability and Calculus (101009/MA100B)",
+      "course_name": "Introductory Topics in Statistics, Probability and Calculus (101009/MA100B)",
       "course_code": "211900",
       "actual_subject_code": "101009",
       "semester": "S1",
@@ -59430,7 +59430,7 @@
         "cells": [
           "784",
           "211900",
-          "Introductory Topics In Statistics, Probability and Calculus (101009/MA100B)",
+          "Introductory Topics in Statistics, Probability and Calculus (101009/MA100B)",
           "S1 Btech Supplementary (2021 admns.) July 2024",
           ""
         ],
@@ -63622,74 +63622,6 @@
       }
     },
     {
-      "id": "725cb59acce7b83c",
-      "sl_no": "2175",
-      "question_paper_code": "213701",
-      "course_name": "Machine Learning (101009/IT503F)",
-      "course_code": "213701",
-      "actual_subject_code": "101009",
-      "semester": "S5",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "November",
-      "exam_year": 2024,
-      "raw_exam_details": "S5 Btech Regular (2022 admns.) November 2024",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213701.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2175",
-          "213701",
-          "Machine Learning (101009/IT503F)",
-          "S5 Btech Regular (2022 admns.) November 2024",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/213701.pdf"
-        ]
-      }
-    },
-    {
-      "id": "f4c0a07821f09e77",
-      "sl_no": "2174",
-      "question_paper_code": "213699",
-      "course_name": "Machine Learning (101009/IT503F)",
-      "course_code": "213699",
-      "actual_subject_code": "101009",
-      "semester": "S5",
-      "exam_type": "Supplementary",
-      "admission_year": 2021,
-      "exam_month": "November",
-      "exam_year": 2025,
-      "raw_exam_details": "S5 Btech Supplementary (2021 admns.) November 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213699.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2174",
-          "213699",
-          "Machine Learning (101009/IT503F)",
-          "S5 Btech Supplementary (2021 admns.) November 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/213699.pdf"
-        ]
-      }
-    },
-    {
       "id": "f7a0cc0f902ac81a",
       "sl_no": "2838",
       "question_paper_code": "215999",
@@ -63860,6 +63792,40 @@
       }
     },
     {
+      "id": "026b6c48f8d610b6",
+      "sl_no": "2467",
+      "question_paper_code": "214541",
+      "course_name": "Machine Learning Algorithms (202108/IT200A)",
+      "course_code": "214541",
+      "actual_subject_code": "202108",
+      "semester": "S2",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214541.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2467",
+          "214541",
+          "Machine Learning Algorithms (202108/IT200A)",
+          "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214541.pdf"
+        ]
+      }
+    },
+    {
       "id": "451932d02269c70f",
       "sl_no": "2245",
       "question_paper_code": "213955",
@@ -63958,40 +63924,6 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/215522.pdf"
-        ]
-      }
-    },
-    {
-      "id": "026b6c48f8d610b6",
-      "sl_no": "2467",
-      "question_paper_code": "214541",
-      "course_name": "Machine Learning Algorithms (MLA) (202108/IT200A)",
-      "course_code": "214541",
-      "actual_subject_code": "MLA",
-      "semester": "S2",
-      "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214541.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2467",
-          "214541",
-          "Machine Learning Algorithms (MLA) (202108/IT200A)",
-          "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214541.pdf"
         ]
       }
     },
@@ -64098,6 +64030,40 @@
       }
     },
     {
+      "id": "725cb59acce7b83c",
+      "sl_no": "2175",
+      "question_paper_code": "213701",
+      "course_name": "Machine Learning# (101009/IT503F)",
+      "course_code": "213701",
+      "actual_subject_code": "101009",
+      "semester": "S5",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "November",
+      "exam_year": 2024,
+      "raw_exam_details": "S5 Btech Regular (2022 admns.) November 2024",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213701.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2175",
+          "213701",
+          "Machine Learning# (101009/IT503F)",
+          "S5 Btech Regular (2022 admns.) November 2024",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/213701.pdf"
+        ]
+      }
+    },
+    {
       "id": "4ce9058e11a18f6f",
       "sl_no": "1282",
       "question_paper_code": "212566",
@@ -64128,6 +64094,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/212566.pdf"
+        ]
+      }
+    },
+    {
+      "id": "f4c0a07821f09e77",
+      "sl_no": "2174",
+      "question_paper_code": "213699",
+      "course_name": "Machine Learning# (101009/IT503F)",
+      "course_code": "213699",
+      "actual_subject_code": "101009",
+      "semester": "S5",
+      "exam_type": "Supplementary",
+      "admission_year": 2021,
+      "exam_month": "November",
+      "exam_year": 2025,
+      "raw_exam_details": "S5 Btech Supplementary (2021 admns.) November 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/213699.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2174",
+          "213699",
+          "Machine Learning# (101009/IT503F)",
+          "S5 Btech Supplementary (2021 admns.) November 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/213699.pdf"
         ]
       }
     },
@@ -65223,7 +65223,7 @@
       "id": "5d6a0e85fb05161f",
       "sl_no": "2157",
       "question_paper_code": "213683",
-      "course_name": "Management For Software Engineers (101902/IT500E)",
+      "course_name": "Management for Software Engineers (101902/IT500E)",
       "course_code": "213683",
       "actual_subject_code": "101902",
       "semester": "S5",
@@ -65244,7 +65244,7 @@
         "cells": [
           "2157",
           "213683",
-          "Management For Software Engineers (101902/IT500E)",
+          "Management for Software Engineers (101902/IT500E)",
           "S5 Btech Regular (2022 admns.) November 2024",
           ""
         ],
@@ -65291,7 +65291,7 @@
       "id": "79f4bb330671be31",
       "sl_no": "2156",
       "question_paper_code": "213681",
-      "course_name": "Management For Software Engineers (101902/IT500E)",
+      "course_name": "Management for Software Engineers (101902/IT500E)",
       "course_code": "213681",
       "actual_subject_code": "101902",
       "semester": "S5",
@@ -65312,7 +65312,7 @@
         "cells": [
           "2156",
           "213681",
-          "Management For Software Engineers (101902/IT500E)",
+          "Management for Software Engineers (101902/IT500E)",
           "S5 Btech Supplementary (2021 admns.) November 2025",
           ""
         ],
@@ -70830,40 +70830,6 @@
       }
     },
     {
-      "id": "96d450f10d1235a0",
-      "sl_no": "2913",
-      "question_paper_code": "215644",
-      "course_name": "Micro and Nano Manufacturing (101006/ME806B)",
-      "course_code": "215644",
-      "actual_subject_code": "101006",
-      "semester": "S8",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215644.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2913",
-          "215644",
-          "Micro and Nano Manufacturing (101006/ME806B)",
-          "S8 Btech Regular (2022 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215644.pdf"
-        ]
-      }
-    },
-    {
       "id": "25fd179d5b412dcb",
       "sl_no": "2333",
       "question_paper_code": "214428",
@@ -70928,6 +70894,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/214429.pdf"
+        ]
+      }
+    },
+    {
+      "id": "96d450f10d1235a0",
+      "sl_no": "2913",
+      "question_paper_code": "215644",
+      "course_name": "Micro and Nano Manufacturing# (101006/ME806B)",
+      "course_code": "215644",
+      "actual_subject_code": "101006",
+      "semester": "S8",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215644.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2913",
+          "215644",
+          "Micro and Nano Manufacturing# (101006/ME806B)",
+          "S8 Btech Regular (2022 admns.) March 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215644.pdf"
         ]
       }
     },
@@ -72159,7 +72159,7 @@
       "id": "b0bb6b0511ca1b23",
       "sl_no": "2883",
       "question_paper_code": "215675",
-      "course_name": "Mobile Computing (101003/CS807C)",
+      "course_name": "Mobile Computing# (101003/CS807C)",
       "course_code": "215675",
       "actual_subject_code": "101003",
       "semester": "S8",
@@ -72180,7 +72180,7 @@
         "cells": [
           "2883",
           "215675",
-          "Mobile Computing (101003/CS807C)",
+          "Mobile Computing# (101003/CS807C)",
           "S8 Btech Regular (2022 admns.) March 2026",
           ""
         ],
@@ -73108,40 +73108,6 @@
       }
     },
     {
-      "id": "a641e4bd2fc4ae50",
-      "sl_no": "2470",
-      "question_paper_code": "214561",
-      "course_name": "Multimedia System (202905/EC201E)",
-      "course_code": "214561",
-      "actual_subject_code": "202905",
-      "semester": "S2",
-      "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214561.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2470",
-          "214561",
-          "Multimedia System (202905/EC201E)",
-          "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214561.pdf"
-        ]
-      }
-    },
-    {
       "id": "22d19bd325b5793c",
       "sl_no": "2923",
       "question_paper_code": "216188",
@@ -73172,6 +73138,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/216188.pdf"
+        ]
+      }
+    },
+    {
+      "id": "a641e4bd2fc4ae50",
+      "sl_no": "2470",
+      "question_paper_code": "214561",
+      "course_name": "Multimedia System# (202905/EC201E)",
+      "course_code": "214561",
+      "actual_subject_code": "202905",
+      "semester": "S2",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214561.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2470",
+          "214561",
+          "Multimedia System# (202905/EC201E)",
+          "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214561.pdf"
         ]
       }
     },
@@ -73349,7 +73349,7 @@
       "id": "27a954a4b074a2bf",
       "sl_no": "2878",
       "question_paper_code": "215670",
-      "course_name": "Nanoelectronics (101002/AE806B)",
+      "course_name": "Nanoelectronics# (101002/AE806B)",
       "course_code": "215670",
       "actual_subject_code": "101002",
       "semester": "S8",
@@ -73370,7 +73370,7 @@
         "cells": [
           "2878",
           "215670",
-          "Nanoelectronics (101002/AE806B)",
+          "Nanoelectronics# (101002/AE806B)",
           "S8 Btech Regular (2022 admns.) March 2026",
           ""
         ],
@@ -74641,7 +74641,7 @@
       "id": "ea113d19d678316b",
       "sl_no": "2915",
       "question_paper_code": "215769",
-      "course_name": "New And Renewable Energy Engineering# (101006/ME805D)",
+      "course_name": "New and Renewable Energy Engineering# (101006/ME805D)",
       "course_code": "215769",
       "actual_subject_code": "101006",
       "semester": "S8",
@@ -74662,7 +74662,7 @@
         "cells": [
           "2915",
           "215769",
-          "New And Renewable Energy Engineering# (101006/ME805D)",
+          "New and Renewable Energy Engineering# (101006/ME805D)",
           "S8 Btech Regular (2022 admns.) March 2026",
           ""
         ],
@@ -74774,40 +74774,6 @@
       }
     },
     {
-      "id": "ea458965f51c0caf",
-      "sl_no": "2395",
-      "question_paper_code": "214336",
-      "course_name": "Nondestructive Testing (101006/ME601D)",
-      "course_code": "214336",
-      "actual_subject_code": "101006",
-      "semester": "S6",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214336.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2395",
-          "214336",
-          "Nondestructive Testing (101006/ME601D)",
-          "S6 Btech Regular (2022 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214336.pdf"
-        ]
-      }
-    },
-    {
       "id": "c531d9d9c9b64748",
       "sl_no": "1724",
       "question_paper_code": "213057",
@@ -74906,6 +74872,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/213059.pdf"
+        ]
+      }
+    },
+    {
+      "id": "ea458965f51c0caf",
+      "sl_no": "2395",
+      "question_paper_code": "214336",
+      "course_name": "Nondestructive Testing# (101006/ME601D)",
+      "course_code": "214336",
+      "actual_subject_code": "101006",
+      "semester": "S6",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214336.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2395",
+          "214336",
+          "Nondestructive Testing# (101006/ME601D)",
+          "S6 Btech Regular (2022 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214336.pdf"
         ]
       }
     },
@@ -75015,7 +75015,7 @@
       "id": "4356966a37372879",
       "sl_no": "2466",
       "question_paper_code": "214607",
-      "course_name": "Numerical Methods and Optimization Techniques (202905/MA201E)",
+      "course_name": "Numerical Methods and Optimization Techniques# (202905/MA201E)",
       "course_code": "214607",
       "actual_subject_code": "202905",
       "semester": "S2",
@@ -75036,7 +75036,7 @@
         "cells": [
           "2466",
           "214607",
-          "Numerical Methods and Optimization Techniques (202905/MA201E)",
+          "Numerical Methods and Optimization Techniques# (202905/MA201E)",
           "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
           ""
         ],
@@ -75076,40 +75076,6 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/212262.pdf"
-        ]
-      }
-    },
-    {
-      "id": "ca254c7b0af63505",
-      "sl_no": "2390",
-      "question_paper_code": "214299",
-      "course_name": "Numerical Methods in Data Science (101008/MA606D)",
-      "course_code": "214299",
-      "actual_subject_code": "101008",
-      "semester": "S6",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214299.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2390",
-          "214299",
-          "Numerical Methods in Data Science (101008/MA606D)",
-          "S6 Btech Regular (2022 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214299.pdf"
         ]
       }
     },
@@ -75246,6 +75212,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/213023.pdf"
+        ]
+      }
+    },
+    {
+      "id": "ca254c7b0af63505",
+      "sl_no": "2390",
+      "question_paper_code": "214299",
+      "course_name": "Numerical Methods in Data Science# (101008/MA606D)",
+      "course_code": "214299",
+      "actual_subject_code": "101008",
+      "semester": "S6",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214299.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2390",
+          "214299",
+          "Numerical Methods in Data Science# (101008/MA606D)",
+          "S6 Btech Regular (2022 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214299.pdf"
         ]
       }
     },
@@ -78582,40 +78582,6 @@
       }
     },
     {
-      "id": "fb6329bbb88b4ac3",
-      "sl_no": "2495",
-      "question_paper_code": "214553",
-      "course_name": "Pattern Recognition (202107/AD202C)",
-      "course_code": "214553",
-      "actual_subject_code": "202107",
-      "semester": "S2",
-      "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214553.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2495",
-          "214553",
-          "Pattern Recognition (202107/AD202C)",
-          "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214553.pdf"
-        ]
-      }
-    },
-    {
       "id": "2bbc04d8139cf2d6",
       "sl_no": "2933",
       "question_paper_code": "216156",
@@ -78646,6 +78612,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/216156.pdf"
+        ]
+      }
+    },
+    {
+      "id": "fb6329bbb88b4ac3",
+      "sl_no": "2495",
+      "question_paper_code": "214553",
+      "course_name": "Pattern Recognition# (202107/AD202C)",
+      "course_code": "214553",
+      "actual_subject_code": "202107",
+      "semester": "S2",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214553.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2495",
+          "214553",
+          "Pattern Recognition# (202107/AD202C)",
+          "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214553.pdf"
         ]
       }
     },
@@ -84229,7 +84229,7 @@
       "id": "9d292eb552f31f97",
       "sl_no": "841",
       "question_paper_code": "212071",
-      "course_name": "Programming In C (101905/CO200G)",
+      "course_name": "Programming in C (101905/CO200G)",
       "course_code": "212071",
       "actual_subject_code": "101905",
       "semester": "S2",
@@ -84250,7 +84250,7 @@
         "cells": [
           "841",
           "212071",
-          "Programming In C (101905/CO200G)",
+          "Programming in C (101905/CO200G)",
           "S2 Btech Regular (2022 admns.) August 2023",
           ""
         ],
@@ -84263,7 +84263,7 @@
       "id": "80e10e248268bd01",
       "sl_no": "840",
       "question_paper_code": "212069",
-      "course_name": "Programming In C (101905/CO200G)",
+      "course_name": "Programming in C (101905/CO200G)",
       "course_code": "212069",
       "actual_subject_code": "101905",
       "semester": "S2",
@@ -84284,7 +84284,7 @@
         "cells": [
           "840",
           "212069",
-          "Programming In C (101905/CO200G)",
+          "Programming in C (101905/CO200G)",
           "S2 Btech Supplementary (2021 admns.) February 2024",
           ""
         ],
@@ -84297,7 +84297,7 @@
       "id": "7fc8ebd91f15d476",
       "sl_no": "842",
       "question_paper_code": "212070",
-      "course_name": "Programming In C (101905/CO200G)",
+      "course_name": "Programming in C (101905/CO200G)",
       "course_code": "212070",
       "actual_subject_code": "101905",
       "semester": "S2",
@@ -84318,7 +84318,7 @@
         "cells": [
           "842",
           "212070",
-          "Programming In C (101905/CO200G)",
+          "Programming in C (101905/CO200G)",
           "S2 Btech Supplementary (2021 admns.) December 2024",
           ""
         ],
@@ -84532,40 +84532,6 @@
       }
     },
     {
-      "id": "26d587772ce8e86b",
-      "sl_no": "2371",
-      "question_paper_code": "214318",
-      "course_name": "Programming in Python (101003/CS606D)",
-      "course_code": "214318",
-      "actual_subject_code": "101003",
-      "semester": "S6",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214318.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2371",
-          "214318",
-          "Programming in Python (101003/CS606D)",
-          "S6 Btech Regular (2022 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214318.pdf"
-        ]
-      }
-    },
-    {
       "id": "d5b1f76860848696",
       "sl_no": "1644",
       "question_paper_code": "213034",
@@ -84664,6 +84630,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/213033.pdf"
+        ]
+      }
+    },
+    {
+      "id": "26d587772ce8e86b",
+      "sl_no": "2371",
+      "question_paper_code": "214318",
+      "course_name": "Programming in Python# (101003/CS606D)",
+      "course_code": "214318",
+      "actual_subject_code": "101003",
+      "semester": "S6",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214318.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2371",
+          "214318",
+          "Programming in Python# (101003/CS606D)",
+          "S6 Btech Regular (2022 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214318.pdf"
         ]
       }
     },
@@ -85691,7 +85691,7 @@
       "id": "f882509d30ced2f4",
       "sl_no": "2679",
       "question_paper_code": "215079",
-      "course_name": "Quality Engineering and Management (101907/ME705C)",
+      "course_name": "Quality Engineering and Management# (101907/ME705C)",
       "course_code": "215079",
       "actual_subject_code": "101907",
       "semester": "S7",
@@ -85712,7 +85712,7 @@
         "cells": [
           "2679",
           "215079",
-          "Quality Engineering and Management (101907/ME705C)",
+          "Quality Engineering and Management# (101907/ME705C)",
           "S7 Btech Regular (2022 admns.) October 2025",
           ""
         ],
@@ -85960,40 +85960,6 @@
       }
     },
     {
-      "id": "f1afbc8f0dfd6b9b",
-      "sl_no": "2895",
-      "question_paper_code": "215680",
-      "course_name": "Real Time Operating Systems (101001/EC802C)",
-      "course_code": "215680",
-      "actual_subject_code": "101001",
-      "semester": "S8",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215680.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2895",
-          "215680",
-          "Real Time Operating Systems (101001/EC802C)",
-          "S8 Btech Regular (2022 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215680.pdf"
-        ]
-      }
-    },
-    {
       "id": "e0a5e4c01c5cdb27",
       "sl_no": "2307",
       "question_paper_code": "214458",
@@ -86096,6 +86062,40 @@
       }
     },
     {
+      "id": "f1afbc8f0dfd6b9b",
+      "sl_no": "2895",
+      "question_paper_code": "215680",
+      "course_name": "Real Time Operating Systems# (101001/EC802C)",
+      "course_code": "215680",
+      "actual_subject_code": "101001",
+      "semester": "S8",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215680.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2895",
+          "215680",
+          "Real Time Operating Systems# (101001/EC802C)",
+          "S8 Btech Regular (2022 admns.) March 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215680.pdf"
+        ]
+      }
+    },
+    {
       "id": "fab26ca0a21057ac",
       "sl_no": "2866",
       "question_paper_code": "216066",
@@ -86167,7 +86167,7 @@
       "id": "2ca75d47e2bdedc5",
       "sl_no": "2727",
       "question_paper_code": "215353",
-      "course_name": "Reinforcement Learning (202902/CO303A)",
+      "course_name": "Reinforcement Learning# (202902/CO303A)",
       "course_code": "215353",
       "actual_subject_code": "202902",
       "semester": "S3",
@@ -86188,7 +86188,7 @@
         "cells": [
           "2727",
           "215353",
-          "Reinforcement Learning (202902/CO303A)",
+          "Reinforcement Learning# (202902/CO303A)",
           "S3 Mtech Regular (2024 admns.) October 2025",
           ""
         ],
@@ -86201,7 +86201,7 @@
       "id": "d27b91621bfa860f",
       "sl_no": "2728",
       "question_paper_code": "215354",
-      "course_name": "Reinforcement Learning (202902/CO303A)",
+      "course_name": "Reinforcement Learning# (202902/CO303A)",
       "course_code": "215354",
       "actual_subject_code": "202902",
       "semester": "S3",
@@ -86222,7 +86222,7 @@
         "cells": [
           "2728",
           "215354",
-          "Reinforcement Learning (202902/CO303A)",
+          "Reinforcement Learning# (202902/CO303A)",
           "S3 Mtech Regular (2024 admns.) March 2026",
           ""
         ],
@@ -86776,40 +86776,6 @@
       }
     },
     {
-      "id": "0d2eb1b6fd0043f3",
-      "sl_no": "2375",
-      "question_paper_code": "214329",
-      "course_name": "Renewable Energy Systems (101005/EE602D)",
-      "course_code": "214329",
-      "actual_subject_code": "101005",
-      "semester": "S6",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214329.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2375",
-          "214329",
-          "Renewable Energy Systems (101005/EE602D)",
-          "S6 Btech Regular (2022 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214329.pdf"
-        ]
-      }
-    },
-    {
       "id": "e1454be9a686a1bf",
       "sl_no": "2860",
       "question_paper_code": "216140",
@@ -87044,6 +87010,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/213049.pdf"
+        ]
+      }
+    },
+    {
+      "id": "0d2eb1b6fd0043f3",
+      "sl_no": "2375",
+      "question_paper_code": "214329",
+      "course_name": "Renewable Energy Systems# (101005/EE602D)",
+      "course_code": "214329",
+      "actual_subject_code": "101005",
+      "semester": "S6",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214329.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2375",
+          "214329",
+          "Renewable Energy Systems# (101005/EE602D)",
+          "S6 Btech Regular (2022 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214329.pdf"
         ]
       }
     },
@@ -87459,7 +87459,7 @@
       "id": "a81e02f5caa174fd",
       "sl_no": "2879",
       "question_paper_code": "215698",
-      "course_name": "Robotics And Industrial Automation (101002/AE807C)",
+      "course_name": "Robotics and Industrial Automation# (101002/AE807C)",
       "course_code": "215698",
       "actual_subject_code": "101002",
       "semester": "S8",
@@ -87480,7 +87480,7 @@
         "cells": [
           "2879",
           "215698",
-          "Robotics And Industrial Automation (101002/AE807C)",
+          "Robotics and Industrial Automation# (101002/AE807C)",
           "S8 Btech Regular (2022 admns.) March 2026",
           ""
         ],
@@ -87493,7 +87493,7 @@
       "id": "509011f5e98eac46",
       "sl_no": "2677",
       "question_paper_code": "215064",
-      "course_name": "Robotics And Industrial Automation (101907/AE704C)",
+      "course_name": "Robotics and Industrial Automation# (101907/AE704C)",
       "course_code": "215064",
       "actual_subject_code": "101907",
       "semester": "S7",
@@ -87514,7 +87514,7 @@
         "cells": [
           "2677",
           "215064",
-          "Robotics And Industrial Automation (101907/AE704C)",
+          "Robotics and Industrial Automation# (101907/AE704C)",
           "S7 Btech Regular (2022 admns.) October 2025",
           ""
         ],
@@ -88442,40 +88442,6 @@
       }
     },
     {
-      "id": "434e10e38c8b566a",
-      "sl_no": "2893",
-      "question_paper_code": "215658",
-      "course_name": "Secure Communication (101001/EC803B)",
-      "course_code": "215658",
-      "actual_subject_code": "101001",
-      "semester": "S8",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215658.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2893",
-          "215658",
-          "Secure Communication (101001/EC803B)",
-          "S8 Btech Regular (2022 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215658.pdf"
-        ]
-      }
-    },
-    {
       "id": "63f308561efd8f5c",
       "sl_no": "2299",
       "question_paper_code": "214413",
@@ -88506,6 +88472,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/214413.pdf"
+        ]
+      }
+    },
+    {
+      "id": "434e10e38c8b566a",
+      "sl_no": "2893",
+      "question_paper_code": "215658",
+      "course_name": "Secure Communication# (101001/EC803B)",
+      "course_code": "215658",
+      "actual_subject_code": "101001",
+      "semester": "S8",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215658.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2893",
+          "215658",
+          "Secure Communication# (101001/EC803B)",
+          "S8 Btech Regular (2022 admns.) March 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215658.pdf"
         ]
       }
     },
@@ -89666,40 +89666,6 @@
       }
     },
     {
-      "id": "a943f599f3d235f0",
-      "sl_no": "2899",
-      "question_paper_code": "215664",
-      "course_name": "Smart Grid Technology (101005/EE803B)",
-      "course_code": "215664",
-      "actual_subject_code": "101005",
-      "semester": "S8",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215664.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2899",
-          "215664",
-          "Smart Grid Technology (101005/EE803B)",
-          "S8 Btech Regular (2022 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215664.pdf"
-        ]
-      }
-    },
-    {
       "id": "3063da61f2a4ed52",
       "sl_no": "1893",
       "question_paper_code": "213323",
@@ -89734,19 +89700,19 @@
       }
     },
     {
-      "id": "f2d4dad346e6960b",
-      "sl_no": "2499",
-      "question_paper_code": "214551",
-      "course_name": "SoC Design (202105/EC201C)",
-      "course_code": "214551",
-      "actual_subject_code": "202105",
-      "semester": "S2",
+      "id": "a943f599f3d235f0",
+      "sl_no": "2899",
+      "question_paper_code": "215664",
+      "course_name": "Smart Grid Technology# (101005/EE803B)",
+      "course_code": "215664",
+      "actual_subject_code": "101005",
+      "semester": "S8",
       "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214551.pdf",
+      "admission_year": 2022,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215664.pdf",
       "source_row": {
         "headers": [
           "Sl.no",
@@ -89756,14 +89722,14 @@
           "Download"
         ],
         "cells": [
-          "2499",
-          "214551",
-          "SoC Design (202105/EC201C)",
-          "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+          "2899",
+          "215664",
+          "Smart Grid Technology# (101005/EE803B)",
+          "S8 Btech Regular (2022 admns.) March 2026",
           ""
         ],
         "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214551.pdf"
+          "https://student.rajagiritech.ac.in/storage/qp/215664.pdf"
         ]
       }
     },
@@ -89870,6 +89836,40 @@
       }
     },
     {
+      "id": "f2d4dad346e6960b",
+      "sl_no": "2499",
+      "question_paper_code": "214551",
+      "course_name": "SoC Design# (202105/EC201C)",
+      "course_code": "214551",
+      "actual_subject_code": "202105",
+      "semester": "S2",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214551.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2499",
+          "214551",
+          "SoC Design# (202105/EC201C)",
+          "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214551.pdf"
+        ]
+      }
+    },
+    {
       "id": "b0131567decccadd",
       "sl_no": "1493",
       "question_paper_code": "212872",
@@ -89904,40 +89904,6 @@
       }
     },
     {
-      "id": "2c7a2cbc442352aa",
-      "sl_no": "2874",
-      "question_paper_code": "215690",
-      "course_name": "Social Network Analysis (101008/IT803C)",
-      "course_code": "215690",
-      "actual_subject_code": "101008",
-      "semester": "S8",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215690.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2874",
-          "215690",
-          "Social Network Analysis (101008/IT803C)",
-          "S8 Btech Regular (2022 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215690.pdf"
-        ]
-      }
-    },
-    {
       "id": "79fb13deff842f5d",
       "sl_no": "2274",
       "question_paper_code": "214432",
@@ -89968,6 +89934,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/214432.pdf"
+        ]
+      }
+    },
+    {
+      "id": "2c7a2cbc442352aa",
+      "sl_no": "2874",
+      "question_paper_code": "215690",
+      "course_name": "Social Network Analysis# (101008/IT803C)",
+      "course_code": "215690",
+      "actual_subject_code": "101008",
+      "semester": "S8",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S8 Btech Regular (2022 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215690.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2874",
+          "215690",
+          "Social Network Analysis# (101008/IT803C)",
+          "S8 Btech Regular (2022 admns.) March 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215690.pdf"
         ]
       }
     },
@@ -90244,40 +90244,6 @@
       }
     },
     {
-      "id": "a7d68f61a4dc0163",
-      "sl_no": "2385",
-      "question_paper_code": "214333",
-      "course_name": "Soft Computing (101004/IT603D)",
-      "course_code": "214333",
-      "actual_subject_code": "101004",
-      "semester": "S6",
-      "exam_type": "Regular",
-      "admission_year": 2022,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214333.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2385",
-          "214333",
-          "Soft Computing (101004/IT603D)",
-          "S6 Btech Regular (2022 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214333.pdf"
-        ]
-      }
-    },
-    {
       "id": "d3435274a0ac302a",
       "sl_no": "2841",
       "question_paper_code": "216121",
@@ -90376,6 +90342,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/213055.pdf"
+        ]
+      }
+    },
+    {
+      "id": "a7d68f61a4dc0163",
+      "sl_no": "2385",
+      "question_paper_code": "214333",
+      "course_name": "Soft Computing# (101004/IT603D)",
+      "course_code": "214333",
+      "actual_subject_code": "101004",
+      "semester": "S6",
+      "exam_type": "Regular",
+      "admission_year": 2022,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S6 Btech Regular (2022 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214333.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2385",
+          "214333",
+          "Soft Computing# (101004/IT603D)",
+          "S6 Btech Regular (2022 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214333.pdf"
         ]
       }
     },
@@ -90958,74 +90958,6 @@
       }
     },
     {
-      "id": "b261ca90237383f3",
-      "sl_no": "2729",
-      "question_paper_code": "215355",
-      "course_name": "Software Testing (202902/CS301A)",
-      "course_code": "215355",
-      "actual_subject_code": "202902",
-      "semester": "S3",
-      "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "October",
-      "exam_year": 2025,
-      "raw_exam_details": "S3 Mtech Regular (2024 admns.) October 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215355.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2729",
-          "215355",
-          "Software Testing (202902/CS301A)",
-          "S3 Mtech Regular (2024 admns.) October 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215355.pdf"
-        ]
-      }
-    },
-    {
-      "id": "ea394bc328196e24",
-      "sl_no": "2730",
-      "question_paper_code": "215356",
-      "course_name": "Software Testing (202902/CS301A)",
-      "course_code": "215356",
-      "actual_subject_code": "202902",
-      "semester": "S3",
-      "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "March",
-      "exam_year": 2026,
-      "raw_exam_details": "S3 Mtech Regular (2024 admns.) March 2026",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215356.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2730",
-          "215356",
-          "Software Testing (202902/CS301A)",
-          "S3 Mtech Regular (2024 admns.) March 2026",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/215356.pdf"
-        ]
-      }
-    },
-    {
       "id": "1e4dc574c542c335",
       "sl_no": "2884",
       "question_paper_code": "215780",
@@ -91090,6 +91022,74 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/213979.pdf"
+        ]
+      }
+    },
+    {
+      "id": "b261ca90237383f3",
+      "sl_no": "2729",
+      "question_paper_code": "215355",
+      "course_name": "Software Testing# (202902/CS301A)",
+      "course_code": "215355",
+      "actual_subject_code": "202902",
+      "semester": "S3",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "October",
+      "exam_year": 2025,
+      "raw_exam_details": "S3 Mtech Regular (2024 admns.) October 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215355.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2729",
+          "215355",
+          "Software Testing# (202902/CS301A)",
+          "S3 Mtech Regular (2024 admns.) October 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215355.pdf"
+        ]
+      }
+    },
+    {
+      "id": "ea394bc328196e24",
+      "sl_no": "2730",
+      "question_paper_code": "215356",
+      "course_name": "Software Testing# (202902/CS301A)",
+      "course_code": "215356",
+      "actual_subject_code": "202902",
+      "semester": "S3",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S3 Mtech Regular (2024 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/215356.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2730",
+          "215356",
+          "Software Testing# (202902/CS301A)",
+          "S3 Mtech Regular (2024 admns.) March 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/215356.pdf"
         ]
       }
     },
@@ -91675,7 +91675,7 @@
       "id": "1e8f12521617a633",
       "sl_no": "2902",
       "question_paper_code": "215710",
-      "course_name": "Special Electric Machines (101005/EE802C)",
+      "course_name": "Special Electric Machines# (101005/EE802C)",
       "course_code": "215710",
       "actual_subject_code": "101005",
       "semester": "S8",
@@ -91696,7 +91696,7 @@
         "cells": [
           "2902",
           "215710",
-          "Special Electric Machines (101005/EE802C)",
+          "Special Electric Machines# (101005/EE802C)",
           "S8 Btech Regular (2022 admns.) March 2026",
           ""
         ],
@@ -98268,40 +98268,6 @@
       }
     },
     {
-      "id": "083a720a662071b0",
-      "sl_no": "2500",
-      "question_paper_code": "214563",
-      "course_name": "VLSI System Testing (202105/EC201D)",
-      "course_code": "214563",
-      "actual_subject_code": "202105",
-      "semester": "S2",
-      "exam_type": "Regular",
-      "admission_year": 2024,
-      "exam_month": "April",
-      "exam_year": 2025,
-      "raw_exam_details": "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
-      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214563.pdf",
-      "source_row": {
-        "headers": [
-          "Sl.no",
-          "Question Paper Code",
-          "Course Name",
-          "Exam",
-          "Download"
-        ],
-        "cells": [
-          "2500",
-          "214563",
-          "VLSI System Testing (202105/EC201D)",
-          "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
-          ""
-        ],
-        "links": [
-          "https://student.rajagiritech.ac.in/storage/qp/214563.pdf"
-        ]
-      }
-    },
-    {
       "id": "f2421cc44881b8a4",
       "sl_no": "2930",
       "question_paper_code": "216185",
@@ -98332,6 +98298,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/216185.pdf"
+        ]
+      }
+    },
+    {
+      "id": "083a720a662071b0",
+      "sl_no": "2500",
+      "question_paper_code": "214563",
+      "course_name": "VLSI System Testing# (202105/EC201D)",
+      "course_code": "214563",
+      "actual_subject_code": "202105",
+      "semester": "S2",
+      "exam_type": "Regular",
+      "admission_year": 2024,
+      "exam_month": "April",
+      "exam_year": 2025,
+      "raw_exam_details": "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/214563.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2500",
+          "214563",
+          "VLSI System Testing# (202105/EC201D)",
+          "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/214563.pdf"
         ]
       }
     },
@@ -98373,9 +98373,9 @@
       "id": "6bd4af7ca32004f0",
       "sl_no": "2469",
       "question_paper_code": "214555",
-      "course_name": "Web Analytics and Development(WAD) (202108/IT204C)",
+      "course_name": "Web Analytics and Development# (202108/IT204C)",
       "course_code": "214555",
-      "actual_subject_code": "WAD",
+      "actual_subject_code": "202108",
       "semester": "S2",
       "exam_type": "Regular",
       "admission_year": 2024,
@@ -98394,7 +98394,7 @@
         "cells": [
           "2469",
           "214555",
-          "Web Analytics and Development(WAD) (202108/IT204C)",
+          "Web Analytics and Development# (202108/IT204C)",
           "S2 Mtech End Semester Examinations (2024 admns.) April 2025",
           ""
         ],
