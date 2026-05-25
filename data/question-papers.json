@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2026-05-18T06:56:39.146235+00:00",
+    "generated_at": "2026-05-25T07:14:47.249715+00:00",
     "source": "student.rajagiritech.ac.in",
     "page_url": "https://student.rajagiritech.ac.in/qp_downloads",
-    "paper_count": 2937,
+    "paper_count": 2938,
     "notes": []
   },
   "papers": [
@@ -111,7 +111,7 @@
     },
     {
       "id": "d69732fcc5552d84",
-      "sl_no": "2909",
+      "sl_no": "2910",
       "question_paper_code": "215681",
       "course_name": "Adhoc and Wireless Sensor Networks# (101004/IT804C)",
       "course_code": "215681",
@@ -132,7 +132,7 @@
           "Download"
         ],
         "cells": [
-          "2909",
+          "2910",
           "215681",
           "Adhoc and Wireless Sensor Networks# (101004/IT804C)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -927,7 +927,7 @@
     },
     {
       "id": "d18126fec43df607",
-      "sl_no": "2858",
+      "sl_no": "2859",
       "question_paper_code": "216061",
       "course_name": "Advanced Control Theory (102005/EE600C)",
       "course_code": "216061",
@@ -948,7 +948,7 @@
           "Download"
         ],
         "cells": [
-          "2858",
+          "2859",
           "216061",
           "Advanced Control Theory (102005/EE600C)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -1641,7 +1641,7 @@
     },
     {
       "id": "282edae729c85df2",
-      "sl_no": "2864",
+      "sl_no": "2865",
       "question_paper_code": "216015",
       "course_name": "Advanced Manufacturing Technology (102006/ME600A)",
       "course_code": "216015",
@@ -1662,7 +1662,7 @@
           "Download"
         ],
         "cells": [
-          "2864",
+          "2865",
           "216015",
           "Advanced Manufacturing Technology (102006/ME600A)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -2219,7 +2219,7 @@
     },
     {
       "id": "d050e873ee0a12de",
-      "sl_no": "2934",
+      "sl_no": "2935",
       "question_paper_code": "216181",
       "course_name": "Advanced Operating Systems (202106/CS200A)",
       "course_code": "216181",
@@ -2240,7 +2240,7 @@
           "Download"
         ],
         "cells": [
-          "2934",
+          "2935",
           "216181",
           "Advanced Operating Systems (202106/CS200A)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -2253,7 +2253,7 @@
     },
     {
       "id": "14cb165eb0da88c7",
-      "sl_no": "2873",
+      "sl_no": "2874",
       "question_paper_code": "215638",
       "course_name": "Advanced Optimization Techniques# (101008/MA807B)",
       "course_code": "215638",
@@ -2274,7 +2274,7 @@
           "Download"
         ],
         "cells": [
-          "2873",
+          "2874",
           "215638",
           "Advanced Optimization Techniques# (101008/MA807B)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -2763,7 +2763,7 @@
     },
     {
       "id": "ead663fce9b02aeb",
-      "sl_no": "2840",
+      "sl_no": "2841",
       "question_paper_code": "216078",
       "course_name": "AI Concepts (102902/CO600D)",
       "course_code": "216078",
@@ -2784,7 +2784,7 @@
           "Download"
         ],
         "cells": [
-          "2840",
+          "2841",
           "216078",
           "AI Concepts (102902/CO600D)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -2797,7 +2797,7 @@
     },
     {
       "id": "bde88f1b9b477f97",
-      "sl_no": "2880",
+      "sl_no": "2881",
       "question_paper_code": "215674",
       "course_name": "Air Quality Management# (101007/CE806B)",
       "course_code": "215674",
@@ -2818,7 +2818,7 @@
           "Download"
         ],
         "cells": [
-          "2880",
+          "2881",
           "215674",
           "Air Quality Management# (101007/CE806B)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -5687,7 +5687,7 @@
     },
     {
       "id": "853980b7dcdffec7",
-      "sl_no": "2928",
+      "sl_no": "2929",
       "question_paper_code": "216169",
       "course_name": "Analog VLSI Design (202105/EC200B)",
       "course_code": "216169",
@@ -5708,7 +5708,7 @@
           "Download"
         ],
         "cells": [
-          "2928",
+          "2929",
           "216169",
           "Analog VLSI Design (202105/EC200B)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -6367,7 +6367,7 @@
     },
     {
       "id": "1fba05a143e887dd",
-      "sl_no": "2932",
+      "sl_no": "2933",
       "question_paper_code": "216164",
       "course_name": "Artificial and Computational Intelligence (202107/AD200B)",
       "course_code": "216164",
@@ -6388,7 +6388,7 @@
           "Download"
         ],
         "cells": [
-          "2932",
+          "2933",
           "216164",
           "Artificial and Computational Intelligence (202107/AD200B)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -7285,7 +7285,7 @@
     },
     {
       "id": "c43511a40b7c1c12",
-      "sl_no": "2844",
+      "sl_no": "2845",
       "question_paper_code": "216029",
       "course_name": "Artificial Intelligence (102009/CU600B)",
       "course_code": "216029",
@@ -7306,7 +7306,7 @@
           "Download"
         ],
         "cells": [
-          "2844",
+          "2845",
           "216029",
           "Artificial Intelligence (102009/CU600B)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -7319,7 +7319,7 @@
     },
     {
       "id": "d8bcc3c232eddbf9",
-      "sl_no": "2936",
+      "sl_no": "2937",
       "question_paper_code": "216189",
       "course_name": "Artificial Intelligence (202905/AD201E)",
       "course_code": "216189",
@@ -7340,7 +7340,7 @@
           "Download"
         ],
         "cells": [
-          "2936",
+          "2937",
           "216189",
           "Artificial Intelligence (202905/AD201E)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -10957,7 +10957,7 @@
     },
     {
       "id": "9ede0b389fad0028",
-      "sl_no": "2938",
+      "sl_no": "2939",
       "question_paper_code": "215854",
       "course_name": "Basics of Electrical and Electronics Engineering (102902/CO200E_Electronics)",
       "course_code": "215854",
@@ -10978,7 +10978,7 @@
           "Download"
         ],
         "cells": [
-          "2938",
+          "2939",
           "215854",
           "Basics of Electrical and Electronics Engineering (102902/CO200E_Electronics)",
           "S2 Btech Regular (2025 admns.) April 2026",
@@ -11127,7 +11127,7 @@
     },
     {
       "id": "0ac3186349e314ba",
-      "sl_no": "2937",
+      "sl_no": "2938",
       "question_paper_code": "215863",
       "course_name": "Basics of Instrumentation and Mechanical Engineering (102002/CO200E_Mechanical)",
       "course_code": "215863",
@@ -11148,7 +11148,7 @@
           "Download"
         ],
         "cells": [
-          "2937",
+          "2938",
           "215863",
           "Basics of Instrumentation and Mechanical Engineering (102002/CO200E_Mechanical)",
           "S2 Btech Regular (2025 admns.) April 2026",
@@ -11365,7 +11365,7 @@
     },
     {
       "id": "46d1ac7dd098b841",
-      "sl_no": "2889",
+      "sl_no": "2890",
       "question_paper_code": "215763",
       "course_name": "Behavioral Economics# (101009/ES802D)",
       "course_code": "215763",
@@ -11386,7 +11386,7 @@
           "Download"
         ],
         "cells": [
-          "2889",
+          "2890",
           "215763",
           "Behavioral Economics# (101009/ES802D)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -11807,7 +11807,7 @@
     },
     {
       "id": "1daaafdad7c44a6d",
-      "sl_no": "2924",
+      "sl_no": "2925",
       "question_paper_code": "216157",
       "course_name": "Bigdata Analytics (202102/CS200A)",
       "course_code": "216157",
@@ -11828,7 +11828,7 @@
           "Download"
         ],
         "cells": [
-          "2924",
+          "2925",
           "216157",
           "Bigdata Analytics (202102/CS200A)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -12181,7 +12181,7 @@
     },
     {
       "id": "df7418a9953b899d",
-      "sl_no": "2875",
+      "sl_no": "2876",
       "question_paper_code": "215717",
       "course_name": "Blockchain and Cybersecurity# (101008/IT802C)",
       "course_code": "215717",
@@ -12202,7 +12202,7 @@
           "Download"
         ],
         "cells": [
-          "2875",
+          "2876",
           "215717",
           "Blockchain and Cybersecurity# (101008/IT802C)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -12725,7 +12725,7 @@
     },
     {
       "id": "e410802530e410bb",
-      "sl_no": "2849",
+      "sl_no": "2850",
       "question_paper_code": "216092",
       "course_name": "Business Communication and Value Science IV (102009/EN600F)",
       "course_code": "216092",
@@ -12746,7 +12746,7 @@
           "Download"
         ],
         "cells": [
-          "2849",
+          "2850",
           "216092",
           "Business Communication and Value Science IV (102009/EN600F)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -13677,7 +13677,7 @@
     },
     {
       "id": "53257ba43b33afcd",
-      "sl_no": "2846",
+      "sl_no": "2847",
       "question_paper_code": "216082",
       "course_name": "Business Strategy (102009/CU600D)",
       "course_code": "216082",
@@ -13698,7 +13698,7 @@
           "Download"
         ],
         "cells": [
-          "2846",
+          "2847",
           "216082",
           "Business Strategy (102009/CU600D)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -14629,7 +14629,7 @@
     },
     {
       "id": "3ac0a6c4fc8430a8",
-      "sl_no": "2917",
+      "sl_no": "2918",
       "question_paper_code": "215785",
       "course_name": "Climate Change and Sustainability# (101007/CE806D)",
       "course_code": "215785",
@@ -14650,7 +14650,7 @@
           "Download"
         ],
         "cells": [
-          "2917",
+          "2918",
           "215785",
           "Climate Change and Sustainability# (101007/CE806D)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -15173,7 +15173,7 @@
     },
     {
       "id": "cfcab6aae01005f0",
-      "sl_no": "2907",
+      "sl_no": "2908",
       "question_paper_code": "215646",
       "course_name": "Cloud Computing# (101004/IT803B)",
       "course_code": "215646",
@@ -15194,7 +15194,7 @@
           "Download"
         ],
         "cells": [
-          "2907",
+          "2908",
           "215646",
           "Cloud Computing# (101004/IT803B)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -15377,7 +15377,7 @@
     },
     {
       "id": "e6c08743f4b797fb",
-      "sl_no": "2847",
+      "sl_no": "2848",
       "question_paper_code": "216133",
       "course_name": "Cloud Micro services and Application (102009/CU601E)",
       "course_code": "216133",
@@ -15398,7 +15398,7 @@
           "Download"
         ],
         "cells": [
-          "2847",
+          "2848",
           "216133",
           "Cloud Micro services and Application (102009/CU601E)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -17247,7 +17247,7 @@
     },
     {
       "id": "b6608eb6efcda153",
-      "sl_no": "2914",
+      "sl_no": "2915",
       "question_paper_code": "215725",
       "course_name": "Composite Materials# (101006/ME801C)",
       "course_code": "215725",
@@ -17268,7 +17268,7 @@
           "Download"
         ],
         "cells": [
-          "2914",
+          "2915",
           "215725",
           "Composite Materials# (101006/ME801C)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -17451,7 +17451,7 @@
     },
     {
       "id": "70cbaccd064a6c16",
-      "sl_no": "2926",
+      "sl_no": "2927",
       "question_paper_code": "216184",
       "course_name": "Computational Intelligence (202102/CS202D)",
       "course_code": "216184",
@@ -17472,7 +17472,7 @@
           "Download"
         ],
         "cells": [
-          "2926",
+          "2927",
           "216184",
           "Computational Intelligence (202102/CS202D)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -19865,7 +19865,7 @@
     },
     {
       "id": "24c79e260237ccc3",
-      "sl_no": "2843",
+      "sl_no": "2844",
       "question_paper_code": "216004",
       "course_name": "Computer Networks (102009/CU600A)",
       "course_code": "216004",
@@ -19886,7 +19886,7 @@
           "Download"
         ],
         "cells": [
-          "2843",
+          "2844",
           "216004",
           "Computer Networks (102009/CU600A)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -21871,7 +21871,7 @@
     },
     {
       "id": "3912670528e878c3",
-      "sl_no": "2871",
+      "sl_no": "2872",
       "question_paper_code": "215616",
       "course_name": "Computer Vision (101008/IT800A)",
       "course_code": "215616",
@@ -21892,7 +21892,7 @@
           "Download"
         ],
         "cells": [
-          "2871",
+          "2872",
           "215616",
           "Computer Vision (101008/IT800A)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -22041,7 +22041,7 @@
     },
     {
       "id": "790431bd065089ec",
-      "sl_no": "2906",
+      "sl_no": "2907",
       "question_paper_code": "215662",
       "course_name": "Computer Vision# (101004/IT801B)",
       "course_code": "215662",
@@ -22062,7 +22062,7 @@
           "Download"
         ],
         "cells": [
-          "2906",
+          "2907",
           "215662",
           "Computer Vision# (101004/IT801B)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -23401,7 +23401,7 @@
     },
     {
       "id": "8e22362e3a4b623d",
-      "sl_no": "2876",
+      "sl_no": "2877",
       "question_paper_code": "215781",
       "course_name": "Content Based Retrieval# (101008/IT801D)",
       "course_code": "215781",
@@ -23422,7 +23422,7 @@
           "Download"
         ],
         "cells": [
-          "2876",
+          "2877",
           "215781",
           "Content Based Retrieval# (101008/IT801D)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -24081,7 +24081,7 @@
     },
     {
       "id": "3c574550e3cddf90",
-      "sl_no": "2851",
+      "sl_no": "2852",
       "question_paper_code": "216032",
       "course_name": "Control Systems (102001/EC600B)",
       "course_code": "216032",
@@ -24102,7 +24102,7 @@
           "Download"
         ],
         "cells": [
-          "2851",
+          "2852",
           "216032",
           "Control Systems (102001/EC600B)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -24353,7 +24353,7 @@
     },
     {
       "id": "a0198860f840033b",
-      "sl_no": "2905",
+      "sl_no": "2906",
       "question_paper_code": "215600",
       "course_name": "Cryptography and Network Security (101004/IT800A)",
       "course_code": "215600",
@@ -24374,7 +24374,7 @@
           "Download"
         ],
         "cells": [
-          "2905",
+          "2906",
           "215600",
           "Cryptography and Network Security (101004/IT800A)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -25917,7 +25917,7 @@
     },
     {
       "id": "95b150ae7ea7b795",
-      "sl_no": "2862",
+      "sl_no": "2863",
       "question_paper_code": "216064",
       "course_name": "Data Mining (102004/IT600C)",
       "course_code": "216064",
@@ -25938,7 +25938,7 @@
           "Download"
         ],
         "cells": [
-          "2862",
+          "2863",
           "216064",
           "Data Mining (102004/IT600C)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -30167,7 +30167,7 @@
     },
     {
       "id": "5178661ff688e2e7",
-      "sl_no": "2931",
+      "sl_no": "2932",
       "question_paper_code": "216171",
       "course_name": "Deep Learning (202107/AD200A)",
       "course_code": "216171",
@@ -30188,7 +30188,7 @@
           "Download"
         ],
         "cells": [
-          "2931",
+          "2932",
           "216171",
           "Deep Learning (202107/AD200A)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -30201,7 +30201,7 @@
     },
     {
       "id": "be81b9d587124c8d",
-      "sl_no": "2881",
+      "sl_no": "2882",
       "question_paper_code": "215631",
       "course_name": "Deep Learning# (101003/CS801B)",
       "course_code": "215631",
@@ -30222,7 +30222,7 @@
           "Download"
         ],
         "cells": [
-          "2881",
+          "2882",
           "215631",
           "Deep Learning# (101003/CS801B)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -30269,7 +30269,7 @@
     },
     {
       "id": "c3275f14d8a63533",
-      "sl_no": "2872",
+      "sl_no": "2873",
       "question_paper_code": "215667",
       "course_name": "Deep Learning# (101008/IT802B)",
       "course_code": "215667",
@@ -30290,7 +30290,7 @@
           "Download"
         ],
         "cells": [
-          "2872",
+          "2873",
           "215667",
           "Deep Learning# (101008/IT802B)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -32445,7 +32445,7 @@
     },
     {
       "id": "39adc87b72ba2a9c",
-      "sl_no": "2867",
+      "sl_no": "2868",
       "question_paper_code": "216089",
       "course_name": "Design of Transmission Elements (102006/ME600D)",
       "course_code": "216089",
@@ -32466,7 +32466,7 @@
           "Download"
         ],
         "cells": [
-          "2867",
+          "2868",
           "216089",
           "Design of Transmission Elements (102006/ME600D)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -32615,7 +32615,7 @@
     },
     {
       "id": "9da587533f12569b",
-      "sl_no": "2870",
+      "sl_no": "2871",
       "question_paper_code": "216105",
       "course_name": "Digital Design Verification Techniques (102802/CO601E)",
       "course_code": "216105",
@@ -32636,7 +32636,7 @@
           "Download"
         ],
         "cells": [
-          "2870",
+          "2871",
           "216105",
           "Digital Design Verification Techniques (102802/CO601E)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -33261,7 +33261,7 @@
     },
     {
       "id": "8f39adacdb898a49",
-      "sl_no": "2855",
+      "sl_no": "2856",
       "question_paper_code": "216136",
       "course_name": "Digital Image Processing (102001/EC606E)",
       "course_code": "216136",
@@ -33282,7 +33282,7 @@
           "Download"
         ],
         "cells": [
-          "2855",
+          "2856",
           "216136",
           "Digital Image Processing (102001/EC606E)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -36457,7 +36457,7 @@
     },
     {
       "id": "0ee711b5ea2205be",
-      "sl_no": "2865",
+      "sl_no": "2866",
       "question_paper_code": "216040",
       "course_name": "Dynamics of Machines (102006/ME600B)",
       "course_code": "216040",
@@ -36478,7 +36478,7 @@
           "Download"
         ],
         "cells": [
-          "2865",
+          "2866",
           "216040",
           "Dynamics of Machines (102006/ME600B)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -36627,7 +36627,7 @@
     },
     {
       "id": "7e2ad0798f55662c",
-      "sl_no": "2903",
+      "sl_no": "2904",
       "question_paper_code": "215751",
       "course_name": "Electric and Hybrid Vehicles# (101005/EE801D)",
       "course_code": "215751",
@@ -36648,7 +36648,7 @@
           "Download"
         ],
         "cells": [
-          "2903",
+          "2904",
           "215751",
           "Electric and Hybrid Vehicles# (101005/EE801D)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -37545,7 +37545,7 @@
     },
     {
       "id": "fb9f44f7afa64d9c",
-      "sl_no": "2859",
+      "sl_no": "2860",
       "question_paper_code": "216088",
       "course_name": "Electrical System Design (102005/EE600D)",
       "course_code": "216088",
@@ -37566,7 +37566,7 @@
           "Download"
         ],
         "cells": [
-          "2859",
+          "2860",
           "216088",
           "Electrical System Design (102005/EE600D)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -37715,7 +37715,7 @@
     },
     {
       "id": "4a854b79486cc9fc",
-      "sl_no": "2898",
+      "sl_no": "2899",
       "question_paper_code": "215626",
       "course_name": "Electrical System Design and Estimation (101005/EE800A)",
       "course_code": "215626",
@@ -37736,7 +37736,7 @@
           "Download"
         ],
         "cells": [
-          "2898",
+          "2899",
           "215626",
           "Electrical System Design and Estimation (101005/EE800A)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -38973,7 +38973,7 @@
     },
     {
       "id": "a3668f484219fa39",
-      "sl_no": "2869",
+      "sl_no": "2870",
       "question_paper_code": "216153",
       "course_name": "Emerging Automotive Technologies (102006/ME604E)",
       "course_code": "216153",
@@ -38994,7 +38994,7 @@
           "Download"
         ],
         "cells": [
-          "2869",
+          "2870",
           "216153",
           "Emerging Automotive Technologies (102006/ME604E)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -39109,7 +39109,7 @@
     },
     {
       "id": "5d02d8bf0b554cc3",
-      "sl_no": "2900",
+      "sl_no": "2901",
       "question_paper_code": "215640",
       "course_name": "Energy Management# (101005/EE802B)",
       "course_code": "215640",
@@ -39130,7 +39130,7 @@
           "Download"
         ],
         "cells": [
-          "2900",
+          "2901",
           "215640",
           "Energy Management# (101005/EE802B)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -39245,7 +39245,7 @@
     },
     {
       "id": "89944a586f6a7f3e",
-      "sl_no": "2904",
+      "sl_no": "2905",
       "question_paper_code": "215758",
       "course_name": "Energy Storage Systems# (101005/EE801D)",
       "course_code": "215758",
@@ -39266,7 +39266,7 @@
           "Download"
         ],
         "cells": [
-          "2904",
+          "2905",
           "215758",
           "Energy Storage Systems# (101005/EE801D)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -45331,7 +45331,7 @@
     },
     {
       "id": "bf89e907c4a2b53a",
-      "sl_no": "2890",
+      "sl_no": "2891",
       "question_paper_code": "215792",
       "course_name": "Enterprise Systems# (101009/IT802E)",
       "course_code": "215792",
@@ -45352,7 +45352,7 @@
           "Download"
         ],
         "cells": [
-          "2890",
+          "2891",
           "215792",
           "Enterprise Systems# (101009/IT802E)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -45467,7 +45467,7 @@
     },
     {
       "id": "ec32e10e005ccb26",
-      "sl_no": "2894",
+      "sl_no": "2895",
       "question_paper_code": "215654",
       "course_name": "Entrepreneurship# (101001/EC807B)",
       "course_code": "215654",
@@ -45488,7 +45488,7 @@
           "Download"
         ],
         "cells": [
-          "2894",
+          "2895",
           "215654",
           "Entrepreneurship# (101001/EC807B)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -48697,7 +48697,7 @@
     },
     {
       "id": "42da1a8bbedc5f59",
-      "sl_no": "2927",
+      "sl_no": "2928",
       "question_paper_code": "216162",
       "course_name": "Foundations of Data science (202105/EC200A)",
       "course_code": "216162",
@@ -48718,7 +48718,7 @@
           "Download"
         ],
         "cells": [
-          "2927",
+          "2928",
           "216162",
           "Foundations of Data science (202105/EC200A)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -50533,7 +50533,7 @@
     },
     {
       "id": "bc3e37843347d5fc",
-      "sl_no": "2882",
+      "sl_no": "2883",
       "question_paper_code": "215634",
       "course_name": "Fuzzy Set Theory and Applications# (101003/MA805B)",
       "course_code": "215634",
@@ -50554,7 +50554,7 @@
           "Download"
         ],
         "cells": [
-          "2882",
+          "2883",
           "215634",
           "Fuzzy Set Theory and Applications# (101003/MA805B)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -50669,7 +50669,7 @@
     },
     {
       "id": "4032e073f93987b9",
-      "sl_no": "2842",
+      "sl_no": "2843",
       "question_paper_code": "216122",
       "course_name": "Fuzzy Sets and Applications (102902/MA601E)",
       "course_code": "216122",
@@ -50690,7 +50690,7 @@
           "Download"
         ],
         "cells": [
-          "2842",
+          "2843",
           "216122",
           "Fuzzy Sets and Applications (102902/MA601E)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -51009,7 +51009,7 @@
     },
     {
       "id": "46822648b3497768",
-      "sl_no": "2922",
+      "sl_no": "2923",
       "question_paper_code": "216180",
       "course_name": "Generative AI and Prompt Engineering (202903/CO203D)",
       "course_code": "216180",
@@ -51030,7 +51030,7 @@
           "Download"
         ],
         "cells": [
-          "2922",
+          "2923",
           "216180",
           "Generative AI and Prompt Engineering (202903/CO203D)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -53083,7 +53083,7 @@
     },
     {
       "id": "0f4775e5f6aeba0c",
-      "sl_no": "2901",
+      "sl_no": "2902",
       "question_paper_code": "215689",
       "course_name": "High Voltage Direct Current and Facts# (101005/EE806C)",
       "course_code": "215689",
@@ -53104,7 +53104,7 @@
           "Download"
         ],
         "cells": [
-          "2901",
+          "2902",
           "215689",
           "High Voltage Direct Current and Facts# (101005/EE806C)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -53831,7 +53831,7 @@
     },
     {
       "id": "78d630df400e2a43",
-      "sl_no": "2891",
+      "sl_no": "2892",
       "question_paper_code": "215787",
       "course_name": "Image Processing and Pattern Recognition# (101009/IT804E)",
       "course_code": "215787",
@@ -53852,7 +53852,7 @@
           "Download"
         ],
         "cells": [
-          "2891",
+          "2892",
           "215787",
           "Image Processing and Pattern Recognition# (101009/IT804E)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -56177,7 +56177,7 @@
     },
     {
       "id": "823f21a53cecd1de",
-      "sl_no": "2845",
+      "sl_no": "2846",
       "question_paper_code": "216055",
       "course_name": "Information Security (102009/CU600C)",
       "course_code": "216055",
@@ -56198,7 +56198,7 @@
           "Download"
         ],
         "cells": [
-          "2845",
+          "2846",
           "216055",
           "Information Security (102009/CU600C)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -56279,7 +56279,7 @@
     },
     {
       "id": "3c8026ef97a1234f",
-      "sl_no": "2925",
+      "sl_no": "2926",
       "question_paper_code": "216168",
       "course_name": "Information Security Concepts (202102/CS200B)",
       "course_code": "216168",
@@ -56300,7 +56300,7 @@
           "Download"
         ],
         "cells": [
-          "2925",
+          "2926",
           "216168",
           "Information Security Concepts (202102/CS200B)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -56619,7 +56619,7 @@
     },
     {
       "id": "98a296f0f8c83be6",
-      "sl_no": "2852",
+      "sl_no": "2853",
       "question_paper_code": "216056",
       "course_name": "Information Theory and Coding (102001/EC600C)",
       "course_code": "216056",
@@ -56640,7 +56640,7 @@
           "Download"
         ],
         "cells": [
-          "2852",
+          "2853",
           "216056",
           "Information Theory and Coding (102001/EC600C)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -56891,7 +56891,7 @@
     },
     {
       "id": "512deb7df190a31f",
-      "sl_no": "2896",
+      "sl_no": "2897",
       "question_paper_code": "215767",
       "course_name": "Internet of Things# (101001/EC805D)",
       "course_code": "215767",
@@ -56912,7 +56912,7 @@
           "Download"
         ],
         "cells": [
-          "2896",
+          "2897",
           "215767",
           "Internet of Things# (101001/EC805D)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -57027,7 +57027,7 @@
     },
     {
       "id": "f3ab6c9b26750b59",
-      "sl_no": "2908",
+      "sl_no": "2909",
       "question_paper_code": "215686",
       "course_name": "Internet of Things# (101004/IT802C)",
       "course_code": "215686",
@@ -57048,7 +57048,7 @@
           "Download"
         ],
         "cells": [
-          "2908",
+          "2909",
           "215686",
           "Internet of Things# (101004/IT802C)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -57333,7 +57333,7 @@
     },
     {
       "id": "e0cc88ee4be71cb9",
-      "sl_no": "2919",
+      "sl_no": "2920",
       "question_paper_code": "216013",
       "course_name": "Internetworking with TCP/IP (102004/IT600A)",
       "course_code": "216013",
@@ -57354,7 +57354,7 @@
           "Download"
         ],
         "cells": [
-          "2919",
+          "2920",
           "216013",
           "Internetworking with TCP/IP (102004/IT600A)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -58013,7 +58013,7 @@
     },
     {
       "id": "45c6a1f176cb7dea",
-      "sl_no": "2918",
+      "sl_no": "2919",
       "question_paper_code": "216194",
       "course_name": "Introduction to deep learning and artificial neural networks (102002/AE601H)",
       "course_code": "216194",
@@ -58034,7 +58034,7 @@
           "Download"
         ],
         "cells": [
-          "2918",
+          "2919",
           "216194",
           "Introduction to deep learning and artificial neural networks (102002/AE601H)",
           "B. Tech. Sixth Semester Honour (2023 Admission) (2023 Admissions) Regular",
@@ -58455,7 +58455,7 @@
     },
     {
       "id": "25b0554ab08fcc96",
-      "sl_no": "2861",
+      "sl_no": "2862",
       "question_paper_code": "216144",
       "course_name": "Introduction to Electrical Vehicles (102005/EE603E)",
       "course_code": "216144",
@@ -58476,7 +58476,7 @@
           "Download"
         ],
         "cells": [
-          "2861",
+          "2862",
           "216144",
           "Introduction to Electrical Vehicles (102005/EE603E)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -58795,7 +58795,7 @@
     },
     {
       "id": "40b49af6a4ac9f40",
-      "sl_no": "2863",
+      "sl_no": "2864",
       "question_paper_code": "216148",
       "course_name": "Introduction to IoT (102902/CO601E)",
       "course_code": "216148",
@@ -58816,7 +58816,7 @@
           "Download"
         ],
         "cells": [
-          "2863",
+          "2864",
           "216148",
           "Introduction to IoT (102902/CO601E)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -59951,7 +59951,7 @@
     },
     {
       "id": "a303467c78a6a696",
-      "sl_no": "2886",
+      "sl_no": "2887",
       "question_paper_code": "215648",
       "course_name": "IT Project Management (101009/MS800B)",
       "course_code": "215648",
@@ -59972,7 +59972,7 @@
           "Download"
         ],
         "cells": [
-          "2886",
+          "2887",
           "215648",
           "IT Project Management (101009/MS800B)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -60189,7 +60189,7 @@
     },
     {
       "id": "4ef2eb8319517ed8",
-      "sl_no": "2839",
+      "sl_no": "2840",
       "question_paper_code": "216052",
       "course_name": "Language Processors (102003/CS600C)",
       "course_code": "216052",
@@ -60210,7 +60210,7 @@
           "Download"
         ],
         "cells": [
-          "2839",
+          "2840",
           "216052",
           "Language Processors (102003/CS600C)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -63929,7 +63929,7 @@
     },
     {
       "id": "a878d95bb5ad188f",
-      "sl_no": "2920",
+      "sl_no": "2921",
       "question_paper_code": "216159",
       "course_name": "Machine Learning Algorithms (MLA) (202108/IT200A)",
       "course_code": "216159",
@@ -63950,7 +63950,7 @@
           "Download"
         ],
         "cells": [
-          "2920",
+          "2921",
           "216159",
           "Machine Learning Algorithms (MLA) (202108/IT200A)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -64133,7 +64133,7 @@
     },
     {
       "id": "5b0c023d9a741ef2",
-      "sl_no": "2848",
+      "sl_no": "2849",
       "question_paper_code": "216129",
       "course_name": "Machine Learning: Concepts and Techniques (102009/CU603E)",
       "course_code": "216129",
@@ -64154,7 +64154,7 @@
           "Download"
         ],
         "cells": [
-          "2848",
+          "2849",
           "216129",
           "Machine Learning: Concepts and Techniques (102009/CU603E)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -66241,7 +66241,7 @@
     },
     {
       "id": "e9a04de38364cf7b",
-      "sl_no": "2887",
+      "sl_no": "2888",
       "question_paper_code": "215693",
       "course_name": "Marketing Research and Marketing Management (101009/MS800C)",
       "course_code": "215693",
@@ -66262,7 +66262,7 @@
           "Download"
         ],
         "cells": [
-          "2887",
+          "2888",
           "215693",
           "Marketing Research and Marketing Management (101009/MS800C)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -70015,7 +70015,7 @@
     },
     {
       "id": "01090b4988491ec9",
-      "sl_no": "2912",
+      "sl_no": "2913",
       "question_paper_code": "215619",
       "course_name": "Mechatronics (101006/ME800A)",
       "course_code": "215619",
@@ -70036,7 +70036,7 @@
           "Download"
         ],
         "cells": [
-          "2912",
+          "2913",
           "215619",
           "Mechatronics (101006/ME800A)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -70899,7 +70899,7 @@
     },
     {
       "id": "96d450f10d1235a0",
-      "sl_no": "2913",
+      "sl_no": "2914",
       "question_paper_code": "215644",
       "course_name": "Micro and Nano Manufacturing# (101006/ME806B)",
       "course_code": "215644",
@@ -70920,7 +70920,7 @@
           "Download"
         ],
         "cells": [
-          "2913",
+          "2914",
           "215644",
           "Micro and Nano Manufacturing# (101006/ME806B)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -71749,7 +71749,7 @@
     },
     {
       "id": "cfc92880ac8d23ff",
-      "sl_no": "2850",
+      "sl_no": "2851",
       "question_paper_code": "216006",
       "course_name": "Microwave and Antennas (102001/EC600A)",
       "course_code": "216006",
@@ -71770,7 +71770,7 @@
           "Download"
         ],
         "cells": [
-          "2850",
+          "2851",
           "216006",
           "Microwave and Antennas (102001/EC600A)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -72157,7 +72157,7 @@
     },
     {
       "id": "b0bb6b0511ca1b23",
-      "sl_no": "2883",
+      "sl_no": "2884",
       "question_paper_code": "215675",
       "course_name": "Mobile Computing# (101003/CS807C)",
       "course_code": "215675",
@@ -72178,7 +72178,7 @@
           "Download"
         ],
         "cells": [
-          "2883",
+          "2884",
           "215675",
           "Mobile Computing# (101003/CS807C)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -72803,7 +72803,7 @@
     },
     {
       "id": "5efbc4c4fc4147c3",
-      "sl_no": "2935",
+      "sl_no": "2936",
       "question_paper_code": "216165",
       "course_name": "Modern Database Management (202902/CO200B)",
       "course_code": "216165",
@@ -72824,7 +72824,7 @@
           "Download"
         ],
         "cells": [
-          "2935",
+          "2936",
           "216165",
           "Modern Database Management (202902/CO200B)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -73109,7 +73109,7 @@
     },
     {
       "id": "22d19bd325b5793c",
-      "sl_no": "2923",
+      "sl_no": "2924",
       "question_paper_code": "216188",
       "course_name": "Multimedia System (202905/EC201E)",
       "course_code": "216188",
@@ -73130,7 +73130,7 @@
           "Download"
         ],
         "cells": [
-          "2923",
+          "2924",
           "216188",
           "Multimedia System (202905/EC201E)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -73279,7 +73279,7 @@
     },
     {
       "id": "267a4a5542b2d59a",
-      "sl_no": "2877",
+      "sl_no": "2878",
       "question_paper_code": "215739",
       "course_name": "Multivariate Data Analysis# (101008/MA807D)",
       "course_code": "215739",
@@ -73300,7 +73300,7 @@
           "Download"
         ],
         "cells": [
-          "2877",
+          "2878",
           "215739",
           "Multivariate Data Analysis# (101008/MA807D)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -73347,7 +73347,7 @@
     },
     {
       "id": "27a954a4b074a2bf",
-      "sl_no": "2878",
+      "sl_no": "2879",
       "question_paper_code": "215670",
       "course_name": "Nanoelectronics# (101002/AE806B)",
       "course_code": "215670",
@@ -73368,7 +73368,7 @@
           "Download"
         ],
         "cells": [
-          "2878",
+          "2879",
           "215670",
           "Nanoelectronics# (101002/AE806B)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -73687,7 +73687,7 @@
     },
     {
       "id": "6945789cd0306223",
-      "sl_no": "2911",
+      "sl_no": "2912",
       "question_paper_code": "215761",
       "course_name": "Natural Language Processing# (101004/IT805D)",
       "course_code": "215761",
@@ -73708,7 +73708,7 @@
           "Download"
         ],
         "cells": [
-          "2911",
+          "2912",
           "215761",
           "Natural Language Processing# (101004/IT805D)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -74639,7 +74639,7 @@
     },
     {
       "id": "ea113d19d678316b",
-      "sl_no": "2915",
+      "sl_no": "2916",
       "question_paper_code": "215769",
       "course_name": "New and Renewable Energy Engineering# (101006/ME805D)",
       "course_code": "215769",
@@ -74660,7 +74660,7 @@
           "Download"
         ],
         "cells": [
-          "2915",
+          "2916",
           "215769",
           "New and Renewable Energy Engineering# (101006/ME805D)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -78005,7 +78005,7 @@
     },
     {
       "id": "d0d5617b8df45638",
-      "sl_no": "2897",
+      "sl_no": "2898",
       "question_paper_code": "215743",
       "course_name": "Optimization Techniques# (101001/MA802D)",
       "course_code": "215743",
@@ -78026,7 +78026,7 @@
           "Download"
         ],
         "cells": [
-          "2897",
+          "2898",
           "215743",
           "Optimization Techniques# (101001/MA802D)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -78583,7 +78583,7 @@
     },
     {
       "id": "2bbc04d8139cf2d6",
-      "sl_no": "2933",
+      "sl_no": "2934",
       "question_paper_code": "216156",
       "course_name": "Pattern Recognition (202107/AD202C)",
       "course_code": "216156",
@@ -78604,7 +78604,7 @@
           "Download"
         ],
         "cells": [
-          "2933",
+          "2934",
           "216156",
           "Pattern Recognition (202107/AD202C)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -79365,7 +79365,7 @@
     },
     {
       "id": "4d95c83ab277fa14",
-      "sl_no": "2857",
+      "sl_no": "2858",
       "question_paper_code": "216036",
       "course_name": "Power Electronics (102005/EE600B)",
       "course_code": "216036",
@@ -79386,7 +79386,7 @@
           "Download"
         ],
         "cells": [
-          "2857",
+          "2858",
           "216036",
           "Power Electronics (102005/EE600B)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -79501,7 +79501,7 @@
     },
     {
       "id": "123a8a6114329c60",
-      "sl_no": "2856",
+      "sl_no": "2857",
       "question_paper_code": "216008",
       "course_name": "Power System II (102005/EE600A)",
       "course_code": "216008",
@@ -79522,7 +79522,7 @@
           "Download"
         ],
         "cells": [
-          "2856",
+          "2857",
           "216008",
           "Power System II (102005/EE600A)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -85077,7 +85077,7 @@
     },
     {
       "id": "cc0b0954a4d461b2",
-      "sl_no": "2916",
+      "sl_no": "2917",
       "question_paper_code": "215773",
       "course_name": "Project Planning and Management# (101006/ME808D)",
       "course_code": "215773",
@@ -85098,7 +85098,7 @@
           "Download"
         ],
         "cells": [
-          "2916",
+          "2917",
           "215773",
           "Project Planning and Management# (101006/ME808D)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -85179,7 +85179,7 @@
     },
     {
       "id": "b32355d9ac16be1f",
-      "sl_no": "2888",
+      "sl_no": "2889",
       "question_paper_code": "215744",
       "course_name": "Psychology# (101009/EN803D)",
       "course_code": "215744",
@@ -85200,7 +85200,7 @@
           "Download"
         ],
         "cells": [
-          "2888",
+          "2889",
           "215744",
           "Psychology# (101009/EN803D)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -86063,7 +86063,7 @@
     },
     {
       "id": "f1afbc8f0dfd6b9b",
-      "sl_no": "2895",
+      "sl_no": "2896",
       "question_paper_code": "215680",
       "course_name": "Real Time Operating Systems# (101001/EC802C)",
       "course_code": "215680",
@@ -86084,7 +86084,7 @@
           "Download"
         ],
         "cells": [
-          "2895",
+          "2896",
           "215680",
           "Real Time Operating Systems# (101001/EC802C)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -86097,7 +86097,7 @@
     },
     {
       "id": "fab26ca0a21057ac",
-      "sl_no": "2866",
+      "sl_no": "2867",
       "question_paper_code": "216066",
       "course_name": "Refrigeration and Air-Conditioning (102006/ME600C)",
       "course_code": "216066",
@@ -86118,7 +86118,7 @@
           "Download"
         ],
         "cells": [
-          "2866",
+          "2867",
           "216066",
           "Refrigeration and Air-Conditioning (102006/ME600C)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -86233,7 +86233,7 @@
     },
     {
       "id": "c9ea8c6f4bb01633",
-      "sl_no": "2868",
+      "sl_no": "2869",
       "question_paper_code": "216149",
       "course_name": "Renewable and Clean Energy Technologies (102006/ME601E)",
       "course_code": "216149",
@@ -86254,7 +86254,7 @@
           "Download"
         ],
         "cells": [
-          "2868",
+          "2869",
           "216149",
           "Renewable and Clean Energy Technologies (102006/ME601E)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -86777,7 +86777,7 @@
     },
     {
       "id": "e1454be9a686a1bf",
-      "sl_no": "2860",
+      "sl_no": "2861",
       "question_paper_code": "216140",
       "course_name": "Renewable Energy Systems (102005/EE602E)",
       "course_code": "216140",
@@ -86798,7 +86798,7 @@
           "Download"
         ],
         "cells": [
-          "2860",
+          "2861",
           "216140",
           "Renewable Energy Systems (102005/EE602E)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -87457,7 +87457,7 @@
     },
     {
       "id": "a81e02f5caa174fd",
-      "sl_no": "2879",
+      "sl_no": "2880",
       "question_paper_code": "215698",
       "course_name": "Robotics and Industrial Automation# (101002/AE807C)",
       "course_code": "215698",
@@ -87478,7 +87478,7 @@
           "Download"
         ],
         "cells": [
-          "2879",
+          "2880",
           "215698",
           "Robotics and Industrial Automation# (101002/AE807C)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -88069,7 +88069,7 @@
     },
     {
       "id": "8a7afdfcd38e867a",
-      "sl_no": "2854",
+      "sl_no": "2855",
       "question_paper_code": "216132",
       "course_name": "Satellite Communication (102001/EC603E)",
       "course_code": "216132",
@@ -88090,7 +88090,7 @@
           "Download"
         ],
         "cells": [
-          "2854",
+          "2855",
           "216132",
           "Satellite Communication (102001/EC603E)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -88477,7 +88477,7 @@
     },
     {
       "id": "434e10e38c8b566a",
-      "sl_no": "2893",
+      "sl_no": "2894",
       "question_paper_code": "215658",
       "course_name": "Secure Communication# (101001/EC803B)",
       "course_code": "215658",
@@ -88498,7 +88498,7 @@
           "Download"
         ],
         "cells": [
-          "2893",
+          "2894",
           "215658",
           "Secure Communication# (101001/EC803B)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -88506,6 +88506,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/215658.pdf"
+        ]
+      }
+    },
+    {
+      "id": "376b70323823110d",
+      "sl_no": "2839",
+      "question_paper_code": "216026",
+      "course_name": "Security in Computing (102902/CO600B)",
+      "course_code": "216026",
+      "actual_subject_code": "102902",
+      "semester": "S6",
+      "exam_type": "Regular",
+      "admission_year": 2023,
+      "exam_month": "March",
+      "exam_year": 2026,
+      "raw_exam_details": "S6 Btech Regular (2023 admns.) March 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/216026.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2839",
+          "216026",
+          "Security in Computing (102902/CO600B)",
+          "S6 Btech Regular (2023 admns.) March 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/216026.pdf"
         ]
       }
     },
@@ -88647,7 +88681,7 @@
     },
     {
       "id": "fafa966437781105",
-      "sl_no": "2885",
+      "sl_no": "2886",
       "question_paper_code": "215606",
       "course_name": "Services Science and Service Operational Management (101009/MS800A)",
       "course_code": "215606",
@@ -88668,7 +88702,7 @@
           "Download"
         ],
         "cells": [
-          "2885",
+          "2886",
           "215606",
           "Services Science and Service Operational Management (101009/MS800A)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -89701,7 +89735,7 @@
     },
     {
       "id": "a943f599f3d235f0",
-      "sl_no": "2899",
+      "sl_no": "2900",
       "question_paper_code": "215664",
       "course_name": "Smart Grid Technology# (101005/EE803B)",
       "course_code": "215664",
@@ -89722,7 +89756,7 @@
           "Download"
         ],
         "cells": [
-          "2899",
+          "2900",
           "215664",
           "Smart Grid Technology# (101005/EE803B)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -89735,7 +89769,7 @@
     },
     {
       "id": "bc59aa91c37b6efa",
-      "sl_no": "2929",
+      "sl_no": "2930",
       "question_paper_code": "216177",
       "course_name": "SoC Design (202105/EC201C)",
       "course_code": "216177",
@@ -89756,7 +89790,7 @@
           "Download"
         ],
         "cells": [
-          "2929",
+          "2930",
           "216177",
           "SoC Design (202105/EC201C)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -89939,7 +89973,7 @@
     },
     {
       "id": "2c7a2cbc442352aa",
-      "sl_no": "2874",
+      "sl_no": "2875",
       "question_paper_code": "215690",
       "course_name": "Social Network Analysis# (101008/IT803C)",
       "course_code": "215690",
@@ -89960,7 +89994,7 @@
           "Download"
         ],
         "cells": [
-          "2874",
+          "2875",
           "215690",
           "Social Network Analysis# (101008/IT803C)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -90245,7 +90279,7 @@
     },
     {
       "id": "d3435274a0ac302a",
-      "sl_no": "2841",
+      "sl_no": "2842",
       "question_paper_code": "216121",
       "course_name": "Soft Computing (102003/CS603E)",
       "course_code": "216121",
@@ -90266,7 +90300,7 @@
           "Download"
         ],
         "cells": [
-          "2841",
+          "2842",
           "216121",
           "Soft Computing (102003/CS603E)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -90449,7 +90483,7 @@
     },
     {
       "id": "f7b72cb98156cacc",
-      "sl_no": "2910",
+      "sl_no": "2911",
       "question_paper_code": "215776",
       "course_name": "Software Architecture# (101004/IT803D)",
       "course_code": "215776",
@@ -90470,7 +90504,7 @@
           "Download"
         ],
         "cells": [
-          "2910",
+          "2911",
           "215776",
           "Software Architecture# (101004/IT803D)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -90959,7 +90993,7 @@
     },
     {
       "id": "1e4dc574c542c335",
-      "sl_no": "2884",
+      "sl_no": "2885",
       "question_paper_code": "215780",
       "course_name": "Software Testing# (101003/CS805D)",
       "course_code": "215780",
@@ -90980,7 +91014,7 @@
           "Download"
         ],
         "cells": [
-          "2884",
+          "2885",
           "215780",
           "Software Testing# (101003/CS805D)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -91673,7 +91707,7 @@
     },
     {
       "id": "1e8f12521617a633",
-      "sl_no": "2902",
+      "sl_no": "2903",
       "question_paper_code": "215710",
       "course_name": "Special Electric Machines# (101005/EE802C)",
       "course_code": "215710",
@@ -91694,7 +91728,7 @@
           "Download"
         ],
         "cells": [
-          "2902",
+          "2903",
           "215710",
           "Special Electric Machines# (101005/EE802C)",
           "S8 Btech Regular (2022 admns.) March 2026",
@@ -98269,7 +98303,7 @@
     },
     {
       "id": "f2421cc44881b8a4",
-      "sl_no": "2930",
+      "sl_no": "2931",
       "question_paper_code": "216185",
       "course_name": "VLSI System Testing (202105/EC201D)",
       "course_code": "216185",
@@ -98290,7 +98324,7 @@
           "Download"
         ],
         "cells": [
-          "2930",
+          "2931",
           "216185",
           "VLSI System Testing (202105/EC201D)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -98405,7 +98439,7 @@
     },
     {
       "id": "8529090a7b5349b5",
-      "sl_no": "2921",
+      "sl_no": "2922",
       "question_paper_code": "216175",
       "course_name": "Web Analytics and Development(WAD) (202108/IT204C)",
       "course_code": "216175",
@@ -98426,7 +98460,7 @@
           "Download"
         ],
         "cells": [
-          "2921",
+          "2922",
           "216175",
           "Web Analytics and Development(WAD) (202108/IT204C)",
           "S2 Mtech Regular (2025 admns.) April 2026",
@@ -99425,7 +99459,7 @@
     },
     {
       "id": "79cf698ceb563ad3",
-      "sl_no": "2853",
+      "sl_no": "2854",
       "question_paper_code": "216085",
       "course_name": "Wireless and Optical Communication (102001/EC600D)",
       "course_code": "216085",
@@ -99446,7 +99480,7 @@
           "Download"
         ],
         "cells": [
-          "2853",
+          "2854",
           "216085",
           "Wireless and Optical Communication (102001/EC600D)",
           "S6 Btech Regular (2023 admns.) March 2026",
@@ -99731,7 +99765,7 @@
     },
     {
       "id": "bd04530a7e533434",
-      "sl_no": "2892",
+      "sl_no": "2893",
       "question_paper_code": "215614",
       "course_name": "Wireless Communication (101001/EC800A)",
       "course_code": "215614",
@@ -99752,7 +99786,7 @@
           "Download"
         ],
         "cells": [
-          "2892",
+          "2893",
           "215614",
           "Wireless Communication (101001/EC800A)",
           "S8 Btech Regular (2022 admns.) March 2026",
