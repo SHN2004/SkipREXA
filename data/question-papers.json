@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2026-05-25T07:14:47.249715+00:00",
+    "generated_at": "2026-06-01T08:34:29.905514+00:00",
     "source": "student.rajagiritech.ac.in",
     "page_url": "https://student.rajagiritech.ac.in/qp_downloads",
-    "paper_count": 2938,
+    "paper_count": 2939,
     "notes": []
   },
   "papers": [
@@ -5920,6 +5920,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/211036.pdf"
+        ]
+      }
+    },
+    {
+      "id": "1d812b72f1d03e00",
+      "sl_no": "2940",
+      "question_paper_code": "216254",
+      "course_name": "Applied AI in IoT (102903/CO703B)",
+      "course_code": "216254",
+      "actual_subject_code": "102903",
+      "semester": "S7",
+      "exam_type": "Regular",
+      "admission_year": 2023,
+      "exam_month": "May",
+      "exam_year": 2026,
+      "raw_exam_details": "S7 Btech Fast track (2023 admns.) May 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/216254.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Question Paper Code",
+          "Course Name",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "2940",
+          "216254",
+          "Applied AI in IoT (102903/CO703B)",
+          "S7 Btech Fast track (2023 admns.) May 2026",
+          ""
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/216254.pdf"
         ]
       }
     },
