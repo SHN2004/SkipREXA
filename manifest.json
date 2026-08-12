@@ -29,14 +29,6 @@
     "https://student.rajagiritech.ac.in/*",
     "https://www.rajagiritech.ac.in/*"
   ],
-  "optional_host_permissions": [
-    "http://rajagiritech.ac.in/*",
-    "http://student.rajagiritech.ac.in/*",
-    "http://www.rajagiritech.ac.in/*",
-    "https://rajagiritech.ac.in/*",
-    "https://student.rajagiritech.ac.in/*",
-    "https://www.rajagiritech.ac.in/*"
-  ],
   "background": {
     "service_worker": "src/background.js",
     "type": "module"
@@ -63,12 +55,7 @@
     },
     {
       "matches": [
-        "http://rajagiritech.ac.in/stud/ktu/Student/Leave.asp*",
-        "http://www.rajagiritech.ac.in/stud/ktu/Student/Leave.asp*",
-        "http://student.rajagiritech.ac.in/stud/ktu/Student/Leave.asp*",
-        "https://rajagiritech.ac.in/stud/ktu/Student/Leave.asp*",
-        "https://www.rajagiritech.ac.in/stud/ktu/Student/Leave.asp*",
-        "https://student.rajagiritech.ac.in/stud/ktu/Student/Leave.asp*"
+        "*://*.rajagiritech.ac.in/stud/*/Student/Leave.asp*"
       ],
       "js": [
         "src/attendance-content.js"
