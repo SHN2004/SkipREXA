@@ -4,6 +4,8 @@
 .DS_Store
 node_modules/
 dist/
+.agents/
+skills-lock.json
 .vite/
 *.log
 npm-debug.log*
