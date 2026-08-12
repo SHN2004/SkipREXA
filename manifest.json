@@ -14,8 +14,7 @@
     "storage",
     "contextMenus",
     "scripting",
-    "downloads",
-    "declarativeNetRequest"
+    "downloads"
   ],
   "host_permissions": [
     "https://chatgpt.com/*",
@@ -33,15 +32,7 @@
     "service_worker": "src/background.js",
     "type": "module"
   },
-  "declarative_net_request": {
-    "rule_resources": [
-      {
-        "id": "rsms_speed_mode",
-        "enabled": true,
-        "path": "rules/rsms-speed-mode.json"
-      }
-    ]
-  },
+
   "content_scripts": [
     {
       "matches": [
@@ -55,7 +46,10 @@
     },
     {
       "matches": [
-        "*://*.rajagiritech.ac.in/stud/*/Student/Leave.asp*"
+        "*://*.rajagiritech.ac.in/stud/*/Student/Leave.asp*",
+        "*://*.rajagiritech.ac.in/stud/*/Student/leave.asp*",
+        "*://*.rajagiritech.ac.in/stud/*/student/Leave.asp*",
+        "*://*.rajagiritech.ac.in/stud/*/student/leave.asp*"
       ],
       "js": [
         "src/attendance-content.js"

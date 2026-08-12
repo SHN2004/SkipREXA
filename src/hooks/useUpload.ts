@@ -44,6 +44,8 @@ type DownloadPdfResponse =
       source?: string;
       isNativeDownload?: boolean;
       downloadId?: number;
+      code?: undefined;
+      error?: undefined;
     }
   | {
       success?: false;

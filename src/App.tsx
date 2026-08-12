@@ -16,7 +16,7 @@ import claudeIcon from '@/assets/claude-color.svg';
 const getSelectedCourseId = (course: Pick<Course, 'id' | 'name' | 'code'>) =>
     course.id || getCourseId(course.name, course.code);
 
-type RsmsSpeedModeResponse = {
+type RsmsToggleResponse = {
     success: boolean;
     enabled: boolean;
     error?: string;
@@ -24,7 +24,6 @@ type RsmsSpeedModeResponse = {
 
 type RsmsOptionsResponse = {
     success: boolean;
-    speedModeEnabled: boolean;
     attendanceUiEnabled: boolean;
     error?: string;
 };
@@ -70,10 +69,8 @@ export default function App() {
     const [progressMsg, setProgressMsg] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
-    const [rsmsSpeedModeEnabled, setRsmsSpeedModeEnabled] = useState(true);
     const [attendanceUiEnabled, setAttendanceUiEnabled] = useState(true);
     const [isRsmsOptionsOpen, setIsRsmsOptionsOpen] = useState(false);
-    const [isSpeedModeSaving, setIsSpeedModeSaving] = useState(false);
     const [isAttendanceUiSaving, setIsAttendanceUiSaving] = useState(false);
     const [rsmsOptionsError, setRsmsOptionsError] = useState('');
 
@@ -104,7 +101,6 @@ export default function App() {
                 return;
             }
 
-            setRsmsSpeedModeEnabled(response.speedModeEnabled);
             setAttendanceUiEnabled(response.attendanceUiEnabled);
             setRsmsOptionsError('');
         });
@@ -303,35 +299,6 @@ export default function App() {
         }
     };
 
-    const handleRsmsSpeedModeToggle = () => {
-        if (isSpeedModeSaving) return;
-        if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
-            setRsmsOptionsError('RSMS options require the extension runtime.');
-            return;
-        }
-
-        const nextEnabled = !rsmsSpeedModeEnabled;
-        setRsmsSpeedModeEnabled(nextEnabled);
-        setIsSpeedModeSaving(true);
-        setRsmsOptionsError('');
-
-        chrome.runtime.sendMessage(
-            { action: 'setRsmsSpeedMode', enabled: nextEnabled },
-            (response?: RsmsSpeedModeResponse) => {
-                setIsSpeedModeSaving(false);
-
-                if (chrome.runtime.lastError || !response?.success) {
-                    setRsmsSpeedModeEnabled(!nextEnabled);
-                    setRsmsOptionsError('Could not update speed mode.');
-                    return;
-                }
-
-                setRsmsSpeedModeEnabled(response.enabled);
-                setRsmsOptionsError('');
-            }
-        );
-    };
-
     const handleAttendanceUiToggle = () => {
         if (isAttendanceUiSaving) return;
         if (typeof chrome === 'undefined' || !chrome.runtime?.sendMessage) {
@@ -346,7 +313,7 @@ export default function App() {
 
         chrome.runtime.sendMessage(
             { action: 'setRsmsAttendanceUi', enabled: nextEnabled },
-            (response?: RsmsSpeedModeResponse) => {
+            (response?: RsmsToggleResponse) => {
                 setIsAttendanceUiSaving(false);
 
                 if (chrome.runtime.lastError || !response?.success) {
@@ -435,7 +402,7 @@ export default function App() {
                                     <div className="mb-3 flex items-center justify-between border-b border-foreground/15 pb-2">
                                         <div>
                                             <div className="font-main text-[11px] font-black uppercase tracking-[0.2em] text-foreground">RSMS controls</div>
-                                            <div className="mt-0.5 text-[10px] font-semibold text-muted-foreground">Portal tweaks for speed and attendance.</div>
+                                            <div className="mt-0.5 text-[10px] font-semibold text-muted-foreground">Portal tweaks for attendance.</div>
                                         </div>
                                         <SlidersHorizontal className="h-4 w-4 text-primary" strokeWidth={2.4} />
                                     </div>
@@ -458,26 +425,6 @@ export default function App() {
                                             </span>
                                             <span className={`relative h-6 w-11 flex-shrink-0 rounded-full border transition-colors ${attendanceUiEnabled ? 'border-primary bg-primary' : 'border-foreground/20 bg-muted'}`}>
                                                 <span className={`absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-background shadow-sm transition-transform ${attendanceUiEnabled ? 'translate-x-[22px]' : 'translate-x-1'}`} />
-                                            </span>
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            role="switch"
-                                            aria-checked={rsmsSpeedModeEnabled}
-                                            disabled={isSpeedModeSaving}
-                                            onClick={handleRsmsSpeedModeToggle}
-                                            className={`flex min-h-[68px] w-full items-center gap-3 rounded-lg border px-3 py-2 text-left transition-colors duration-200 disabled:cursor-wait ${rsmsSpeedModeEnabled ? 'border-primary/50 bg-primary/10' : 'border-foreground/20 bg-card hover:border-foreground/40'}`}
-                                        >
-                                            <span className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg border ${rsmsSpeedModeEnabled ? 'border-primary/35 bg-primary/10 text-primary' : 'border-foreground/15 bg-foreground/5 text-muted-foreground'}`}>
-                                                <Gauge className="h-4 w-4" strokeWidth={2.4} />
-                                            </span>
-                                            <span className="min-w-0 flex-1">
-                                                <span className="block font-main text-[11px] font-black uppercase tracking-[0.12em] text-foreground">Speed mode</span>
-                                                <span className="mt-0.5 block text-[10px] font-semibold leading-snug text-muted-foreground">Block non-essential RSMS assets.</span>
-                                            </span>
-                                            <span className={`relative h-6 w-11 flex-shrink-0 rounded-full border transition-colors ${rsmsSpeedModeEnabled ? 'border-primary bg-primary' : 'border-foreground/20 bg-muted'}`}>
-                                                <span className={`absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-background shadow-sm transition-transform ${rsmsSpeedModeEnabled ? 'translate-x-[22px]' : 'translate-x-1'}`} />
                                             </span>
                                         </button>
                                     </div>
