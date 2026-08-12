@@ -22,6 +22,7 @@
   let attendanceUiEnabled = true;
   let highlightedCells = [];
   let pinnedHighlightSubjects = new Set();
+  let infoDismissListenerAttached = false;
   const subjectMapPromises = new Map();
   const subjectMapFailureTimestamps = new Map();
 
@@ -605,6 +606,20 @@
     `;
   }
 
+  function infoTipHtml(id, title, message, alignment = "") {
+    const alignmentClass = alignment ? ` skiprexa-info-tip--${alignment}` : "";
+    return `
+      <span class="skiprexa-info-tip${alignmentClass}">
+        <button type="button" class="skiprexa-info-button" aria-label="About ${escapeHtml(title)}" aria-describedby="${escapeHtml(id)}" aria-expanded="false">
+          <span aria-hidden="true">i</span>
+        </button>
+        <span id="${escapeHtml(id)}" class="skiprexa-tooltip" role="tooltip">
+          <span class="skiprexa-tooltip-title">${escapeHtml(title)}</span>
+          <span class="skiprexa-tooltip-copy">${escapeHtml(message)}</span>
+        </span>
+      </span>`;
+  }
+
   // ── Panel shell ──────────────────────────────────────────────────
 
   function getOrCreatePanel(anchor) {
@@ -823,6 +838,13 @@
           align-items: center;
           gap: 10px;
         }
+        #${PANEL_ID} .skiprexa-control-group,
+        #${PANEL_ID} .skiprexa-heading-label {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+        }
         #${PANEL_ID} .skiprexa-highlight-help {
           width: 100%;
           margin-top: 2px;
@@ -879,6 +901,128 @@
           color: var(--sx-red);
           border: 1px solid var(--sx-red-border);
           letter-spacing: 0.02em;
+        }
+
+        /* ── Context notes ───────────────────────────── */
+        #${PANEL_ID} .skiprexa-info-tip {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          flex: 0 0 auto;
+          text-align: left;
+          text-transform: none;
+          letter-spacing: normal;
+        }
+        #${PANEL_ID} .skiprexa-info-button {
+          width: 17px;
+          height: 17px;
+          padding: 0;
+          border: 1px solid #cbd7e4;
+          border-radius: 50%;
+          background: #f5f8fb;
+          color: #60758d;
+          font-family: Georgia, 'Times New Roman', serif;
+          font-size: 11px;
+          font-weight: 700;
+          font-style: italic;
+          line-height: 15px;
+          text-align: center;
+          cursor: help;
+          box-shadow: 0 1px 1px rgba(15,23,42,0.04);
+          transition: color 0.16s ease, background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+        }
+        #${PANEL_ID} .skiprexa-info-button:hover,
+        #${PANEL_ID} .skiprexa-info-button:focus-visible,
+        #${PANEL_ID} .skiprexa-info-tip.is-open .skiprexa-info-button {
+          border-color: var(--sx-accent);
+          background: var(--sx-accent);
+          color: #fff;
+          box-shadow: 0 0 0 3px rgba(30,58,95,0.11);
+          transform: translateY(-1px);
+          outline: none;
+        }
+        #${PANEL_ID} .skiprexa-tooltip {
+          position: absolute;
+          z-index: 30;
+          top: calc(100% + 9px);
+          left: 50%;
+          width: 226px;
+          max-width: calc(100vw - 32px);
+          padding: 11px 12px 12px;
+          border: 1px solid rgba(255,255,255,0.12);
+          border-radius: 8px;
+          background: #172b46;
+          color: #edf4fb;
+          font-family: var(--sx-font);
+          text-align: left;
+          text-transform: none;
+          letter-spacing: normal;
+          line-height: 1.4;
+          box-shadow: 0 12px 28px rgba(15,23,42,0.22), 0 2px 8px rgba(15,23,42,0.12);
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transform: translate(-50%, -4px);
+          transform-origin: top center;
+          transition: opacity 0.16s ease, transform 0.16s ease;
+        }
+        #${PANEL_ID} .skiprexa-tooltip::before {
+          content: "";
+          position: absolute;
+          top: -5px;
+          left: 50%;
+          width: 9px;
+          height: 9px;
+          background: #172b46;
+          border-top: 1px solid rgba(255,255,255,0.12);
+          border-left: 1px solid rgba(255,255,255,0.12);
+          transform: translateX(-50%) rotate(45deg);
+        }
+        #${PANEL_ID} .skiprexa-info-tip--end .skiprexa-tooltip {
+          right: -6px;
+          left: auto;
+          transform: translateY(-4px);
+          transform-origin: top right;
+        }
+        #${PANEL_ID} .skiprexa-info-tip--end .skiprexa-tooltip::before {
+          right: 10px;
+          left: auto;
+          transform: rotate(45deg);
+        }
+        #${PANEL_ID} .skiprexa-info-tip:hover:not(.is-dismissed) .skiprexa-tooltip,
+        #${PANEL_ID} .skiprexa-info-tip:not(.is-dismissed) .skiprexa-info-button:focus-visible + .skiprexa-tooltip,
+        #${PANEL_ID} .skiprexa-info-tip.is-open:not(.is-dismissed) .skiprexa-tooltip {
+          opacity: 1;
+          visibility: visible;
+          transform: translate(-50%, 0);
+        }
+        #${PANEL_ID} .skiprexa-info-tip--end:hover:not(.is-dismissed) .skiprexa-tooltip,
+        #${PANEL_ID} .skiprexa-info-tip--end:not(.is-dismissed) .skiprexa-info-button:focus-visible + .skiprexa-tooltip,
+        #${PANEL_ID} .skiprexa-info-tip--end.is-open:not(.is-dismissed) .skiprexa-tooltip {
+          transform: translateY(0);
+        }
+        #${PANEL_ID} .skiprexa-info-tip.is-dismissed .skiprexa-tooltip {
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+        }
+        #${PANEL_ID} .skiprexa-tooltip-title,
+        #${PANEL_ID} .skiprexa-tooltip-copy {
+          display: block;
+        }
+        #${PANEL_ID} .skiprexa-tooltip-title {
+          margin-bottom: 4px;
+          color: #fff;
+          font-family: var(--sx-mono);
+          font-size: 9px;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+        #${PANEL_ID} .skiprexa-tooltip-copy {
+          color: #d8e4f0;
+          font-size: 11.5px;
+          font-weight: 500;
         }
 
         /* ── Table ───────────────────────────────────── */
@@ -1223,50 +1367,37 @@
           margin: 0;
         }
 
-        /* ── Footer ─────────────────────────────── */
-        #${PANEL_ID} .skiprexa-footer {
-          padding: 14px 18px;
-          border-top: 2px solid var(--sx-border);
-          background: #f0f4f8;
-          display: flex;
-          align-items: stretch;
-          gap: 1px;
-          border-bottom-left-radius: 10px;
-          border-bottom-right-radius: 10px;
-          overflow: hidden;
+        @media (prefers-reduced-motion: reduce) {
+          #${PANEL_ID} .skiprexa-info-button,
+          #${PANEL_ID} .skiprexa-tooltip {
+            transition: none;
+          }
         }
-        #${PANEL_ID} .skiprexa-footer-block {
-          flex: 1;
-          padding: 8px 14px;
-          display: flex;
-          flex-direction: column;
-          gap: 3px;
-          background: #f0f4f8;
-        }
-        #${PANEL_ID} .skiprexa-footer-block:not(:last-child) {
-          border-right: 1px solid var(--sx-border);
-        }
-        #${PANEL_ID} .skiprexa-footer-label {
-          font-family: var(--sx-mono);
-          font-size: 9px;
-          font-weight: 700;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: var(--sx-text-tertiary);
-        }
-        #${PANEL_ID} .skiprexa-footer-value {
-          font-size: 13px;
-          font-weight: 500;
-          color: var(--sx-text-secondary);
-          line-height: 1.4;
-        }
-        #${PANEL_ID} .skiprexa-footer-value strong {
-          color: var(--sx-accent);
-          font-weight: 700;
-        }
-        #${PANEL_ID} .skiprexa-footer-value.is-green {
-          color: #059669;
-          font-weight: 600;
+        @media (max-width: 760px) {
+          #${PANEL_ID} .skiprexa-tooltip,
+          #${PANEL_ID} .skiprexa-info-tip--end .skiprexa-tooltip {
+            position: fixed;
+            top: auto;
+            right: 14px;
+            bottom: 14px;
+            left: 14px;
+            width: auto;
+            max-width: none;
+            transform: translateY(8px);
+            transform-origin: bottom center;
+          }
+          #${PANEL_ID} .skiprexa-tooltip::before,
+          #${PANEL_ID} .skiprexa-info-tip--end .skiprexa-tooltip::before {
+            display: none;
+          }
+          #${PANEL_ID} .skiprexa-info-tip:hover:not(.is-dismissed) .skiprexa-tooltip,
+          #${PANEL_ID} .skiprexa-info-tip:not(.is-dismissed) .skiprexa-info-button:focus-visible + .skiprexa-tooltip,
+          #${PANEL_ID} .skiprexa-info-tip.is-open:not(.is-dismissed) .skiprexa-tooltip,
+          #${PANEL_ID} .skiprexa-info-tip--end:hover:not(.is-dismissed) .skiprexa-tooltip,
+          #${PANEL_ID} .skiprexa-info-tip--end:not(.is-dismissed) .skiprexa-info-button:focus-visible + .skiprexa-tooltip,
+          #${PANEL_ID} .skiprexa-info-tip--end.is-open:not(.is-dismissed) .skiprexa-tooltip {
+            transform: translateY(0);
+          }
         }
 
         /* ── Tile highlight ──────────────────────────── */
@@ -1287,11 +1418,17 @@
       <div class="skiprexa-header">
         <div class="skiprexa-title">SkipREXA <span>Attendance Analyzer</span></div>
         <div class="skiprexa-controls">
-          <div class="skiprexa-toggle">
-            <button class="skiprexa-toggle-btn ${is75 ? "active" : ""}" data-threshold="75">75%</button>
-            <button class="skiprexa-toggle-btn ${!is75 ? "active" : ""}" data-threshold="80">80%</button>
+          <div class="skiprexa-control-group">
+            <div class="skiprexa-toggle">
+              <button class="skiprexa-toggle-btn ${is75 ? "active" : ""}" data-threshold="75">75%</button>
+              <button class="skiprexa-toggle-btn ${!is75 ? "active" : ""}" data-threshold="80">80%</button>
+            </div>
+            ${infoTipHtml("skiprexa-tip-threshold", "Attendance target", "Choose the attendance rule used for every calculation: 75% or 80%.", "end")}
           </div>
-          <div class="skiprexa-total-pill">${subjectRows.reduce((s,r)=>s+r.missedHours,0)} absent</div>
+          <div class="skiprexa-control-group">
+            <div class="skiprexa-total-pill">${subjectRows.reduce((s,r)=>s+r.missedHours,0)} absent</div>
+            ${infoTipHtml("skiprexa-tip-absent-total", "Absent total", "Total unapproved absent hours across all subjects. Approved and duty leave are excluded.", "end")}
+          </div>
         </div>
         <div class="skiprexa-highlight-help">Use <strong>Pin</strong> on a subject to keep its timetable cells highlighted while you scroll.</div>
       </div>
@@ -1300,28 +1437,13 @@
         <thead>
           <tr>
             <th>Subject</th>
-            <th style="width:80px;">Missed</th>
-            <th style="width:120px;">Min Total for ${thresholdInt}%</th>
-            <th style="width:100px;">Total Held</th>
+            <th style="width:92px;"><span class="skiprexa-heading-label">Missed ${infoTipHtml("skiprexa-tip-missed", "Missed hours", "Unapproved absent hours for this subject. Approved and duty leave do not count.")}</span></th>
+            <th style="width:142px;"><span class="skiprexa-heading-label">Min Total for ${thresholdInt}% ${infoTipHtml("skiprexa-tip-min-total", `Minimum total for ${thresholdInt}%`, `The minimum number of classes that must be held for these absences to still meet ${thresholdInt}%.`)}</span></th>
+            <th style="width:122px;"><span class="skiprexa-heading-label">Total Held ${infoTipHtml("skiprexa-tip-total-held", "Total held", "Enter the classes conducted so far to reveal your current percentage and how many more you can miss.", "end")}</span></th>
           </tr>
         </thead>
         <tbody>${rowsHtml}</tbody>
       </table>
-
-      <div class="skiprexa-footer">
-        <div class="skiprexa-footer-block">
-          <div class="skiprexa-footer-label">What is this column?</div>
-          <div class="skiprexa-footer-value"><strong>Min Total for ${thresholdInt}%</strong> = the minimum number of total classes that must be held for your current absences to still be within ${thresholdInt}% attendance</div>
-        </div>
-        <div class="skiprexa-footer-block">
-          <div class="skiprexa-footer-label">Unlock danger zone</div>
-          <div class="skiprexa-footer-value">Type the classes held so far into <strong>Total Held</strong> — you'll see if you're safe, at risk, or over the limit</div>
-        </div>
-        <div class="skiprexa-footer-block" style="flex:0 0 auto;min-width:160px;">
-          <div class="skiprexa-footer-label">Leave types</div>
-          <div class="skiprexa-footer-value is-green">● Approved &amp; Duty leave<br>are NOT counted against you</div>
-        </div>
-      </div>
     `;
 
     panel.setAttribute("data-rendered", "true");
@@ -1329,6 +1451,7 @@
     attachSubjectInteractions(panel);
     attachThresholdToggle(panel);
     attachTotalInputListeners(panel);
+    attachInfoTips(panel);
     if (pinnedHighlightSubjects.size) {
       const availableSubjects = new Set(
         Array.from(panel.querySelectorAll(".skiprexa-highlight-toggle[data-subject]")).map((button) => button.getAttribute("data-subject")).filter(Boolean)
@@ -1350,6 +1473,53 @@
     for (const input of inputs) {
       const subject = input.getAttribute("data-subject");
       input.addEventListener("input", () => onTotalClassesInput(subject, input.value));
+    }
+  }
+
+  function closeInfoTips(panel, except = null) {
+    const tips = panel.querySelectorAll(".skiprexa-info-tip");
+    for (const tip of tips) {
+      if (tip === except) continue;
+      tip.classList.remove("is-open", "is-dismissed");
+      tip.querySelector(".skiprexa-info-button")?.setAttribute("aria-expanded", "false");
+    }
+  }
+
+  function attachInfoTips(panel) {
+    const tips = panel.querySelectorAll(".skiprexa-info-tip");
+    for (const tip of tips) {
+      const button = tip.querySelector(".skiprexa-info-button");
+      if (!button) continue;
+
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const shouldOpen = !tip.classList.contains("is-open");
+        closeInfoTips(panel, shouldOpen ? tip : null);
+        tip.classList.toggle("is-dismissed", !shouldOpen);
+        tip.classList.toggle("is-open", shouldOpen);
+        button.setAttribute("aria-expanded", String(shouldOpen));
+      });
+
+      button.addEventListener("focus", () => tip.classList.remove("is-dismissed"));
+      tip.addEventListener("mouseenter", () => tip.classList.remove("is-dismissed"));
+      button.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        tip.classList.remove("is-open");
+        tip.classList.add("is-dismissed");
+        button.setAttribute("aria-expanded", "false");
+        event.stopPropagation();
+      });
+    }
+
+    if (!infoDismissListenerAttached) {
+      infoDismissListenerAttached = true;
+      document.addEventListener("click", (event) => {
+        const currentPanel = document.getElementById(PANEL_ID);
+        if (!currentPanel) return;
+        if (event.target instanceof Element && event.target.closest(`#${PANEL_ID} .skiprexa-info-tip`)) return;
+        closeInfoTips(currentPanel);
+      });
     }
   }
 
