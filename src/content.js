@@ -25,8 +25,9 @@ if (window.questionPaperHelperLoaded) {
             
             uploadPDFsToActiveLLM(message.pdfs)
                 .then((result) => {
-                    console.log('Upload completed successfully');
-                    sendResponse({ success: true, ...(result || {}) });
+                    const uploadedCount = Number(result?.uploadedCount || 0);
+                    console.log(`Upload completed: ${uploadedCount}/${message.pdfs.length} confirmed`);
+                    sendResponse({ success: uploadedCount > 0, ...(result || {}) });
                 })
                 .catch(error => {
                     console.error('Upload error:', error);
@@ -93,6 +94,171 @@ async function injectPromptToActiveLLM(promptText) {
     throw new Error(`Unsupported platform: ${window.location.hostname}`);
 }
 
+const ATTACHMENT_CARD_SELECTORS = [
+    '[data-testid*="attachment"]',
+    '[data-testid*="file"]',
+    '[data-testid*="upload"]',
+    '[data-filename]',
+    '[data-file-name]',
+    '[role="listitem"]',
+    '[class*="attachment"]',
+    '[class*="file"]',
+    '[aria-label]',
+    '[title]',
+    'img[alt]'
+];
+
+const ATTACHMENT_PROCESSING_PATTERN = /\b(uploading|processing|queued|loading|finalizing)\b/i;
+const ATTACHMENT_FAILURE_PATTERN = /\b(upload failed|failed|error|couldn['’]?t upload|try again|not supported)\b/i;
+
+function getChatGPTComposerContainer() {
+    const chatInput = document.querySelector('[data-testid="chat-input"]');
+    if (chatInput) {
+        return chatInput.closest?.('form') || chatInput.parentElement || chatInput;
+    }
+
+    const promptTextarea = document.querySelector('[data-testid="prompt-textarea"]');
+    if (promptTextarea) {
+        return promptTextarea.closest?.('form') || promptTextarea.parentElement || promptTextarea;
+    }
+
+    return (
+        document.querySelector('.composer-container') ||
+        document.querySelector('main') ||
+        document.body
+    );
+}
+
+function normalizeAttachmentText(value) {
+    return String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+function getAttachmentMarker(element) {
+    return normalizeAttachmentText([
+        element.getAttribute?.('data-testid'),
+        element.getAttribute?.('class'),
+        element.getAttribute?.('role'),
+        element.getAttribute?.('data-filename'),
+        element.getAttribute?.('data-file-name')
+    ].filter(Boolean).join(' '));
+}
+
+function isAttachmentLabel(element) {
+    const marker = getAttachmentMarker(element);
+    return /(?:filename|file[-_ ]?name|attachment[-_ ]?name|file[-_ ]?(?:icon|remove|button)|attachment[-_ ]?(?:icon|remove|button))/.test(marker);
+}
+
+function isAttachmentCard(element) {
+    if (!element || isAttachmentLabel(element)) return false;
+    const marker = getAttachmentMarker(element);
+    return element.getAttribute?.('role') === 'listitem' || /attachment|file|upload/.test(marker);
+}
+
+function getAttachmentLabel(element) {
+    return normalizeAttachmentText([
+        element.getAttribute?.('data-filename'),
+        element.getAttribute?.('data-file-name'),
+        element.getAttribute?.('aria-label'),
+        element.getAttribute?.('title'),
+        element.getAttribute?.('alt'),
+        element.textContent
+    ].filter(Boolean).join(' '));
+}
+
+function findAttachmentCard(element, container) {
+    if (isAttachmentCard(element)) return element;
+
+    let current = element.parentElement;
+    while (current && current !== container) {
+        if (isAttachmentCard(current)) return current;
+        current = current.parentElement;
+    }
+
+    return element;
+}
+
+function attachmentLabelMatches(label, fileName) {
+    const target = normalizeAttachmentText(fileName);
+    const baseName = target.replace(/\.[^/.]+$/, '');
+    if (!target || !label.includes(target)) {
+        return Boolean(baseName && baseName.length >= 6 && label.includes(baseName));
+    }
+    return true;
+}
+
+function collectAttachmentRecords(container, fileName, knownTestIds = new Set()) {
+    if (!container || !fileName) return [];
+
+    const records = [];
+    const seenCards = new Set();
+    const candidates = container.querySelectorAll(ATTACHMENT_CARD_SELECTORS.join(', '));
+
+    for (const candidate of candidates) {
+        const testId = candidate.getAttribute?.('data-testid');
+        if (testId && knownTestIds.has(testId)) continue;
+
+        const candidateLabel = getAttachmentLabel(candidate);
+        if (!attachmentLabelMatches(candidateLabel, fileName)) continue;
+
+        const card = findAttachmentCard(candidate, container);
+        if (!card || seenCards.has(card)) continue;
+        seenCards.add(card);
+
+        const cardLabel = getAttachmentLabel(card);
+        const statusText = normalizeAttachmentText([
+            cardLabel,
+            card.getAttribute?.('data-status'),
+            card.getAttribute?.('aria-busy'),
+            card.getAttribute?.('aria-live'),
+            card.getAttribute?.('class')
+        ].filter(Boolean).join(' '));
+
+        records.push({
+            card,
+            label: cardLabel || candidateLabel,
+            processing: ATTACHMENT_PROCESSING_PATTERN.test(statusText),
+            error: ATTACHMENT_FAILURE_PATTERN.test(statusText)
+        });
+    }
+
+    return records;
+}
+
+function getAttachmentSnapshot(containerGetter, fileName, knownTestIds = new Set()) {
+    const records = collectAttachmentRecords(containerGetter(), fileName, knownTestIds);
+    const eligibleRecords = records.filter((record) => !record.processing && !record.error);
+    return {
+        count: records.length,
+        eligibleCount: eligibleRecords.length,
+        signature: records.map((record) => `${record.label}|${record.processing ? 'processing' : record.error ? 'error' : 'ready'}`).sort().join('||'),
+        records
+    };
+}
+
+async function waitForConfirmedAttachment(containerGetter, fileName, previousSnapshot, timeoutMs = 5000, knownTestIds = new Set()) {
+    const startTime = Date.now();
+    let stableSignature = null;
+
+    while (Date.now() - startTime < timeoutMs) {
+        const current = getAttachmentSnapshot(containerGetter, fileName, knownTestIds);
+        const hasNewEligibleCard = current.count > previousSnapshot.count && current.eligibleCount > previousSnapshot.eligibleCount;
+        const hasUnfinishedTarget = current.records.some((record) => record.processing || record.error);
+        const signature = `${current.count}:${current.eligibleCount}:${current.signature}`;
+
+        if (hasNewEligibleCard && !hasUnfinishedTarget) {
+            if (stableSignature === signature) return { ok: true, snapshot: current };
+            stableSignature = signature;
+            await delay(600);
+        } else {
+            stableSignature = null;
+        }
+
+        await delay(250);
+    }
+
+    return { ok: false, snapshot: getAttachmentSnapshot(containerGetter, fileName, knownTestIds) };
+}
+
 function getClaudeComposerContainer() {
     return (
         document.querySelector('[data-testid="chat-input-grid-container"]') ||
@@ -129,33 +295,7 @@ function getClaudeAttachmentTestIds() {
 }
 
 function isClaudeAttachmentPresent(fileName) {
-    if (!fileName || typeof fileName !== 'string') return false;
-
-    const targetName = fileName.trim();
-    const targetBaseName = targetName.replace(/\.[^/.]+$/, '');
-    const needle = targetName.toLowerCase();
-    const baseNeedle = targetBaseName.toLowerCase();
-
-    const testIds = getClaudeAttachmentTestIds();
-    for (const id of testIds) {
-        if (id === targetName) return true;
-        if (targetBaseName && id === targetBaseName) return true;
-    }
-
-    const container = getClaudeComposerContainer();
-    const candidates = container.querySelectorAll('img[alt], [aria-label], [title], button');
-    for (const el of candidates) {
-        const alt = (el.getAttribute('alt') || '').toLowerCase();
-        const aria = (el.getAttribute('aria-label') || '').toLowerCase();
-        const title = (el.getAttribute('title') || '').toLowerCase();
-        const text = (el.textContent || '').toLowerCase().replace(/\s+/g, ' ').trim();
-        const haystack = `${alt} ${aria} ${title} ${text}`.trim();
-        if (!haystack) continue;
-        if (haystack.includes(needle)) return true;
-        if (baseNeedle && baseNeedle.length >= 6 && haystack.includes(baseNeedle)) return true;
-    }
-
-    return false;
+    return getAttachmentSnapshot(getClaudeComposerContainer, fileName, CLAUDE_KNOWN_TESTIDS).eligibleCount > 0;
 }
 
 async function waitForClaudeAttachment(fileName, timeoutMs = 5000) {
@@ -171,14 +311,17 @@ function getClaudeAttachmentCount() {
     return getClaudeAttachmentTestIds().length;
 }
 
-async function waitForClaudeAttachmentAdded(previousCount, fileName, timeoutMs = 5000) {
-    const startTime = Date.now();
-    while (Date.now() - startTime < timeoutMs) {
-        if (getClaudeAttachmentCount() > previousCount) return true;
-        if (isClaudeAttachmentPresent(fileName)) return true;
-        await delay(200);
-    }
-    return false;
+async function waitForClaudeAttachmentAdded(previousSnapshot, fileName, timeoutMs = 5000) {
+    const snapshot = typeof previousSnapshot === 'number'
+        ? { count: previousSnapshot, eligibleCount: previousSnapshot, signature: '', records: [] }
+        : previousSnapshot;
+    return waitForConfirmedAttachment(
+        getClaudeComposerContainer,
+        fileName,
+        snapshot,
+        timeoutMs,
+        CLAUDE_KNOWN_TESTIDS
+    );
 }
 
 // Test upload methods to find the working one
@@ -272,13 +415,13 @@ async function uploadPDFsToChatGPT(pdfs) {
     
     console.log('📄 Starting individual upload strategy');
     
-    // Track successful uploads
     let successfulUploads = 0;
-    const initialFileCount = getCurrentFileCount();
+    const outcomes = [];
     
     for (let i = 0; i < pdfs.length; i++) {
         const pdf = pdfs[i];
         console.log(`\n📄 Uploading PDF ${i + 1}/${pdfs.length}: ${pdf.name}`);
+        let dispatchAttempted = false;
         
         try {
             // Convert this specific PDF to File object
@@ -293,42 +436,63 @@ async function uploadPDFsToChatGPT(pdfs) {
             
             // Use drag-and-drop method directly
             const dropZone = findDropZone();
-            if (dropZone) {
-                console.log(`📤 Drag-dropping ${pdf.name}...`);
-                await simulateDragAndDrop(dropZone, file);
-                
-                // Wait for upload to process
-                await delay(2000);
-                
-                // Assume success - no verification to avoid confusion
+            if (!dropZone) {
+                outcomes.push({
+                    paperId: pdf.id || pdf.info?.id,
+                    name: pdf.name,
+                    status: 'failed',
+                    error: 'ChatGPT upload drop zone was not found.'
+                });
+                continue;
+            }
+
+            const previousSnapshot = getAttachmentSnapshot(getChatGPTComposerContainer, pdf.name);
+            console.log(`📤 Drag-dropping ${pdf.name}...`);
+            dispatchAttempted = true;
+            await simulateDragAndDrop(dropZone, file);
+
+            const confirmation = await waitForConfirmedAttachment(
+                getChatGPTComposerContainer,
+                pdf.name,
+                previousSnapshot,
+                5000
+            );
+
+            if (confirmation.ok) {
                 successfulUploads++;
-                console.log(`✅ Upload ${i + 1} completed: ${pdf.name}`);
+                outcomes.push({
+                    paperId: pdf.id || pdf.info?.id,
+                    name: pdf.name,
+                    status: 'attached'
+                });
+                console.log(`✅ Upload ${i + 1} confirmed: ${pdf.name}`);
             } else {
-                console.log(`❌ No drop zone found for ${pdf.name}`);
+                outcomes.push({
+                    paperId: pdf.id || pdf.info?.id,
+                    name: pdf.name,
+                    status: 'unconfirmed',
+                    error: `ChatGPT did not show a stable attachment for ${pdf.name}.`
+                });
+                console.warn(`⚠️ Upload ${i + 1} could not be confirmed: ${pdf.name}`);
             }
-            
-            // Longer delay between uploads to let ChatGPT stabilize
-            if (i < pdfs.length - 1) {
-                console.log('⏳ Waiting before next upload...');
-                await delay(2000);
-            }
+
+            if (i < pdfs.length - 1) await delay(800);
             
         } catch (error) {
             console.error(`Error uploading ${pdf.name}:`, error);
+            outcomes.push({
+                paperId: pdf.id || pdf.info?.id,
+                name: pdf.name,
+                status: dispatchAttempted ? 'unconfirmed' : 'failed',
+                error: error?.message || String(error)
+            });
         }
     }
     
-    const finalFileCount = getCurrentFileCount();
     console.log(`\n📊 Upload Summary:`);
     console.log(`- Attempted: ${pdfs.length}`);
     console.log(`- Successful: ${successfulUploads}`);
-    console.log(`- Files in UI: ${finalFileCount} (was ${initialFileCount})`);
-    
-    if (successfulUploads === 0) {
-        throw new Error('No files were uploaded successfully. Please try refreshing ChatGPT and try again.');
-    }
-    
-    console.log('🎉 Upload process completed');
+    return { uploadedCount: successfulUploads, outcomes };
 }
 
 // Upload single PDF using specific method
@@ -347,6 +511,7 @@ async function uploadSinglePDFWithMethod(pdf, method) {
         
         // Create File object
         const file = new File([blob], pdf.name, { type: 'application/pdf' });
+        const previousSnapshot = getAttachmentSnapshot(getChatGPTComposerContainer, pdf.name);
         
         let uploadSuccess = false;
         
@@ -390,7 +555,7 @@ async function uploadSinglePDFWithMethod(pdf, method) {
         await delay(1000);
         
         // Verify the upload was successful
-        const verified = await verifyFileUpload(pdf.name, 5000); // Increased timeout
+        const verified = await verifyFileUpload(pdf.name, 5000, previousSnapshot); // Increased timeout
         
         if (verified) {
             console.log(`✅ ${pdf.name} uploaded and verified successfully`);
@@ -530,49 +695,63 @@ let claudeDragDropSupported = null;
 
 async function uploadSingleFileToClaude(file) {
     const fileName = file?.name || 'file';
-    const previousCount = getClaudeAttachmentCount();
+    const previousSnapshot = getAttachmentSnapshot(getClaudeComposerContainer, fileName, CLAUDE_KNOWN_TESTIDS);
     const sizeBytes = typeof file?.size === 'number' ? file.size : 0;
     const waitMs = Math.min(60000, Math.max(10000, Math.ceil(sizeBytes / (1024 * 1024)) * 8000));
+    let dispatchAttempted = false;
+    let fileInputForCleanup = null;
 
-    // Try drag-and-drop first (matches Claude's UX, if supported)
-    const dropZone = claudeDragDropSupported === false ? null : findClaudeDropZone();
-    if (dropZone) {
-        console.log(`📤 [Claude] Drag-dropping ${fileName}...`);
-        await simulateDragAndDrop(dropZone, file);
-        if (await waitForClaudeAttachmentAdded(previousCount, fileName, 2500)) {
-            claudeDragDropSupported = true;
-            return { method: 'drag_drop' };
+    try {
+        // Try drag-and-drop first (matches Claude's UX, if supported)
+        const dropZone = claudeDragDropSupported === false ? null : findClaudeDropZone();
+        if (dropZone) {
+            console.log(`📤 [Claude] Drag-dropping ${fileName}...`);
+            dispatchAttempted = true;
+            await simulateDragAndDrop(dropZone, file);
+            const confirmation = await waitForClaudeAttachmentAdded(previousSnapshot, fileName, 2500);
+            if (confirmation.ok) {
+                claudeDragDropSupported = true;
+                return { status: 'attached', method: 'drag_drop' };
+            }
+            if (claudeDragDropSupported === null) claudeDragDropSupported = false;
+            console.log(`⚠️ [Claude] Drag-drop did not show a confirmed attachment for ${fileName}, falling back to file input...`);
         }
-        if (claudeDragDropSupported === null) claudeDragDropSupported = false;
-        console.log(`⚠️ [Claude] Drag-drop did not show attachment for ${fileName}, falling back to file input...`);
-    }
 
-    // Fallback: hidden file input (works if Claude wires change/input events)
-    const fileInput = findClaudeFileInput() || findFileInput();
-    if (!fileInput) {
-        throw new Error('No Claude file input found. Are you on an active chat and logged in?');
-    }
+        // Fallback: hidden file input (works if Claude wires change/input events)
+        fileInputForCleanup = findClaudeFileInput() || findFileInput();
+        if (!fileInputForCleanup) {
+            const error = new Error('No Claude file input found. Are you on an active chat and logged in?');
+            error.uploadStatus = dispatchAttempted ? 'unconfirmed' : 'failed';
+            throw error;
+        }
 
-    console.log(`📤 [Claude] Using file input for ${fileName}...`);
-    await simulateFileUpload(fileInput, file);
+        console.log(`📤 [Claude] Using file input for ${fileName}...`);
+        dispatchAttempted = true;
+        await simulateFileUpload(fileInputForCleanup, file);
 
-    const attached = await waitForClaudeAttachmentAdded(previousCount, fileName, waitMs);
-    if (!attached) {
-        const attachmentIds = getClaudeAttachmentTestIds();
-        const suffix = attachmentIds.length ? ` (found attachments: ${attachmentIds.slice(0, 5).join(', ')})` : '';
-        throw new Error(`Claude did not show an attachment chip for ${fileName}${suffix}`);
-    }
+        const confirmation = await waitForClaudeAttachmentAdded(previousSnapshot, fileName, waitMs);
+        if (!confirmation.ok) {
+            const attachmentIds = getClaudeAttachmentTestIds();
+            const suffix = attachmentIds.length ? ` (found attachments: ${attachmentIds.slice(0, 5).join(', ')})` : '';
+            const error = new Error(`Claude did not show a stable attachment for ${fileName}${suffix}`);
+            error.uploadStatus = 'unconfirmed';
+            throw error;
+        }
 
-    // Restore the native `files` property for future uploads (prevents interfering with normal selection).
-    if (Object.prototype.hasOwnProperty.call(fileInput, 'files')) {
-        try {
-            delete fileInput.files;
-        } catch (error) {
-            // Best-effort cleanup; safe to ignore.
+        // Restore the native `files` property for future uploads (prevents interfering with normal selection).
+        return { status: 'attached', method: 'file_input' };
+    } catch (error) {
+        if (error && !error.uploadStatus) error.uploadStatus = dispatchAttempted ? 'unconfirmed' : 'failed';
+        throw error;
+    } finally {
+        if (fileInputForCleanup && Object.prototype.hasOwnProperty.call(fileInputForCleanup, 'files')) {
+            try {
+                delete fileInputForCleanup.files;
+            } catch (error) {
+                // Best-effort cleanup; safe to ignore.
+            }
         }
     }
-
-    return { method: 'file_input' };
 }
 
 // Upload PDFs to Claude using its hidden file input
@@ -580,7 +759,7 @@ async function uploadPDFsToClaude(pdfs) {
     console.log('Starting upload of', pdfs.length, 'PDFs to Claude');
 
     let successfulUploads = 0;
-    const failures = [];
+    const outcomes = [];
 
     for (let i = 0; i < pdfs.length; i++) {
         const pdf = pdfs[i];
@@ -589,9 +768,15 @@ async function uploadPDFsToClaude(pdfs) {
         try {
             const file = base64ToFile(pdf.data, pdf.name, 'application/pdf');
 
-            await uploadSingleFileToClaude(file);
+            const result = await uploadSingleFileToClaude(file);
             successfulUploads++;
-            console.log(`✅ Upload ${i + 1} completed: ${pdf.name}`);
+            outcomes.push({
+                paperId: pdf.id || pdf.info?.id,
+                name: pdf.name,
+                status: 'attached',
+                method: result?.method
+            });
+            console.log(`✅ Upload ${i + 1} confirmed: ${pdf.name}`);
 
             // Small delay between uploads for UI stabilization
             if (i < pdfs.length - 1) {
@@ -599,7 +784,12 @@ async function uploadPDFsToClaude(pdfs) {
             }
         } catch (error) {
             console.error(`Error uploading ${pdf.name} to Claude:`, error);
-            failures.push({ name: pdf.name, error: error?.message || String(error) });
+            outcomes.push({
+                paperId: pdf.id || pdf.info?.id,
+                name: pdf.name,
+                status: error?.uploadStatus || 'failed',
+                error: error?.message || String(error)
+            });
         }
     }
 
@@ -607,19 +797,7 @@ async function uploadPDFsToClaude(pdfs) {
     console.log(`- Attempted: ${pdfs.length}`);
     console.log(`- Successful: ${successfulUploads}`);
 
-    if (successfulUploads === 0) {
-        const firstFailure = failures[0];
-        const details = firstFailure ? ` (${firstFailure.name}: ${firstFailure.error})` : '';
-        throw new Error(`No files were uploaded successfully to Claude.${details}`);
-    }
-
-    if (failures.length > 0) {
-        const summaryNames = failures.slice(0, 3).map((f) => f.name).join(', ');
-        const more = failures.length > 3 ? ` (+${failures.length - 3} more)` : '';
-        throw new Error(`Uploaded ${successfulUploads}/${pdfs.length} files to Claude. Failed: ${summaryNames}${more}`);
-    }
-
-    return { uploadedCount: successfulUploads };
+    return { uploadedCount: successfulUploads, outcomes };
 }
 
 // Find file input element
@@ -1015,49 +1193,20 @@ function base64ToArrayBuffer(base64) {
 }
 
 // Upload verification system
-async function verifyFileUpload(fileName, maxWaitTime = 5000) {
+async function verifyFileUpload(fileName, maxWaitTime = 5000, previousSnapshot = null) {
     console.log(`Verifying upload of ${fileName}...`);
-    
-    const startTime = Date.now();
-    
-    while (Date.now() - startTime < maxWaitTime) {
-        // Look for file indicators in ChatGPT's interface
-        const fileElements = document.querySelectorAll([
-            '[data-testid*="file"]',
-            '.file-item',
-            '.attachment',
-            '.uploaded-file',
-            'div[title*=".pdf"]',
-            'span[title*=".pdf"]',
-            '[aria-label*=".pdf"]'
-        ].join(', '));
-        
-        for (const element of fileElements) {
-            const text = element.textContent || element.title || element.ariaLabel || '';
-            if (text.includes(fileName) || text.includes(fileName.replace(/\.[^/.]+$/, ""))) {
-                console.log(`✅ File ${fileName} verified in UI`);
-                return true;
-            }
-        }
-        
-        // Also check for generic file upload indicators
-        const genericFileIndicators = document.querySelectorAll([
-            'svg[class*="file"]',
-            '.file-preview',
-            '.file-attachment',
-            '[class*="attachment"]'
-        ].join(', '));
-        
-        if (genericFileIndicators.length > 0) {
-            console.log(`✅ Generic file indicator found for ${fileName}`);
-            return true;
-        }
-        
-        // Wait before next check
-        await new Promise(resolve => setTimeout(resolve, 200));
+    const before = previousSnapshot || getAttachmentSnapshot(getChatGPTComposerContainer, fileName);
+    const confirmation = await waitForConfirmedAttachment(
+        getChatGPTComposerContainer,
+        fileName,
+        before,
+        maxWaitTime
+    );
+    if (confirmation.ok) {
+        console.log(`✅ File ${fileName} verified in the composer`);
+        return true;
     }
-    
-    console.log(`❌ File ${fileName} not verified in UI after ${maxWaitTime}ms`);
+    console.log(`❌ File ${fileName} not verified in the composer after ${maxWaitTime}ms`);
     return false;
 }
 

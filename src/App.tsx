@@ -8,7 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Search, Loader2, X, Download, UploadCloud, CheckCircle2, ChevronRight, CheckSquare, Square, Gauge, Eye, SlidersHorizontal } from 'lucide-react';
 import { useCourses, Course } from '@/hooks/useCourses';
 import { usePapers, Paper } from '@/hooks/usePapers';
-import { processUpload, processDirectDownload } from '@/hooks/useUpload';
+import { processUpload, processDirectDownload, type UploadResult } from '@/hooks/useUpload';
 import { getCourseId, normalizeCourseName } from '@/data-client';
 import openaiIcon from '@/assets/openai.svg';
 import claudeIcon from '@/assets/claude-color.svg';
@@ -67,6 +67,7 @@ export default function App() {
     const [isLoading, setIsLoading] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const [progressMsg, setProgressMsg] = useState('');
+    const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
     const [attendanceUiEnabled, setAttendanceUiEnabled] = useState(true);
@@ -349,9 +350,11 @@ export default function App() {
 
     const handleUpload = async () => {
         setIsLoading(true);
+        setUploadResult(null);
         try {
             const papersToUpload = Array.from(selectedPapers).map(id => papers[parseInt(id)]);
-            await processUpload(papersToUpload, selectedCourses, studyIntent, setProgressMsg);
+            const result = await processUpload(papersToUpload, selectedCourses, studyIntent, setProgressMsg);
+            setUploadResult(result);
         } catch (error: any) {
             alert(error.message || "Upload failed");
         } finally {
@@ -620,6 +623,36 @@ export default function App() {
                                     <span className="text-[9px] font-main font-bold tracking-[0.15em] uppercase text-muted-foreground/70">
                                         Please keep extension open
                                     </span>
+                                </div>
+                            )}
+                            {uploadResult && !isBusy && (
+                                <div role="status" aria-live="polite" className="mt-4 p-4 border border-border bg-card rounded-[16px] shadow-sm animate-in fade-in slide-in-from-bottom-2">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <span className="font-main text-[11px] font-black uppercase tracking-[0.16em] text-foreground">
+                                            {uploadResult.attachedCount === uploadResult.attemptedCount ? 'Upload complete' : uploadResult.attachedCount > 0 ? 'Upload partially complete' : 'Upload failed'}
+                                        </span>
+                                        <span className={`font-main text-[11px] font-black uppercase tracking-[0.1em] ${uploadResult.attachedCount > 0 ? 'text-primary' : 'text-destructive'}`}>
+                                            {uploadResult.attachedCount} / {uploadResult.attemptedCount} attached
+                                        </span>
+                                    </div>
+                                    {uploadResult.outcomes.some(outcome => outcome.status !== 'attached') && (
+                                        <div className="mt-3 grid gap-1.5">
+                                            {uploadResult.outcomes.filter(outcome => outcome.status !== 'attached').map(outcome => (
+                                                <div key={`${outcome.paperId}-${outcome.stage}`} className="text-[10px] font-semibold leading-snug text-muted-foreground">
+                                                    <span className={outcome.status === 'unconfirmed' ? 'text-amber-600 dark:text-amber-400' : 'text-destructive'}>
+                                                        {outcome.status === 'unconfirmed' ? 'Unconfirmed' : 'Failed'}:
+                                                    </span>{' '}
+                                                    {outcome.filename}{outcome.reason ? ` — ${outcome.reason}` : ''}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    <div className="mt-3 border-t border-border/70 pt-2 text-[10px] font-semibold text-muted-foreground">
+                                        Prompt: <span className={uploadResult.prompt.status === 'inserted' ? 'text-primary' : uploadResult.prompt.status === 'failed' ? 'text-destructive' : 'text-muted-foreground'}>
+                                            {uploadResult.prompt.status === 'inserted' ? 'inserted' : uploadResult.prompt.status === 'failed' ? 'failed' : 'skipped'}
+                                        </span>
+                                        {uploadResult.prompt.reason ? ` — ${uploadResult.prompt.reason}` : ''}
+                                    </div>
                                 </div>
                             )}
                         </section>
