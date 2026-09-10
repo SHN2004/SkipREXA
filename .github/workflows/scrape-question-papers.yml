@@ -1,0 +1,45 @@
+name: Scrape Question Papers
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install scraper dependencies
+        working-directory: scraper
+        run: uv sync
+
+      - name: Run scraper
+        working-directory: scraper
+        env:
+          RAJAGIRI_USERNAME: ${{ secrets.RAJAGIRI_USERNAME }}
+          RAJAGIRI_PASSWORD: ${{ secrets.RAJAGIRI_PASSWORD }}
+        run: uv run scraper scrape --output ../data/question-papers.json
+
+      - name: Commit updated JSON
+        env:
+          TARGET_REF: ${{ github.ref_name }}
+        run: |
+          if git diff --quiet -- data/question-papers.json; then
+            echo "No JSON changes detected."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/question-papers.json
+          git commit -m "chore: refresh question paper index"
+          git push origin HEAD:${TARGET_REF}
