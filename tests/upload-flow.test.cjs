@@ -466,3 +466,24 @@ test("Claude MAIN-world adapter marks missing evidence unconfirmed and still res
   assert.equal(result.outcomes[0].status, "unconfirmed");
   assert.equal(Object.prototype.hasOwnProperty.call(harness.input, "files"), false);
 });
+
+
+test("Claude confirms captured removable thumbnails outside the text composer", async () => {
+  const harness = loadClaudeUpload({ thumbnailOutsideComposer: true });
+  const result = await harness.exports.processUpload([paper("p1")], [], "general", () => {});
+  assert.equal(result.attachedCount, 1);
+  assert.equal(result.outcomes[0].status, "attached");
+});
+
+test("Claude does not count existing, busy, or non-removable thumbnails", async () => {
+  for (const options of [
+    { existingThumbnail: true, addCardOnChange: false },
+    { thumbnailOutsideComposer: true, removable: false },
+    { thumbnailOutsideComposer: true, busy: true },
+  ]) {
+    const harness = loadClaudeUpload(options);
+    const result = await harness.exports.processUpload([paper("p1")], [], "general", () => {});
+    assert.equal(result.attachedCount, 0);
+    assert.equal(result.outcomes[0].status, "unconfirmed");
+  }
+});

@@ -344,6 +344,32 @@ async function uploadPdfToClaudeMainWorld(tabId: number, pdf: any) {
             })
           }
 
+          // Claude can render its attachment strip outside the text composer.
+          // Only removable thumbnails belong to an editable upload; do not use
+          // arbitrary images from conversation history as attachment evidence.
+          for (const card of document.querySelectorAll('[data-testid="file-thumbnail"]')) {
+            if (seenCards.has(card)) continue
+            const target = normalize(fileName)
+            const matchingImage = Array.from(card.querySelectorAll('img[alt]')).some(
+              (img) => normalize(img.getAttribute('alt')) === target
+            )
+            const matchingRemove = Array.from(card.querySelectorAll('button[aria-label]')).some(
+              (button) => normalize(button.getAttribute('aria-label')) === `remove ${target}`
+            )
+            if (!matchingImage || !matchingRemove) continue
+            seenCards.add(card)
+            const status = normalize([
+              card.textContent, card.getAttribute('data-status'), card.getAttribute('class')
+            ].filter(Boolean).join(' '))
+            records.push({
+              label: target,
+              processing: card.getAttribute('aria-busy') === 'true' ||
+                card.querySelectorAll('[aria-busy="true"], [role="progressbar"], [data-status="uploading"], [data-status="processing"]').length > 0 ||
+                processingPattern.test(status),
+              error: failurePattern.test(status)
+            })
+          }
+
           const eligibleRecords = records.filter((record) => !record.processing && !record.error)
           return {
             count: records.length,
