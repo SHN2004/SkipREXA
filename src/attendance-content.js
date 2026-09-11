@@ -14,13 +14,19 @@
   const STORAGE_KEY = "skiprexa-attendance-data";
   const ATTENDANCE_UI_STORAGE_KEY = "skiprexa_attendance_ui_enabled";
   const SUBJECT_CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 14;
-  let lastDigest = "";
+  // The update owner keeps summary invalidation separate from live timetable
+  // reconciliation.  The latter must run even when the parsed entries are
+  // unchanged because RSMS replaces DOM nodes during a refresh.
+  let lastRenderKey = "";
+  let attendancePanel = null;
   let renderTimer = null;
+  let burstRenderTimers = [];
   let lateUpdateObserver = null;
   let lateUpdateObserverTimer = null;
   let isSubmitTriggered = new URLSearchParams(window.location.search).has("code");
   let attendanceUiEnabled = true;
   let highlightedCells = [];
+  let activeHoverSubject = null;
   let pinnedHighlightSubjects = new Set();
   let expandedSubjects = new Set();
   let analyzerCollapsed = false;
@@ -76,11 +82,14 @@
   }
 
   function removeAttendancePanel() {
-    window.clearTimeout(renderTimer);
+    clearScheduledUpdateTimers();
     stopLateUpdateObserver();
     clearSubjectHighlight();
+    activeHoverSubject = null;
+    attendancePanel?.remove();
     document.getElementById(PANEL_ID)?.remove();
-    lastDigest = "";
+    attendancePanel = null;
+    lastRenderKey = "";
   }
 
   function subscribeAttendanceUiSetting() {
@@ -357,22 +366,26 @@
     if (subjectMapPromises.has(classCode)) return;
     if ((Date.now() - (subjectMapFailureTimestamps.get(classCode) || 0)) < 60_000) return;
 
-    const promise = fetchSubjectMapForClass(classCode, neededSubjects)
+    const requestedClassCode = classCode;
+    const promise = fetchSubjectMapForClass(requestedClassCode, neededSubjects)
       .then((result) => {
         if (!result) return;
-        subjectNameCache[classCode] = result;
+        subjectNameCache[requestedClassCode] = result;
         savePersistedState();
-        patchSubjectLabels(document.getElementById(PANEL_ID));
+        // The class may have changed while the lookup was in flight.  Let the
+        // update owner resolve the current class and panel before patching.
+        if (!attendanceUiEnabled || !isSubmitTriggered) return;
+        renderSummary();
       })
       .catch(() => {
-        subjectMapFailureTimestamps.set(classCode, Date.now());
+        subjectMapFailureTimestamps.set(requestedClassCode, Date.now());
         // silent fallback to subject codes
       })
       .finally(() => {
-        subjectMapPromises.delete(classCode);
+        subjectMapPromises.delete(requestedClassCode);
       });
 
-    subjectMapPromises.set(classCode, promise);
+    subjectMapPromises.set(requestedClassCode, promise);
   }
 
   function findLeaveTable() {
@@ -484,7 +497,6 @@
   // ── Cell highlight ───────────────────────────────────────────────
 
   function clearSubjectHighlight() {
-    if (!highlightedCells.length) return;
     for (const cell of highlightedCells) {
       cell.classList.remove(TILE_HIGHLIGHT_CLASS);
       cell.classList.remove(TILE_HIGHLIGHT_INFO_CLASS);
@@ -512,6 +524,15 @@
     }
   }
 
+  function getActiveHighlightSubjects() {
+    if (pinnedHighlightSubjects.size) return pinnedHighlightSubjects;
+    return activeHoverSubject ? new Set([activeHoverSubject]) : new Set();
+  }
+
+  function reconcileSubjectHighlights() {
+    applySubjectHighlights(getActiveHighlightSubjects());
+  }
+
   function syncPinnedHighlightButtons(panel) {
     const buttons = panel.querySelectorAll(".skiprexa-highlight-toggle");
     for (const button of buttons) {
@@ -531,8 +552,11 @@
 
   function setPinnedHighlightSubjects(subjects, panel) {
     pinnedHighlightSubjects = new Set(subjects || []);
+    // A pin toggle is an explicit interaction.  Preserve the existing
+    // behavior where unpinning the final subject clears the hover highlight.
+    activeHoverSubject = null;
     savePersistedState();
-    applySubjectHighlights(pinnedHighlightSubjects);
+    reconcileSubjectHighlights();
     if (panel) syncPinnedHighlightButtons(panel);
   }
 
@@ -543,11 +567,14 @@
       row.addEventListener("mouseenter", () => {
         if (pinnedHighlightSubjects.size) return;
         if (!subject) return;
-        applySubjectHighlights(new Set([subject]));
+        activeHoverSubject = subject;
+        reconcileSubjectHighlights();
       });
       row.addEventListener("mouseleave", () => {
         if (pinnedHighlightSubjects.size) return;
-        clearSubjectHighlight();
+        if (activeHoverSubject !== subject) return;
+        activeHoverSubject = null;
+        reconcileSubjectHighlights();
       });
     }
 
@@ -707,13 +734,34 @@
       panel = document.createElement("div");
       panel.id = PANEL_ID;
     }
+    attendancePanel = panel;
 
-    if (anchor === document.body) {
-      document.body.appendChild(panel);
-    } else {
+    if (!anchor || anchor === document.body) {
+      if (panel.parentNode !== document.body) document.body.appendChild(panel);
+    } else if (panel.parentNode !== anchor.parentNode || panel.nextElementSibling !== anchor) {
       anchor.insertAdjacentElement("beforebegin", panel);
     }
     return panel;
+  }
+
+  function syncPinnedSubjectsToPanel(panel) {
+    if (!panel) return;
+
+    const availableSubjects = new Set(
+      Array.from(panel.querySelectorAll(".skiprexa-highlight-toggle[data-subject]"))
+        .map((button) => button.getAttribute("data-subject"))
+        .filter(Boolean)
+    );
+    const nextPinnedSubjects = new Set(
+      Array.from(pinnedHighlightSubjects).filter((subject) => availableSubjects.has(subject))
+    );
+    const hasChanged = nextPinnedSubjects.size !== pinnedHighlightSubjects.size
+      || Array.from(nextPinnedSubjects).some((subject) => !pinnedHighlightSubjects.has(subject));
+    if (hasChanged) {
+      pinnedHighlightSubjects = nextPinnedSubjects;
+      savePersistedState();
+    }
+    syncPinnedHighlightButtons(panel);
   }
 
   // ── Handlers ─────────────────────────────────────────────────────
@@ -721,7 +769,6 @@
   function onThresholdChange(value) {
     attendanceThreshold = value === "80" ? 0.80 : 0.75;
     savePersistedState();
-    lastDigest = "";
     renderSummary();
   }
 
@@ -734,7 +781,7 @@
       else totalClassesMap[subject] = num;
     }
     savePersistedState();
-    updateDangerBadges();
+    renderSummary();
   }
 
   function getStoredTotal(subject) {
@@ -771,8 +818,7 @@
     if (summary) summary.textContent = analyzerSummaryText(rows);
   }
 
-  function updateDangerBadges() {
-    const panel = document.getElementById(PANEL_ID);
+  function updateDangerBadges(panel = document.getElementById(PANEL_ID)) {
     if (!panel) return;
     const rows = panel.querySelectorAll("tr[data-subject]");
     for (const row of rows) {
@@ -804,7 +850,7 @@
     updatePanelSummary(panel);
   }
 
-  // ── Main render ──────────────────────────────────────────────────
+  // ── Main update owner ────────────────────────────────────────────
 
   function renderSummary() {
     if (!attendanceUiEnabled) {
@@ -815,12 +861,32 @@
 
     const entries = parseLeaveEntries();
     ensureSubjectNamesForCurrentClass(entries);
-    const digest = JSON.stringify(entries);
-    if (digest === lastDigest) return;
-    lastDigest = digest;
+    const classCode = getCurrentClassCode();
+    const renderKey = JSON.stringify({
+      classCode,
+      threshold: attendanceThreshold,
+      entries
+    });
+    const existingPanel = document.getElementById(PANEL_ID);
 
-    const panel = getOrCreatePanel(findAnchorElement());
+    // The render key gates only summary replacement.  Timetable nodes are
+    // independently reconciled on every pass because RSMS can replace them
+    // without changing the parsed attendance data.
+    if (existingPanel && renderKey === lastRenderKey) {
+      // Recheck placement without moving an already-correct panel.  This also
+      // repairs a table that was moved by RSMS while preserving panel nodes.
+      const panel = getOrCreatePanel(findAnchorElement());
+      patchSubjectLabels(panel);
+      updateDangerBadges(panel);
+      reconcileSubjectHighlights();
+      return;
+    }
+
+    // Rebuilding the summary invalidates a transient hover row.  Pinned
+    // subjects remain authoritative and are reapplied after the rebuild.
+    activeHoverSubject = null;
     clearSubjectHighlight();
+    const panel = getOrCreatePanel(findAnchorElement());
 
     if (!entries.length) {
       panel.innerHTML = `
@@ -828,6 +894,8 @@
           <div style="font-size:15px;font-weight:700;letter-spacing:-0.02em;">SkipREXA</div>
           <div style="margin-top:6px;color:#6b7280;font-size:13px;">No missed class hours found for the selected class.</div>
         </div>`;
+      reconcileSubjectHighlights();
+      lastRenderKey = renderKey;
       return;
     }
 
@@ -1976,13 +2044,11 @@
     attachTotalInputListeners(panel);
     attachInfoTips(panel);
     attachCollapseButton(panel);
-    if (pinnedHighlightSubjects.size) {
-      const availableSubjects = new Set(
-        Array.from(panel.querySelectorAll(".skiprexa-highlight-toggle[data-subject]")).map((button) => button.getAttribute("data-subject")).filter(Boolean)
-      );
-      const nextPinnedSubjects = new Set(Array.from(pinnedHighlightSubjects).filter((subject) => availableSubjects.has(subject)));
-      setPinnedHighlightSubjects(nextPinnedSubjects, panel);
-    }
+    syncPinnedSubjectsToPanel(panel);
+    reconcileSubjectHighlights();
+    // Commit only after the panel has been rebuilt and its listeners have
+    // been attached.  A failed render therefore remains eligible for retry.
+    lastRenderKey = renderKey;
   }
 
   function attachThresholdToggle(panel) {
@@ -2065,11 +2131,27 @@
 
   // ── Lifecycle ────────────────────────────────────────────────────
 
+  function clearScheduledBurstRenders() {
+    for (const timerId of burstRenderTimers) window.clearTimeout(timerId);
+    burstRenderTimers = [];
+  }
+
+  function clearScheduledUpdateTimers() {
+    if (renderTimer !== null) {
+      window.clearTimeout(renderTimer);
+      renderTimer = null;
+    }
+    clearScheduledBurstRenders();
+  }
+
   function scheduleRender(delay = 250) {
     if (!attendanceUiEnabled) return;
     if (!isSubmitTriggered) return;
-    window.clearTimeout(renderTimer);
-    renderTimer = window.setTimeout(renderSummary, delay);
+    if (renderTimer !== null) window.clearTimeout(renderTimer);
+    renderTimer = window.setTimeout(() => {
+      renderTimer = null;
+      renderSummary();
+    }, delay);
   }
 
   function stopLateUpdateObserver() {
@@ -2077,7 +2159,7 @@
       lateUpdateObserver.disconnect();
       lateUpdateObserver = null;
     }
-    if (lateUpdateObserverTimer) {
+    if (lateUpdateObserverTimer !== null) {
       window.clearTimeout(lateUpdateObserverTimer);
       lateUpdateObserverTimer = null;
     }
@@ -2087,6 +2169,11 @@
     stopLateUpdateObserver();
 
     lateUpdateObserver = new MutationObserver((mutations) => {
+      if (attendancePanel && !attendancePanel.isConnected) {
+        scheduleRender(120);
+        return;
+      }
+
       const shouldRender = mutations.some((mutation) => {
         const target = mutation.target;
         if (target instanceof Element && target.closest(`#${PANEL_ID}`)) return false;
@@ -2095,6 +2182,7 @@
           return true;
         }
         for (const node of mutation.removedNodes) {
+          if (node === attendancePanel || node.querySelector?.(`#${PANEL_ID}`)) return true;
           if (node instanceof Element && node.closest?.(`#${PANEL_ID}`)) continue;
           return true;
         }
@@ -2110,12 +2198,12 @@
   function scheduleRenderBurst() {
     if (!attendanceUiEnabled) return;
     if (!isSubmitTriggered) return;
+    clearScheduledUpdateTimers();
     startLateUpdateObserver();
     scheduleRender(250);
-    window.setTimeout(() => renderSummary(), 700);
-    window.setTimeout(() => renderSummary(), 1400);
-    window.setTimeout(() => renderSummary(), 2500);
-    window.setTimeout(() => renderSummary(), 4000);
+    for (const delay of [700, 1400, 2500, 4000]) {
+      burstRenderTimers.push(window.setTimeout(() => renderSummary(), delay));
+    }
   }
 
   function attachSubmitListeners() {
@@ -2130,6 +2218,12 @@
       if (!submitTrigger) return;
       isSubmitTriggered = true;
       scheduleRenderBurst();
+    }, true);
+    document.addEventListener("change", (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (!target.matches('select[name="code"], input[name="code"], select#list1, input#list1')) return;
+      if (isSubmitTriggered) scheduleRender(120);
     }, true);
   }
 
