@@ -546,7 +546,7 @@
       button.setAttribute("aria-label", isActive ? `Unpin ${subjectLabel}` : `Pin ${subjectLabel}`);
       button.setAttribute("title", isActive ? `Unpin ${subjectLabel}` : `Pin ${subjectLabel} on timetable`);
       const label = button.querySelector(".skiprexa-highlight-toggle-label");
-      if (label) label.textContent = isActive ? "Pinned" : "Pin";
+      if (label) label.textContent = isActive ? "Pinned" : "Pin subject";
     }
   }
 
@@ -601,8 +601,6 @@
       detail.addEventListener("toggle", () => {
         const subject = detail.getAttribute("data-subject");
         if (!subject) return;
-        const sessionsRow = detail.closest("tr").nextElementSibling;
-        if (sessionsRow?.classList.contains("skiprexa-sessions-row")) sessionsRow.hidden = !detail.open;
         if (detail.open) expandedSubjects.add(subject);
         else expandedSubjects.delete(subject);
         savePersistedState();
@@ -908,12 +906,12 @@
     const missedTotal = subjectRows.reduce((sum, row) => sum + row.missedHours, 0);
 
     const leaveTypeLabel = {
-      leave: { label: "Absent", color: "#f08c9a" },
-      approved_leave: { label: "Approved", color: "#a8dadc" },
-      duty_leave: { label: "Duty leave", color: "#a8dadc" }
+      leave: { label: "Absent", color: "#c94f5c" },
+      approved_leave: { label: "Approved", color: "#147d73" },
+      duty_leave: { label: "Duty leave", color: "#147d73" }
     };
 
-    const rowsHtml = subjectRows.map((entry, index) => {
+    const rowsHtml = subjectRows.map((entry) => {
       const minTotal = minTotalForThreshold(entry.missedHours, attendanceThreshold);
       const totalHeld = getStoredTotal(entry.subject);
       const outcome = computeDangerZone(entry.missedHours, totalHeld, attendanceThreshold);
@@ -939,7 +937,7 @@
           <td class="skiprexa-cell skiprexa-cell-subject">
             <div class="skiprexa-subject-top">
               <details class="skiprexa-details" data-subject="${escapeHtml(entry.subject)}"${isExpanded ? " open" : ""}>
-                <summary class="skiprexa-summary" aria-controls="skiprexa-sessions-${index}">
+                <summary class="skiprexa-summary">
                   <span class="skiprexa-summary-main">
                     <span class="skiprexa-chevron"></span>
                     <span class="skiprexa-subject-heading">
@@ -948,10 +946,11 @@
                     </span>
                   </span>
                 </summary>
+                <div class="skiprexa-session-list">${sessionListHtml}</div>
               </details>
               <button type="button" class="skiprexa-highlight-toggle" data-subject="${escapeHtml(entry.subject)}" aria-pressed="false" title="Pin ${escapeHtml(subjectMeta.label)} on timetable">
                 <svg class="skiprexa-pin-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M7.2 2.8h5.6l-.7 4 2.3 2.3v1.4H5.6V9.1l2.3-2.3-.7-4Zm2.1 7.7h1.4v6.7L10 18.4l-.7-1.2v-6.7Z"/></svg>
-                <span class="skiprexa-highlight-toggle-label">Pin</span>
+                <span class="skiprexa-highlight-toggle-label">Pin subject</span>
               </button>
             </div>
             ${breakdownHtml}
@@ -964,14 +963,6 @@
               aria-label="Classes held so far for ${escapeHtml(subjectMeta.label)}" aria-invalid="${outcome?.isValid === false ? "true" : "false"}"
               value="${totalHeld ?? ""}" placeholder="Total" autocomplete="off" />
           </td>
-        </tr>
-        <tr class="skiprexa-sessions-row"${isExpanded ? "" : " hidden"}>
-          <td colspan="5">
-            <div id="skiprexa-sessions-${index}" class="skiprexa-session-panel" role="region" aria-label="Recorded sessions for ${escapeHtml(subjectMeta.label)}">
-              <div class="skiprexa-session-caption">Recorded sessions <span>${entry.sessions.length} ${entry.sessions.length === 1 ? "class" : "classes"}</span></div>
-              <div class="skiprexa-session-list">${sessionListHtml}</div>
-            </div>
-          </td>
         </tr>`;
     }).join("");
 
@@ -983,23 +974,22 @@
           --sx-font: 'DM Sans', system-ui, -apple-system, sans-serif;
           --sx-display: 'Space Grotesk', 'DM Sans', system-ui, sans-serif;
           --sx-mono: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
-          --sx-bg: #222222;
-          --sx-surface: #2c2c2c;
-          --sx-border: #444444;
-          --sx-border-subtle: #444444;
-          --sx-text: #e4e4e4;
-          --sx-text-secondary: #c1c1c1;
-          --sx-text-tertiary: #a8a8a8;
-          --sx-accent: #b39cd0;
-          --sx-accent-light: #39333f;
-          --sx-safe: #a8dadc;
-          --sx-watch: #e2bc7e;
-          --sx-risk: #f08c9a;
+          --sx-bg: #f3f6fa;
+          --sx-surface: #ffffff;
+          --sx-border: #d3dce8;
+          --sx-border-subtle: #e2e8f0;
+          --sx-text: #17213a;
+          --sx-text-secondary: #4d5b70;
+          --sx-text-tertiary: #68778d;
+          --sx-accent: #17213a;
+          --sx-accent-light: #e9eef6;
+          --sx-safe: #0e7169;
+          --sx-watch: #995b0d;
+          --sx-risk: #b94150;
           --sx-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-          color-scheme: dark;
           width: 100%;
           box-sizing: border-box;
-          margin: 28px 0 20px !important;
+          margin: 30px 0 14px !important;
           padding: 0;
           border: 1px solid var(--sx-border);
           border-radius: 16px;
@@ -1009,7 +999,7 @@
           line-height: 1.45;
           max-width: none;
           color: var(--sx-text);
-          box-shadow: 0 12px 40px rgba(33,58,70,0.06);
+          box-shadow: 0 14px 34px rgba(23,33,58,0.08), 0 2px 6px rgba(23,33,58,0.04);
           overflow: visible;
           clear: both;
         }
@@ -1020,9 +1010,8 @@
           align-items: center;
           justify-content: space-between;
           gap: 18px 24px;
-          padding: 28px 28px 24px;
+          padding: 20px 22px 18px;
           border-bottom: 1px solid var(--sx-border);
-          box-shadow: inset 0 3px 0 var(--sx-accent-light);
           border-radius: 16px 16px 0 0;
           background: var(--sx-surface);
           flex-wrap: wrap;
@@ -1035,7 +1024,7 @@
           display: flex;
           align-items: center;
           gap: 7px;
-          margin-bottom: 12px;
+          margin-bottom: 5px;
           color: var(--sx-text-secondary);
           font: 600 9px/1 var(--sx-mono);
           letter-spacing: 0.1em;
@@ -1048,25 +1037,25 @@
           width: 21px;
           height: 21px;
           border-radius: 6px;
-          background: var(--sx-accent-light);
-          color: var(--sx-accent);
+          background: var(--sx-accent);
+          color: #ffffff;
           font: 700 11px/1 var(--sx-display);
           letter-spacing: -0.04em;
           box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
         }
         #${PANEL_ID} .skiprexa-eyebrow-divider {
-          color: #747474;
+          color: #c2cad5;
         }
         #${PANEL_ID} .skiprexa-title {
           font-family: var(--sx-display);
-          font-size: 30px;
+          font-size: 22px;
           line-height: 1.1;
-          font-weight: 600;
+          font-weight: 700;
           letter-spacing: -0.045em;
           color: var(--sx-text);
         }
         #${PANEL_ID} .skiprexa-title-summary {
-          margin-top: 9px;
+          margin-top: 5px;
           color: var(--sx-text-secondary);
           font-weight: 600;
           font-size: 12.5px;
@@ -1098,10 +1087,10 @@
           width: 100%;
           box-sizing: border-box;
           margin: 0;
-          padding: 0;
-          border: 0;
+          padding: 9px 11px;
+          border: 1px solid #d8e1ec;
           border-radius: 9px;
-          background: transparent;
+          background: #f7f9fc;
           color: var(--sx-text-secondary);
           font-size: 11px;
           font-weight: 600;
@@ -1119,14 +1108,14 @@
           padding: 7px 9px;
           border: 1px solid transparent;
           border-radius: 8px;
-          background: #303030;
+          background: #f7f9fc;
           color: var(--sx-text-secondary);
           font: 600 12px/1 var(--sx-font);
           cursor: pointer;
           transition: transform 140ms var(--sx-ease-out), color 160ms ease, background-color 160ms ease, border-color 160ms ease;
         }
         #${PANEL_ID} .skiprexa-collapse-button:focus-visible {
-          outline: 2px solid var(--sx-accent);
+          outline: 2px solid rgba(23,33,58,0.35);
           outline-offset: 2px;
         }
         #${PANEL_ID} .skiprexa-collapse-button:active {
@@ -1158,7 +1147,7 @@
           border-radius: 10px;
           overflow: hidden;
           border: 1px solid var(--sx-border);
-          background: #222222;
+          background: #f5f7fa;
         }
         #${PANEL_ID} .skiprexa-target-label {
           color: var(--sx-text-secondary);
@@ -1182,11 +1171,11 @@
         }
         #${PANEL_ID} .skiprexa-toggle-btn.active {
           background: var(--sx-accent);
-          color: var(--sx-bg);
+          color: #fff;
           box-shadow: 0 2px 5px rgba(23,33,58,0.18);
         }
         #${PANEL_ID} .skiprexa-toggle-btn:focus-visible {
-          outline: 2px solid var(--sx-accent);
+          outline: 2px solid rgba(23,33,58,0.36);
           outline-offset: 2px;
         }
         #${PANEL_ID} .skiprexa-toggle-btn:active {
@@ -1200,16 +1189,16 @@
           min-height: 36px;
           box-sizing: border-box;
           padding: 7px 10px;
-          border: 1px solid var(--sx-border);
+          border: 1px solid #f0d7da;
           border-radius: 10px;
-          background: var(--sx-bg);
-          color: var(--sx-text-secondary);
+          background: #fff7f8;
+          color: #8c4750;
           font-size: 10.5px;
           font-weight: 700;
           white-space: nowrap;
         }
         #${PANEL_ID} .skiprexa-total-missed strong {
-          color: var(--sx-text);
+          color: var(--sx-risk);
           font: 700 15px/1 var(--sx-mono);
         }
 
@@ -1230,7 +1219,7 @@
           border: 0;
           border-radius: 7px;
           background: transparent;
-          color: #a8a8a8;
+          color: #68758a;
           cursor: help;
           transition: color 160ms ease, background-color 160ms ease, box-shadow 160ms ease, transform 140ms var(--sx-ease-out);
         }
@@ -1241,9 +1230,9 @@
           width: 17px;
           height: 17px;
           box-sizing: border-box;
-          border: 1px solid #626262;
+          border: 1px solid #cbd5e1;
           border-radius: 50%;
-          background: #303030;
+          background: #f8fafc;
           font-family: Georgia, 'Times New Roman', serif;
           font-size: 11px;
           font-weight: 700;
@@ -1253,7 +1242,7 @@
         #${PANEL_ID} .skiprexa-info-button:focus-visible,
         #${PANEL_ID} .skiprexa-info-tip.is-open .skiprexa-info-button {
           background: rgba(23,33,58,0.08);
-          color: #e4e4e4;
+          color: #fff;
           box-shadow: 0 0 0 3px rgba(23,33,58,0.1);
           outline: none;
         }
@@ -1261,7 +1250,6 @@
         #${PANEL_ID} .skiprexa-info-tip.is-open .skiprexa-info-button > span {
           border-color: var(--sx-accent);
           background: var(--sx-accent);
-          color: var(--sx-bg);
         }
         #${PANEL_ID} .skiprexa-info-button:active {
           transform: scale(0.96);
@@ -1276,8 +1264,8 @@
           padding: 11px 12px 12px;
           border: 1px solid rgba(255,255,255,0.12);
           border-radius: 10px;
-          background: #1e1e1e;
-          color: #e4e4e4;
+          background: #17213a;
+          color: #edf4fb;
           font-family: var(--sx-font);
           text-align: left;
           text-transform: none;
@@ -1298,7 +1286,7 @@
           left: 50%;
           width: 9px;
           height: 9px;
-          background: #1e1e1e;
+          background: #17213a;
           border-top: 1px solid rgba(255,255,255,0.12);
           border-left: 1px solid rgba(255,255,255,0.12);
           transform: translateX(-50%) rotate(45deg);
@@ -1365,53 +1353,53 @@
         }
         #${PANEL_ID} .skiprexa-tooltip-title {
           margin-bottom: 4px;
-          color: #e4e4e4;
+          color: #fff;
           font-family: var(--sx-font);
           font-size: 11px;
           font-weight: 700;
           letter-spacing: 0;
         }
         #${PANEL_ID} .skiprexa-tooltip-copy {
-          color: #d7d0de;
+          color: #d8e4f0;
           font-size: 11.5px;
           font-weight: 500;
         }
 
         /* ── Table ───────────────────────────────────── */
         #${PANEL_ID} .skiprexa-analyzer-body {
-          padding: 8px 20px 18px;
+          padding: 8px 10px 10px;
         }
         #${PANEL_ID} table {
           width: 100%;
           border-collapse: separate;
-          border-spacing: 0 8px;
+          border-spacing: 0 7px;
           table-layout: fixed;
         }
         #${PANEL_ID} thead th {
           padding: 8px 14px;
           border: 0;
-          border-top: 0;
-          border-bottom: 0;
+          border-top: 1px solid #d6dfeb;
+          border-bottom: 1px solid #cbd6e3;
           font: 700 10px/1.25 var(--sx-mono);
           letter-spacing: 0.055em;
           text-transform: uppercase;
-          color: var(--sx-text-tertiary);
-          background: transparent;
+          color: #3f4d63;
+          background: #e9eef5;
           text-align: left;
         }
         #${PANEL_ID} thead th:first-child {
-          border-left: 0;
+          border-left: 1px solid #d6dfeb;
           border-radius: 8px 0 0 8px;
         }
         #${PANEL_ID} thead th:last-child {
-          border-right: 0;
+          border-right: 1px solid #d6dfeb;
           border-radius: 0 8px 8px 0;
         }
         #${PANEL_ID} thead th:not(:first-child) {
           text-align: center;
         }
         #${PANEL_ID} .skiprexa-cell {
-          padding: 18px 16px;
+          padding: 12px 14px;
           border-top: 1px solid var(--sx-border-subtle);
           border-bottom: 1px solid var(--sx-border-subtle);
           background: var(--sx-surface);
@@ -1443,7 +1431,7 @@
           font-family: var(--sx-mono);
           font-weight: 700;
           font-size: 15px;
-          color: var(--sx-text-secondary);
+          color: var(--sx-accent);
         }
 
         /* ── Row states ──────────────────────────────── */
@@ -1451,11 +1439,11 @@
           background: transparent;
         }
         #${PANEL_ID} .skiprexa-row.is-pinned-highlight .skiprexa-cell {
-          border-color: rgba(179,156,208,0.45);
-          background: #332e39;
+          border-color: rgba(24,125,157,0.34);
+          background: #f2fbfd;
         }
         #${PANEL_ID} .skiprexa-row.is-pinned-highlight .skiprexa-cell:first-child {
-          box-shadow: inset 3px 0 0 #b39cd0;
+          box-shadow: inset 3px 0 0 #187d9d;
         }
 
         /* ── Subject details ─────────────────────────── */
@@ -1482,7 +1470,7 @@
           border-radius: 8px;
         }
         #${PANEL_ID} .skiprexa-details > summary:focus-visible {
-          box-shadow: 0 0 0 3px rgba(179,156,208,0.24);
+          box-shadow: 0 0 0 3px rgba(23,33,58,0.12);
         }
         #${PANEL_ID} .skiprexa-summary-main {
           display: inline-flex;
@@ -1500,9 +1488,9 @@
           width: 28px;
           height: 28px;
           box-sizing: border-box;
-          border: 1px solid var(--sx-border-subtle);
+          border: 1px solid #e1e7ef;
           border-radius: 8px;
-          background: var(--sx-bg);
+          background: #f7f9fc;
           position: relative;
           transition: transform 180ms var(--sx-ease-out), background-color 160ms ease, border-color 160ms ease;
           flex-shrink: 0;
@@ -1511,11 +1499,11 @@
           content: "";
           position: absolute;
           top: 50%; left: 50%;
-          width: 5px; height: 5px;
+          width: 0; height: 0;
           border-style: solid;
-          border-width: 1.5px 1.5px 0 0;
-          border-color: var(--sx-text-secondary);
-          transform: translate(-65%, -50%) rotate(45deg);
+          border-width: 3.5px 0 3.5px 5px;
+          border-color: transparent transparent transparent var(--sx-accent);
+          transform: translate(-30%, -50%);
           transition: border-color 0.2s;
         }
         #${PANEL_ID} .skiprexa-details[open] .skiprexa-chevron {
@@ -1524,20 +1512,18 @@
           border-color: var(--sx-accent);
         }
         #${PANEL_ID} .skiprexa-details[open] .skiprexa-chevron::after {
-          border-color: var(--sx-bg);
+          border-left-color: #fff;
         }
         #${PANEL_ID} .skiprexa-subject-heading {
           display: inline-flex;
-          align-items: flex-start;
-          flex-direction: column;
-          gap: 5px;
+          align-items: baseline;
+          gap: 8px;
           min-width: 0;
           flex-wrap: wrap;
         }
         #${PANEL_ID} .skiprexa-subject-name {
           font-size: 14px;
-          font-weight: 600;
-          overflow-wrap: anywhere;
+          font-weight: 700;
           letter-spacing: -0.015em;
           line-height: 1.3;
           color: var(--sx-text);
@@ -1554,12 +1540,10 @@
           align-items: center;
           gap: 5px;
           min-height: 32px;
-          padding: 7px 10px;
-          min-width: 68px;
-          justify-content: center;
-          border: 1px solid var(--sx-border);
+          padding: 5px 8px;
+          border: 1px solid transparent;
           border-radius: 8px;
-          background: var(--sx-bg);
+          background: transparent;
           color: var(--sx-text-secondary);
           font-family: var(--sx-font);
           font-size: 11px;
@@ -1573,7 +1557,7 @@
         }
         #${PANEL_ID} .skiprexa-highlight-toggle:focus-visible {
           outline: none;
-          box-shadow: 0 0 0 3px rgba(179,156,208,0.24);
+          box-shadow: 0 0 0 3px rgba(23,33,58,0.12);
         }
         #${PANEL_ID} .skiprexa-highlight-toggle:active {
           transform: scale(0.97);
@@ -1585,60 +1569,33 @@
         }
         #${PANEL_ID} .skiprexa-highlight-toggle-label {
           line-height: 1;
-          white-space: nowrap;
         }
         #${PANEL_ID} .skiprexa-highlight-toggle.is-active {
-          border-color: #b39cd0;
-          background: #39333f;
-          color: #b39cd0;
-          box-shadow: 0 0 0 3px rgba(179,156,208,0.1);
+          border-color: #b9dce5;
+          background: #e9f8fb;
+          color: #187d9d;
+          box-shadow: 0 0 0 3px rgba(24,125,157,0.1);
         }
 
         /* ── Session list ────────────────────────────── */
-        #${PANEL_ID} .skiprexa-sessions-row[hidden] { display: none !important; }
-        #${PANEL_ID} .skiprexa-sessions-row > td {
-          padding: 0;
-          border: 0;
-          background: transparent;
-        }
-        #${PANEL_ID} .skiprexa-session-panel {
-          padding: 16px 20px 20px;
-          border: 1px solid var(--sx-border);
-          border-radius: 10px;
-          background: var(--sx-surface);
-        }
-        #${PANEL_ID} .skiprexa-session-caption {
-          display: flex;
-          align-items: baseline;
-          gap: 10px;
-          margin-bottom: 12px;
-          color: var(--sx-text);
-          font: 600 12px/1.4 var(--sx-font);
-        }
-        #${PANEL_ID} .skiprexa-session-caption span {
-          color: var(--sx-text-tertiary);
-          font-weight: 400;
-        }
         #${PANEL_ID} .skiprexa-session-list {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-          gap: 0 24px;
-          max-height: 200px;
-          overflow-y: auto;
-          scrollbar-width: thin;
-          scrollbar-color: var(--sx-text-tertiary) transparent;
+          margin: 8px 0 2px 38px;
+          padding: 7px 10px;
+          border-radius: 8px;
+          background: #f7f9fc;
+          border: 1px solid #e6ebf2;
         }
         #${PANEL_ID} .skiprexa-session-row {
           display: flex;
           justify-content: space-between;
           align-items: center;
           gap: 6px;
-          padding: 9px 0;
+          padding: 4px 0;
           font-size: 12px;
           color: var(--sx-text-secondary);
         }
         #${PANEL_ID} .skiprexa-session-row:not(:last-child) {
-          border-bottom: 1px solid #444444;
+          border-bottom: 1px solid #e8edf3;
         }
         #${PANEL_ID} .skiprexa-session-date {
           font-weight: 500;
@@ -1670,7 +1627,7 @@
           display: flex;
           flex-direction: column;
           gap: 8px;
-          --sx-state-color: #aaa3b3;
+          --sx-state-color: #637188;
         }
         #${PANEL_ID} .skiprexa-outcome-copy {
           display: flex;
@@ -1702,7 +1659,7 @@
           margin-top: 1px;
           color: var(--sx-text-secondary);
           font-size: 11px;
-          font-weight: 400;
+          font-weight: 600;
           line-height: 1.35;
         }
         #${PANEL_ID} .skiprexa-outcome.is-safe { --sx-state-color: var(--sx-safe); }
@@ -1714,10 +1671,9 @@
           position: relative;
           display: block;
           width: 100%;
-          height: 6px;
-          margin-top: 3px;
+          height: 4px;
           border-radius: 999px;
-          background: var(--sx-border-subtle);
+          background: #e7ebf1;
         }
         #${PANEL_ID} .skiprexa-meter-fill {
           position: absolute;
@@ -1737,42 +1693,42 @@
           bottom: -3px;
           width: 2px;
           border-radius: 2px;
-          background: var(--sx-text);
-          box-shadow: 0 0 0 2px #2c2c2c;
+          background: var(--sx-accent);
+          box-shadow: 0 0 0 2px #ffffff;
           transform: translateX(-1px);
         }
 
         /* ── Total held input ────────────────────────── */
         #${PANEL_ID} .skiprexa-total-input {
           width: 100%;
-          max-width: 88px;
+          max-width: 108px;
           min-height: 38px;
           box-sizing: border-box;
           padding: 7px 9px;
-          border: 1px solid #626262;
+          border: 1px solid #cdd6e2;
           border-radius: 9px;
           text-align: center;
           font-family: var(--sx-mono);
           font-size: 13px;
           font-weight: 700;
           color: var(--sx-text);
-          background: #252525;
+          background: #fbfcfe;
           outline: none;
           transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
           -moz-appearance: textfield;
         }
         #${PANEL_ID} .skiprexa-total-input:focus-visible {
           border-color: var(--sx-accent);
-          background: #2c2c2c;
-          box-shadow: 0 0 0 3px rgba(179,156,208,0.24);
+          background: #ffffff;
+          box-shadow: 0 0 0 3px rgba(23,33,58,0.12);
         }
         #${PANEL_ID} .skiprexa-total-input.is-valid:not(:focus) {
-          border-color: #686170;
-          background: #333036;
+          border-color: #9bc8c3;
+          background: #f4fbfa;
         }
         #${PANEL_ID} .skiprexa-total-input.is-invalid {
-          border-color: #f08c9a;
-          background: #3a292e;
+          border-color: #dc9099;
+          background: #fff7f8;
           box-shadow: 0 0 0 3px rgba(201,79,92,0.08);
         }
         #${PANEL_ID} .skiprexa-total-input::placeholder {
@@ -1787,23 +1743,22 @@
 
         @media (hover: hover) and (pointer: fine) {
           #${PANEL_ID} .skiprexa-collapse-button:hover {
-            border-color: #484848;
-            background: #383838;
+            border-color: #e1e7ef;
+            background: #eef2f7;
             color: var(--sx-accent);
           }
           #${PANEL_ID} .skiprexa-toggle-btn:hover:not(.active) {
-            background: #383838;
+            background: #e9edf3;
             color: var(--sx-text-secondary);
           }
           #${PANEL_ID} .skiprexa-info-button:hover {
             background: rgba(23,33,58,0.08);
-            color: #2c2c2c;
+            color: #ffffff;
             box-shadow: 0 0 0 3px rgba(23,33,58,0.1);
           }
           #${PANEL_ID} .skiprexa-info-button:hover > span {
             border-color: var(--sx-accent);
             background: var(--sx-accent);
-            color: var(--sx-bg);
           }
           #${PANEL_ID} .skiprexa-info-tip:hover:not(.is-dismissed) .skiprexa-tooltip {
             opacity: 1;
@@ -1816,28 +1771,41 @@
             transform: translateY(0);
           }
           #${PANEL_ID} .skiprexa-row:hover .skiprexa-cell {
-            border-color: #70617e;
-            background: #333035;
+            border-color: #dbe3ed;
+            background: #fbfcfe;
           }
           #${PANEL_ID} .skiprexa-details > summary:hover .skiprexa-chevron {
-            border-color: #626262;
-            background: #383838;
+            border-color: #cbd5e1;
+            background: #eef2f7;
           }
           #${PANEL_ID} .skiprexa-details[open] > summary:hover .skiprexa-chevron {
             border-color: var(--sx-accent);
             background: var(--sx-accent);
           }
           #${PANEL_ID} .skiprexa-highlight-toggle:hover {
-            border-color: #626262;
-            background: #383838;
+            border-color: #dce3ec;
+            background: #eef2f7;
             color: var(--sx-accent);
           }
           #${PANEL_ID} .skiprexa-total-input:hover {
-            border-color: #b39cd0;
+            border-color: #98a6b8;
           }
         }
 
-        @media (max-width: 1000px) {
+        @media (prefers-reduced-motion: reduce) {
+          #${PANEL_ID} .skiprexa-info-button,
+          #${PANEL_ID} .skiprexa-tooltip,
+          #${PANEL_ID} .skiprexa-collapse-icon,
+          #${PANEL_ID} .skiprexa-chevron,
+          #${PANEL_ID} .skiprexa-meter-fill,
+          #${PANEL_ID} .skiprexa-highlight-toggle,
+          #${PANEL_ID} .skiprexa-toggle-btn,
+          #${PANEL_ID} .skiprexa-collapse-button {
+            transition: none;
+            animation: none;
+          }
+        }
+        @media (max-width: 840px) {
           #${PANEL_ID} {
             width: 100%;
             max-width: 100%;
@@ -1894,9 +1862,9 @@
             margin-bottom: 0;
           }
           #${PANEL_ID} .skiprexa-row.is-pinned-highlight {
-            border-color: rgba(179,156,208,0.5);
+            border-color: rgba(24,125,157,0.5);
             background: var(--sx-surface);
-            box-shadow: inset 3px 0 0 #b39cd0;
+            box-shadow: inset 3px 0 0 #187d9d;
           }
           #${PANEL_ID} .skiprexa-cell {
             min-width: 0;
@@ -1952,8 +1920,11 @@
           #${PANEL_ID} .skiprexa-details > summary {
             flex-wrap: nowrap;
           }
+          #${PANEL_ID} .skiprexa-highlight-toggle-label {
+            display: none;
+          }
           #${PANEL_ID} .skiprexa-highlight-toggle {
-            min-width: 68px;
+            width: 34px;
             justify-content: center;
           }
           #${PANEL_ID} .skiprexa-tooltip,
@@ -1981,7 +1952,7 @@
         }
         @media (max-width: 540px) {
           #${PANEL_ID} .skiprexa-title {
-            font-size: 24px;
+            font-size: 20px;
           }
           #${PANEL_ID} .skiprexa-header-actions,
           #${PANEL_ID} .skiprexa-controls {
@@ -2006,70 +1977,9 @@
           }
         }
 
-        /* Semester ledger: one target track, quiet supporting controls. */
-        #${PANEL_ID} .skiprexa-ledger-caption {
-          display: flex;
-          justify-content: space-between;
-          gap: 8px 16px;
-          flex-wrap: wrap;
-          padding: 14px 16px 8px;
-          color: var(--sx-text-secondary);
-          font: 500 12px/1.5 var(--sx-font);
-        }
-        #${PANEL_ID} .skiprexa-ledger-caption > span:first-child {
-          color: var(--sx-text);
-          font-weight: 600;
-        }
-        #${PANEL_ID} .skiprexa-meter::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          border-radius: inherit;
-          background: repeating-linear-gradient(90deg, transparent 0, transparent calc(10% - 2px), var(--sx-surface) calc(10% - 2px), var(--sx-surface) 10%);
-          pointer-events: none;
-        }
-        #${PANEL_ID} .skiprexa-meter-target { z-index: 1; }
-        #${PANEL_ID} .skiprexa-pin-icon {
-          transition: transform 180ms var(--sx-ease-out);
-        }
-        #${PANEL_ID} .skiprexa-highlight-toggle.is-active .skiprexa-pin-icon {
-          transform: rotate(-25deg);
-        }
-        #${PANEL_ID} .skiprexa-row:focus-within .skiprexa-cell {
-          border-color: #b39cd0;
-        }
-        @media (prefers-reduced-motion: no-preference) {
-          #${PANEL_ID} .skiprexa-sessions-row:not([hidden]) .skiprexa-session-panel {
-            animation: skiprexa-unfold 180ms var(--sx-ease-out);
-          }
-          #${PANEL_ID} .skiprexa-meter.has-value .skiprexa-meter-fill {
-            animation: skiprexa-track-in 240ms var(--sx-ease-out);
-            transform-origin: left;
-          }
-          @keyframes skiprexa-unfold {
-            from { opacity: 0; transform: translateY(-4px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          @keyframes skiprexa-track-in {
-            from { transform: scaleX(0.96); opacity: 0.5; }
-            to { transform: scaleX(1); opacity: 1; }
-          }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          #${PANEL_ID} *, .${TILE_HIGHLIGHT_CLASS}, .${TILE_HIGHLIGHT_INFO_CLASS} {
-            transition: none !important;
-            animation: none !important;
-          }
-        }
-        @media (max-width: 1000px) {
-          #${PANEL_ID} .skiprexa-analyzer-body { padding: 4px 12px 12px; }
-          #${PANEL_ID} .skiprexa-sessions-row { margin-bottom: 12px; }
-          #${PANEL_ID} .skiprexa-ledger-caption { padding: 12px 2px 16px; }
-        }
-
         /* ── Tile highlight ──────────────────────────── */
         .${TILE_HIGHLIGHT_CLASS} {
-          outline: 2px solid #b39cd0 !important;
+          outline: 2px solid #38b7d6 !important;
           outline-offset: -2px;
           box-shadow: inset 0 0 0 999px rgba(56,183,214,0.22), 0 0 0 1px rgba(24,125,157,0.9);
           transition: box-shadow 160ms ease, outline-color 160ms ease;
@@ -2112,15 +2022,14 @@
       </div>
 
       <div id="skiprexa-analyzer-body" class="skiprexa-analyzer-body">
-        <div class="skiprexa-ledger-caption"><span>${subjectRows.length} ${subjectRows.length === 1 ? "subject" : "subjects"} <span aria-hidden="true">·</span> This semester</span><span>Enter classes held to see where you stand.</span></div>
         <table>
           <thead>
             <tr>
               <th>Subject</th>
-              <th style="width:270px;">Distance to target</th>
-              <th style="width:76px;">Missed</th>
-              <th style="width:110px;"><span class="skiprexa-heading-label">Needed total ${infoTipHtml("skiprexa-tip-total-needed", `Total needed for ${thresholdInt}%`, `The minimum total classes needed for your current missed classes to equal ${thresholdInt}% attendance.`)}</span></th>
-              <th style="width:120px;">Classes held</th>
+              <th style="width:280px;">Distance to target</th>
+              <th style="width:96px;">Missed</th>
+              <th style="width:132px;"><span class="skiprexa-heading-label">Needed total ${infoTipHtml("skiprexa-tip-total-needed", `Total needed for ${thresholdInt}%`, `The minimum total classes needed for your current missed classes to equal ${thresholdInt}% attendance.`)}</span></th>
+              <th style="width:144px;">Classes held</th>
             </tr>
           </thead>
           <tbody>${rowsHtml}</tbody>

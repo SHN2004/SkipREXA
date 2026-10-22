@@ -338,27 +338,3 @@ test("the late update observer expires after eight seconds", async (t) => {
   await harness.settle();
   assert.equal(currentTableCell(harness.window).classList.contains(HIGHLIGHT_CLASS), false);
 });
-
-test("session drawers stay separate from totals and preserve expansion when the target changes", async (t) => {
-  const harness = createHarness();
-  t.after(() => harness.dom.window.close());
-  await harness.renderInitial();
-  let root = panel(harness.window);
-  let details = root.querySelector("details");
-  assert.equal(root.querySelector(".skiprexa-sessions-row").hidden, true);
-  details.open = true;
-  details.dispatchEvent(new harness.window.Event("toggle"));
-  assert.equal(root.querySelector(".skiprexa-sessions-row").hidden, false);
-  assert.equal(details.closest("tr").querySelector(".skiprexa-session-list"), null);
-  assert.ok(details.closest("tr").querySelector(".skiprexa-total-input"));
-  assert.ok(harness.window.document.getElementById(details.querySelector("summary").getAttribute("aria-controls")));
-
-  root.querySelector('[data-threshold="80"]').click();
-  root = panel(harness.window);
-  details = root.querySelector("details");
-  assert.equal(details.open, true);
-  assert.equal(root.querySelector(".skiprexa-sessions-row").hidden, false);
-  details.open = false;
-  details.dispatchEvent(new harness.window.Event("toggle"));
-  assert.equal(root.querySelector(".skiprexa-sessions-row").hidden, true);
-});
