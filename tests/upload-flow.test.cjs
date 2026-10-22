@@ -307,7 +307,7 @@ function loadContentListener({ addCardOnDrop = true, initialCards = [] } = {}) {
   };
 }
 
-function loadClaudeUpload({ addCardOnChange = true, thumbnailOutsideComposer = false, existingThumbnail = false, removable = true, busy = false } = {}) {
+function loadClaudeUpload({ addCardOnChange = true, thumbnailOutsideComposer = false, existingThumbnail = false, removable = true, busy = false, renameSuffix = "" } = {}) {
   let simulatedNow = 0;
   const cards = [];
   const composer = new FakeElement({
@@ -335,7 +335,7 @@ function loadClaudeUpload({ addCardOnChange = true, thumbnailOutsideComposer = f
     if (event.type !== "change" || !addCardOnChange) return true;
     const file = input.files?.[0];
     if (thumbnailOutsideComposer) {
-      addThumbnail(file.name);
+      addThumbnail(file.name.replace(/\.pdf$/, `${renameSuffix}.pdf`));
       return true;
     }
     const card = new FakeElement({
@@ -473,6 +473,20 @@ test("Claude confirms captured removable thumbnails outside the text composer", 
   const result = await harness.exports.processUpload([paper("p1")], [], "general", () => {});
   assert.equal(result.attachedCount, 1);
   assert.equal(result.outcomes[0].status, "attached");
+});
+
+test("Claude confirms a re-upload that Claude renamed with a duplicate suffix", async () => {
+  for (const renameSuffix of ["_1", "_d78745"]) {
+    const harness = loadClaudeUpload({ thumbnailOutsideComposer: true, existingThumbnail: true, renameSuffix });
+    const result = await harness.exports.processUpload([paper("p1")], [], "general", () => {});
+    assert.equal(result.outcomes[0].status, "attached", renameSuffix);
+  }
+});
+
+test("Claude does not match a different file that only shares the name prefix", async () => {
+  const harness = loadClaudeUpload({ thumbnailOutsideComposer: true, renameSuffix: "_answer_key" });
+  const result = await harness.exports.processUpload([paper("p1")], [], "general", () => {});
+  assert.equal(result.outcomes[0].status, "unconfirmed");
 });
 
 test("Claude does not count existing, busy, or non-removable thumbnails", async () => {

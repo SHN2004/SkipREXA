@@ -347,15 +347,24 @@ async function uploadPdfToClaudeMainWorld(tabId: number, pdf: any) {
           // Claude can render its attachment strip outside the text composer.
           // Only removable thumbnails belong to an editable upload; do not use
           // arbitrary images from conversation history as attachment evidence.
+          const target = normalize(fileName)
+          const dot = target.lastIndexOf('.')
+          const targetBase = dot > 0 ? target.slice(0, dot) : target
+          const targetExt = dot > 0 ? target.slice(dot) : ''
+          // Claude renames a re-uploaded duplicate to "<base>_1.pdf" or "<base>_d78745.pdf".
+          const isSameFile = (name: string) => name === target || (
+            name.startsWith(`${targetBase}_`) && name.endsWith(targetExt) &&
+            /^[a-z0-9]{1,8}$/.test(name.slice(targetBase.length + 1, name.length - targetExt.length))
+          )
           for (const card of document.querySelectorAll('[data-testid="file-thumbnail"]')) {
             if (seenCards.has(card)) continue
-            const target = normalize(fileName)
             const matchingImage = Array.from(card.querySelectorAll('img[alt]')).some(
-              (img) => normalize(img.getAttribute('alt')) === target
+              (img) => isSameFile(normalize(img.getAttribute('alt')))
             )
-            const matchingRemove = Array.from(card.querySelectorAll('button[aria-label]')).some(
-              (button) => normalize(button.getAttribute('aria-label')) === `remove ${target}`
-            )
+            const matchingRemove = Array.from(card.querySelectorAll('button[aria-label]')).some((button) => {
+              const label = normalize(button.getAttribute('aria-label'))
+              return label.startsWith('remove ') && isSameFile(label.slice('remove '.length))
+            })
             if (!matchingImage || !matchingRemove) continue
             seenCards.add(card)
             const status = normalize([

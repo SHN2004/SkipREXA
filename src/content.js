@@ -1385,21 +1385,21 @@ async function injectPromptToChatGPT(promptText) {
     try {
         console.log('🔤 Attempting to inject prompt:', promptText);
         
-        // First try to find the ProseMirror editor
-        const proseMirrorDiv = document.querySelector('#prompt-textarea[contenteditable="true"]');
+        // ChatGPT's ProseMirror editor lost its #prompt-textarea id; match it by role too.
+        const proseMirrorDiv = document.querySelector(
+            '#prompt-textarea[contenteditable="true"], div.ProseMirror[contenteditable="true"], [contenteditable="true"][role="textbox"]'
+        );
         if (proseMirrorDiv) {
             console.log('Found ProseMirror div, injecting prompt...');
-            
-            // Clear existing content and set new content
-            proseMirrorDiv.innerHTML = `<p>${promptText}</p>`;
-            
-            // Trigger input events to notify ProseMirror of the change
-            const inputEvent = new Event('input', { bubbles: true });
-            proseMirrorDiv.dispatchEvent(inputEvent);
-            
-            const focusEvent = new Event('focus', { bubbles: true });
-            proseMirrorDiv.dispatchEvent(focusEvent);
-            
+
+            // execCommand goes through ProseMirror's own input handling and keeps line breaks.
+            proseMirrorDiv.focus();
+            document.execCommand('selectAll');
+            if (!document.execCommand('insertText', false, promptText)) {
+                proseMirrorDiv.textContent = promptText;
+                proseMirrorDiv.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+
             console.log('✅ Prompt injected via ProseMirror');
             return;
         }
@@ -1428,8 +1428,8 @@ async function injectPromptToChatGPT(promptText) {
         for (const input of contentEditableInputs) {
             if (input.closest('[class*="input"]') || input.closest('[class*="prompt"]')) {
                 console.log('Found alternative contenteditable input, injecting prompt...');
-                
-                input.innerHTML = `<p>${promptText}</p>`;
+
+                input.textContent = promptText;
                 
                 const inputEvent = new Event('input', { bubbles: true });
                 input.dispatchEvent(inputEvent);
