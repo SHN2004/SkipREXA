@@ -127,14 +127,16 @@ Once you know this, please help me create a comprehensive study plan covering al
 
 Your task is to create a clean, organized set of PYQs using ONLY the uploaded question papers. Do the following:
 
-1. Extract all unique questions from the uploaded papers. Remove duplicates while preserving the original question text as much as possible.
-2. If the user has uploaded a syllabus file (PDF/text) along with these papers, split the questions module-wise strictly according to the syllabus. If no syllabus is attached, DO NOT guess modules - instead split ONLY by marks (e.g., 2 marks, 5 marks, 10 marks, 15 marks, etc.).
-3. For each section, clearly label marks and present questions in a clean format.
-4. If syllabus is provided, also indicate which module each question belongs to. If not, organize purely by mark distribution.
-5. Before generating, ask: "Have you attached/uploaded the syllabus for this course? If yes, I'll split module-wise as per it. If not, I'll organize by marks only."
-6. Use the uploaded question papers as the sole source of questions. Do not add new questions from outside.
+1. First, ask me: "Do you want the PYQs to be shown directly in this chat, or do you want me to create a PDF/document file for download?" Wait for my answer before proceeding.
+2. Extract all unique questions from the uploaded papers. Remove duplicates while preserving the original question text as much as possible.
+3. If the user has uploaded a syllabus file (PDF/text) along with these papers, split the questions module-wise strictly according to the syllabus. If no syllabus is attached, DO NOT guess modules - instead split ONLY by marks (e.g., 2 marks, 5 marks, 10 marks, 15 marks, etc.).
+4. For each section, clearly label marks and present questions in a clean format.
+5. If syllabus is provided, also indicate which module each question belongs to. If not, organize purely by mark distribution.
+6. If I choose "chat", display the full organized PYQ set here. If I choose "PDF/document", create a clean downloadable file (PDF format preferred) with proper formatting, headings, and sections.
+7. Also ask: "Have you attached/uploaded the syllabus for this course? If yes, I'll split module-wise as per it. If not, I'll organize by marks only."
+8. Use the uploaded question papers as the sole source of questions. Do not add new questions from outside.
 
-Start by checking for a syllabus attachment. Proceed based on the answer.`,
+Start by asking both questions above.`,
   };
 
   return promptTemplates[studyPurpose] || "";
