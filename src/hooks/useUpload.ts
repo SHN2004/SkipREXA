@@ -92,37 +92,49 @@ export function generateCustomPrompt(studyPurpose: string, selectedCourses: Cour
     internal_1: `I'm studying for my Internal 1 exam and have uploaded ${paperCount} end semester question papers for ${courseName} for reference. My Internal 1 will have:
 - Section A: 4 questions (5 marks each) 
 - Section B: 4 questions (2 main questions, each with OR options, 15 marks each)
-
+ 
 Internal 1 typically covers Modules 1 and 2, but my teacher may have assigned different modules.
-
+ 
 Before we start, please ask me:
 1. Which specific modules are covered in my Internal 1 exam?
 2. How much time do I have to prepare for this exam?
 3. What's my preferred study approach: (a) Practice solving questions, (b) Understand concepts through questions, (c) Create study notes from questions, or (d) Mixed approach?
-
+ 
 Since I've uploaded end semester question papers, I need you to filter the relevant questions based on my modules. The end semester paper structure is: Section A has questions 1-2 (Module 1), 3-4 (Module 2), 5-6 (Module 3), 7-8 (Module 4), 9-10 (Module 5). Section B has questions 11-12 (Module 1 with OR), 13-14 (Module 2 with OR), 15-16 (Module 3 with OR), 17-18 (Module 4 with OR), 19-20 (Module 5 with OR). Please identify and focus on questions from my specified modules only.`,
     internal_2: `I'm studying for my Internal 2 exam and have uploaded ${paperCount} end semester question papers for ${courseName} for reference. My Internal 2 will have:
 - Section A: 4 questions (5 marks each)
 - Section B: 4 questions (2 main questions, each with OR options, 15 marks each)
-
+ 
 Internal 2 typically covers Modules 3 and 4, but my teacher may have assigned different modules.
-
+ 
 Before we start, please ask me:
 1. Which specific modules are covered in my Internal 2 exam?
 2. How much time do I have to prepare for this exam?
 3. What's my preferred study approach: (a) Practice solving questions, (b) Understand concepts through questions, (c) Create study notes from questions, or (d) Mixed approach?
-
+ 
 Since I've uploaded end semester question papers, I need you to filter the relevant questions based on my modules.`,
     model: `I'm studying for my End Semester exam and have uploaded ${paperCount} question papers for ${courseName} for reference. My End Semester exam will have:
 - Section A: 10 questions (2 from each of the 5 modules)
 - Section B: 10 questions (5 main questions, each with OR options)
-
+ 
 Before we start, please ask me:
 1. Are there any specific modules I want to focus on more, or should we cover all 5 modules equally?
 2. How much time do I have to prepare for this exam?
 3. What's my preferred study approach: (a) Practice solving questions, (b) Understand concepts through questions, (c) Create study notes from questions, (d) Focus on frequently asked questions, or (e) Mixed approach?
-
+ 
 Once you know this, please help me create a comprehensive study plan covering all modules according to my study approach and time constraint, using the uploaded question papers as reference.`,
+    pyq: `I have uploaded ${paperCount} question paper(s) for ${courseName} as reference to create Previous Year Questions (PYQs) for effective preparation.
+
+Your task is to create a clean, organized set of PYQs using ONLY the uploaded question papers. Do the following:
+
+1. Extract all unique questions from the uploaded papers. Remove duplicates while preserving the original question text as much as possible.
+2. If the user has uploaded a syllabus file (PDF/text) along with these papers, split the questions module-wise strictly according to the syllabus. If no syllabus is attached, DO NOT guess modules - instead split ONLY by marks (e.g., 2 marks, 5 marks, 10 marks, 15 marks, etc.).
+3. For each section, clearly label marks and present questions in a clean format.
+4. If syllabus is provided, also indicate which module each question belongs to. If not, organize purely by mark distribution.
+5. Before generating, ask: "Have you attached/uploaded the syllabus for this course? If yes, I'll split module-wise as per it. If not, I'll organize by marks only."
+6. Use the uploaded question papers as the sole source of questions. Do not add new questions from outside.
+
+Start by checking for a syllabus attachment. Proceed based on the answer.`,
   };
 
   return promptTemplates[studyPurpose] || "";

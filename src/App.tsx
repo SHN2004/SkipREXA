@@ -598,7 +598,8 @@ export default function App() {
                                 { id: 'general', label: 'General Analysis (No Prompt Injection)' },
                                 { id: 'internal_1', label: 'Internal 1 Prep (Modules 1-2)' },
                                 { id: 'internal_2', label: 'Internal 2 Prep (Modules 3-4)' },
-                                { id: 'model', label: 'Model Exam Prep (All Modules)' }
+                                { id: 'model', label: 'Model Exam Prep (All Modules)' },
+                                { id: 'pyq', label: "Create PYQ's (Attach Syllabus for Module-wise PYQ)" }
                             ].map((intent) => (
                                 <label key={intent.id} className={`flex items-center p-4 bg-card border-2 cursor-pointer transition-all ${studyIntent === intent.id ? 'border-primary shadow-sm -translate-y-1 rounded-[16px]' : 'border-foreground/20 hover:shadow-sm hover:-translate-y-0.5 rounded-[16px]'}`}>
                                     <input type="radio" name="intent" value={intent.id} checked={studyIntent === intent.id} onChange={(e) => setStudyIntent(e.target.value)} className="appearance-none w-5 h-5 border-2 border-foreground rounded-none mr-4 checked:border-primary checked:bg-primary transition-all flex-shrink-0 relative checked:after:content-[''] checked:after:absolute checked:after:top-1/2 checked:after:left-1/2 checked:after:-translate-x-1/2 checked:after:-translate-y-1/2 checked:after:w-2 checked:after:h-2 checked:after:bg-white" />

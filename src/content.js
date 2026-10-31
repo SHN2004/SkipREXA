@@ -1245,61 +1245,72 @@ async function injectPromptToChatGPT(promptText) {
     try {
         console.log('🔤 Attempting to inject prompt:', promptText);
         
-        // First try to find the ProseMirror editor
-        const proseMirrorDiv = document.querySelector('#prompt-textarea[contenteditable="true"]');
-        if (proseMirrorDiv) {
-            console.log('Found ProseMirror div, injecting prompt...');
-            
-            // Clear existing content and set new content
-            proseMirrorDiv.innerHTML = `<p>${promptText}</p>`;
-            
-            // Trigger input events to notify ProseMirror of the change
-            const inputEvent = new Event('input', { bubbles: true });
-            proseMirrorDiv.dispatchEvent(inputEvent);
-            
-            const focusEvent = new Event('focus', { bubbles: true });
-            proseMirrorDiv.dispatchEvent(focusEvent);
-            
-            console.log('✅ Prompt injected via ProseMirror');
-            return;
-        }
+        // Try multiple selectors for ChatGPT composer
+        const selectors = [
+            '#prompt-textarea[contenteditable="true"]',
+            '[contenteditable="true"][data-id="root"]',
+            '.ProseMirror[contenteditable="true"]',
+            'div[contenteditable="true"][role="textbox"]',
+            'textarea[name="prompt-textarea"]',
+            'textarea[placeholder*="Message"]',
+            'textarea[placeholder*="message"]'
+        ];
         
-        // Fallback: try to find the textarea
-        const textarea = document.querySelector('textarea[name="prompt-textarea"]');
-        if (textarea) {
-            console.log('Found textarea, injecting prompt...');
-            
-            textarea.value = promptText;
-            textarea.style.display = 'block'; // Make visible if hidden
-            
-            // Trigger events
-            const inputEvent = new Event('input', { bubbles: true });
-            textarea.dispatchEvent(inputEvent);
-            
-            const changeEvent = new Event('change', { bubbles: true });
-            textarea.dispatchEvent(changeEvent);
-            
-            console.log('✅ Prompt injected via textarea');
-            return;
-        }
-        
-        // Last resort: try any contenteditable div that might be the input
-        const contentEditableInputs = document.querySelectorAll('div[contenteditable="true"]');
-        for (const input of contentEditableInputs) {
-            if (input.closest('[class*="input"]') || input.closest('[class*="prompt"]')) {
-                console.log('Found alternative contenteditable input, injecting prompt...');
-                
-                input.innerHTML = `<p>${promptText}</p>`;
-                
-                const inputEvent = new Event('input', { bubbles: true });
-                input.dispatchEvent(inputEvent);
-                
-                console.log('✅ Prompt injected via alternative method');
-                return;
+        let inputEl = null;
+        for (const selector of selectors) {
+            const el = document.querySelector(selector);
+            if (el && el.offsetParent !== null && el.getAttribute('readonly') !== 'true') {
+                inputEl = el;
+                break;
             }
         }
         
-        throw new Error('Could not find ChatGPT input field to inject prompt');
+        if (!inputEl) {
+            // Last resort: any visible contenteditable
+            const contentEditables = document.querySelectorAll('div[contenteditable="true"]');
+            for (const el of contentEditables) {
+                if (el.offsetParent !== null) {
+                    inputEl = el;
+                    break;
+                }
+            }
+        }
+        
+        if (!inputEl) {
+            throw new Error('Could not find ChatGPT input field to inject prompt');
+        }
+        
+        inputEl.focus();
+        await delay(200);
+        
+        if (inputEl.tagName === 'TEXTAREA') {
+            const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+            if (valueSetter) {
+                valueSetter.call(inputEl, promptText);
+            } else {
+                inputEl.value = promptText;
+            }
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+            inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+        } else if (inputEl.isContentEditable) {
+            try {
+                document.execCommand('selectAll', false, null);
+                document.execCommand('delete', false, null);
+                document.execCommand('insertText', false, promptText);
+            } catch (e) {
+                // Fallback
+                inputEl.innerHTML = '';
+                const p = document.createElement('p');
+                p.textContent = promptText;
+                inputEl.appendChild(p);
+            }
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+            inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        
+        await delay(300);
+        console.log('✅ Prompt injected into ChatGPT');
+        return;
         
     } catch (error) {
         console.error('Error injecting prompt:', error);
@@ -1317,35 +1328,49 @@ async function injectPromptToClaude(promptText) {
             'textarea[aria-label="Write your prompt to Claude"]',
             'textarea[aria-label*="Write your prompt"]',
             'textarea[placeholder*="help you"]',
+            '[contenteditable="true"][role="textbox"]',
             'textarea'
         ];
 
-        let textarea = null;
+        let inputEl = null;
         for (const selector of selectors) {
             const el = document.querySelector(selector);
-            if (el && el.offsetParent !== null && !el.disabled) {
-                textarea = el;
+            if (el && el.offsetParent !== null && !el.disabled && el.getAttribute('readonly') !== 'true') {
+                inputEl = el;
                 break;
             }
         }
 
-        if (!textarea) {
-            throw new Error('Could not find Claude input textarea to inject prompt');
+        if (!inputEl) {
+            throw new Error('Could not find Claude input to inject prompt');
         }
 
-        textarea.focus();
+        inputEl.focus();
+        await delay(200);
 
-        // Use the native setter to work with React-controlled inputs
-        const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
-        if (valueSetter) {
-            valueSetter.call(textarea, promptText);
-        } else {
-            textarea.value = promptText;
+        if (inputEl.tagName === 'TEXTAREA') {
+            // Use the native setter to work with React-controlled inputs
+            const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+            if (valueSetter) {
+                valueSetter.call(inputEl, promptText);
+            } else {
+                inputEl.value = promptText;
+            }
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+            inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+        } else if (inputEl.isContentEditable) {
+            try {
+                document.execCommand('selectAll', false, null);
+                document.execCommand('delete', false, null);
+                document.execCommand('insertText', false, promptText);
+            } catch (e) {
+                inputEl.textContent = promptText;
+            }
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+            inputEl.dispatchEvent(new Event('change', { bubbles: true }));
         }
 
-        textarea.dispatchEvent(new Event('input', { bubbles: true }));
-        textarea.dispatchEvent(new Event('change', { bubbles: true }));
-
+        await delay(300);
         console.log('✅ Prompt injected into Claude');
     } catch (error) {
         console.error('Error injecting prompt into Claude:', error);
