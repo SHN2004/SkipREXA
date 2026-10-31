@@ -1,4 +1,4 @@
-// Content script for ChatGPT/Claude file upload
+// Content script for ChatGPT/Claude/Perplexity file upload
 console.log('Question Paper Helper content script loaded');
 
 

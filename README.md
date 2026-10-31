@@ -2,15 +2,15 @@
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/SHN2004/SkipREXA)
 
-**SkipREXA** is a Chrome Extension designed to streamline the process of uploading exam question papers to ChatGPT and Claude for study and analysis. It acts as a bridge between a GitHub-hosted JSON index of university question papers and the LLM's file upload interface.
+**SkipREXA** is a Chrome Extension designed to streamline the process of uploading exam question papers to ChatGPT, Claude, and Perplexity for study and analysis. It acts as a bridge between a GitHub-hosted JSON index of university question papers and the LLM's file upload interface.
 
 ## Core Features
 
 *   **Course Search:** Instantly search for courses by name or code.
 *   **Paper Selection:** Fetch question papers for selected courses and choose which ones to upload or download.
-*   **Automated Upload:** Downloads selected PDFs and automatically uploads them to the active ChatGPT or Claude conversation.
+*   **Automated Upload:** Downloads selected PDFs and automatically uploads them to the active ChatGPT, Claude, or Perplexity conversation.
 *   **Contextual Prompts:** Injects tailored prompts (e.g., "Prepare me for Internal 1") to guide the AI's analysis on either platform.
-*   **Multi-LLM Support:** Works with both [ChatGPT](https://chatgpt.com) and [Claude](https://claude.ai).
+*   **Multi-LLM Support:** Works with [ChatGPT](https://chatgpt.com), [Claude](https://claude.ai), and [Perplexity](https://www.perplexity.ai).
 *   **Local Download:** Option to save papers directly to your device.
 
 ## Setup
@@ -69,7 +69,7 @@ For scraper setup and usage, see **[`scraper/README.md`](./scraper/README.md)**.
 
 ## Usage
 
-1.  Open either [ChatGPT](https://chatgpt.com) or [Claude](https://claude.ai).
+1.  Open [ChatGPT](https://chatgpt.com), [Claude](https://claude.ai), or [Perplexity](https://www.perplexity.ai).
 2.  Click the SkipREXA extension icon.
 3.  Search for a course and select the papers you need.
-4.  Click **Upload** to send them to the active ChatGPT or Claude conversation with a context prompt.
+4.  Click **Upload** to send them to the active ChatGPT, Claude, or Perplexity conversation with a context prompt.
