@@ -1507,8 +1507,12 @@ async function injectPromptToPerplexity(promptText) {
             'textarea[placeholder*="Ask anything"]',
             'textarea[placeholder*="Ask follow-up"]',
             'textarea[aria-label*="Ask"]',
+            'textarea[aria-label*="Search"]',
             'div[contenteditable="true"][role="textbox"]',
             '[data-testid*="searchbox"] textarea',
+            '[data-testid*="input"] textarea',
+            '[data-testid*="composer"] textarea',
+            '#ask-input',
             'form textarea',
             'textarea'
         ];
@@ -1523,13 +1527,44 @@ async function injectPromptToPerplexity(promptText) {
         }
 
         if (!inputEl) {
+            // Try any visible textarea/contenteditable
+            const textareas = document.querySelectorAll('textarea');
+            for (const el of textareas) {
+                if (el.offsetParent !== null && !el.disabled) {
+                    inputEl = el;
+                    break;
+                }
+            }
+        }
+
+        if (!inputEl) {
+            const contentEditables = document.querySelectorAll('div[contenteditable="true"]');
+            for (const el of contentEditables) {
+                if (el.offsetParent !== null) {
+                    inputEl = el;
+                    break;
+                }
+            }
+        }
+
+        if (!inputEl) {
             throw new Error('Could not find Perplexity input field to inject prompt');
         }
 
         inputEl.focus();
+        await delay(300);
 
         if (inputEl.tagName === 'TEXTAREA') {
             const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+            // Clear first
+            if (valueSetter) {
+                valueSetter.call(inputEl, '');
+            } else {
+                inputEl.value = '';
+            }
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+            await delay(100);
+            
             if (valueSetter) {
                 valueSetter.call(inputEl, promptText);
             } else {
@@ -1537,14 +1572,26 @@ async function injectPromptToPerplexity(promptText) {
             }
             inputEl.dispatchEvent(new Event('input', { bubbles: true }));
             inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+            // Also try keydown/keyup for React
+            inputEl.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true }));
+            inputEl.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
         } else if (inputEl.isContentEditable) {
-            inputEl.textContent = promptText;
+            try {
+                document.execCommand('selectAll', false, null);
+                document.execCommand('delete', false, null);
+                document.execCommand('insertText', false, promptText);
+            } catch (e) {
+                inputEl.textContent = '';
+                inputEl.textContent = promptText;
+            }
             inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+            inputEl.dispatchEvent(new Event('change', { bubbles: true }));
         } else {
             inputEl.value = promptText;
             inputEl.dispatchEvent(new Event('input', { bubbles: true }));
         }
 
+        await delay(500);
         console.log('✅ Prompt injected into Perplexity');
     } catch (error) {
         console.error('Error injecting prompt into Perplexity:', error);
