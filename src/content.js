@@ -1,4 +1,4 @@
-// Content script for ChatGPT/Claude file upload
+// Content script for ChatGPT/Claude/Perplexity file upload
 console.log('Question Paper Helper content script loaded');
 
 
@@ -60,6 +60,7 @@ function getActiveLLMPlatform() {
     const hostname = window.location.hostname || '';
     if (hostname === 'claude.ai') return 'claude';
     if (hostname === 'chatgpt.com' || hostname === 'chat.openai.com') return 'chatgpt';
+    if (hostname === 'perplexity.ai' || hostname === 'www.perplexity.ai') return 'perplexity';
     return 'unknown';
 }
 
@@ -75,6 +76,10 @@ async function uploadPDFsToActiveLLM(pdfs) {
         return uploadPDFsToChatGPT(pdfs);
     }
 
+    if (platform === 'perplexity') {
+        return uploadPDFsToPerplexity(pdfs);
+    }
+
     throw new Error(`Unsupported platform: ${window.location.hostname}`);
 }
 
@@ -88,6 +93,10 @@ async function injectPromptToActiveLLM(promptText) {
 
     if (platform === 'chatgpt') {
         return injectPromptToChatGPT(promptText);
+    }
+
+    if (platform === 'perplexity') {
+        return injectPromptToPerplexity(promptText);
     }
 
     throw new Error(`Unsupported platform: ${window.location.hostname}`);
@@ -1236,61 +1245,72 @@ async function injectPromptToChatGPT(promptText) {
     try {
         console.log('🔤 Attempting to inject prompt:', promptText);
         
-        // First try to find the ProseMirror editor
-        const proseMirrorDiv = document.querySelector('#prompt-textarea[contenteditable="true"]');
-        if (proseMirrorDiv) {
-            console.log('Found ProseMirror div, injecting prompt...');
-            
-            // Clear existing content and set new content
-            proseMirrorDiv.innerHTML = `<p>${promptText}</p>`;
-            
-            // Trigger input events to notify ProseMirror of the change
-            const inputEvent = new Event('input', { bubbles: true });
-            proseMirrorDiv.dispatchEvent(inputEvent);
-            
-            const focusEvent = new Event('focus', { bubbles: true });
-            proseMirrorDiv.dispatchEvent(focusEvent);
-            
-            console.log('✅ Prompt injected via ProseMirror');
-            return;
-        }
+        // Try multiple selectors for ChatGPT composer
+        const selectors = [
+            '#prompt-textarea[contenteditable="true"]',
+            '[contenteditable="true"][data-id="root"]',
+            '.ProseMirror[contenteditable="true"]',
+            'div[contenteditable="true"][role="textbox"]',
+            'textarea[name="prompt-textarea"]',
+            'textarea[placeholder*="Message"]',
+            'textarea[placeholder*="message"]'
+        ];
         
-        // Fallback: try to find the textarea
-        const textarea = document.querySelector('textarea[name="prompt-textarea"]');
-        if (textarea) {
-            console.log('Found textarea, injecting prompt...');
-            
-            textarea.value = promptText;
-            textarea.style.display = 'block'; // Make visible if hidden
-            
-            // Trigger events
-            const inputEvent = new Event('input', { bubbles: true });
-            textarea.dispatchEvent(inputEvent);
-            
-            const changeEvent = new Event('change', { bubbles: true });
-            textarea.dispatchEvent(changeEvent);
-            
-            console.log('✅ Prompt injected via textarea');
-            return;
-        }
-        
-        // Last resort: try any contenteditable div that might be the input
-        const contentEditableInputs = document.querySelectorAll('div[contenteditable="true"]');
-        for (const input of contentEditableInputs) {
-            if (input.closest('[class*="input"]') || input.closest('[class*="prompt"]')) {
-                console.log('Found alternative contenteditable input, injecting prompt...');
-                
-                input.innerHTML = `<p>${promptText}</p>`;
-                
-                const inputEvent = new Event('input', { bubbles: true });
-                input.dispatchEvent(inputEvent);
-                
-                console.log('✅ Prompt injected via alternative method');
-                return;
+        let inputEl = null;
+        for (const selector of selectors) {
+            const el = document.querySelector(selector);
+            if (el && el.offsetParent !== null && el.getAttribute('readonly') !== 'true') {
+                inputEl = el;
+                break;
             }
         }
         
-        throw new Error('Could not find ChatGPT input field to inject prompt');
+        if (!inputEl) {
+            // Last resort: any visible contenteditable
+            const contentEditables = document.querySelectorAll('div[contenteditable="true"]');
+            for (const el of contentEditables) {
+                if (el.offsetParent !== null) {
+                    inputEl = el;
+                    break;
+                }
+            }
+        }
+        
+        if (!inputEl) {
+            throw new Error('Could not find ChatGPT input field to inject prompt');
+        }
+        
+        inputEl.focus();
+        await delay(200);
+        
+        if (inputEl.tagName === 'TEXTAREA') {
+            const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+            if (valueSetter) {
+                valueSetter.call(inputEl, promptText);
+            } else {
+                inputEl.value = promptText;
+            }
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+            inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+        } else if (inputEl.isContentEditable) {
+            try {
+                document.execCommand('selectAll', false, null);
+                document.execCommand('delete', false, null);
+                document.execCommand('insertText', false, promptText);
+            } catch (e) {
+                // Fallback
+                inputEl.innerHTML = '';
+                const p = document.createElement('p');
+                p.textContent = promptText;
+                inputEl.appendChild(p);
+            }
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+            inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        
+        await delay(300);
+        console.log('✅ Prompt injected into ChatGPT');
+        return;
         
     } catch (error) {
         console.error('Error injecting prompt:', error);
@@ -1308,38 +1328,273 @@ async function injectPromptToClaude(promptText) {
             'textarea[aria-label="Write your prompt to Claude"]',
             'textarea[aria-label*="Write your prompt"]',
             'textarea[placeholder*="help you"]',
+            '[contenteditable="true"][role="textbox"]',
             'textarea'
         ];
 
-        let textarea = null;
+        let inputEl = null;
         for (const selector of selectors) {
             const el = document.querySelector(selector);
-            if (el && el.offsetParent !== null && !el.disabled) {
-                textarea = el;
+            if (el && el.offsetParent !== null && !el.disabled && el.getAttribute('readonly') !== 'true') {
+                inputEl = el;
                 break;
             }
         }
 
-        if (!textarea) {
-            throw new Error('Could not find Claude input textarea to inject prompt');
+        if (!inputEl) {
+            throw new Error('Could not find Claude input to inject prompt');
         }
 
-        textarea.focus();
+        inputEl.focus();
+        await delay(200);
 
-        // Use the native setter to work with React-controlled inputs
-        const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
-        if (valueSetter) {
-            valueSetter.call(textarea, promptText);
-        } else {
-            textarea.value = promptText;
+        if (inputEl.tagName === 'TEXTAREA') {
+            // Use the native setter to work with React-controlled inputs
+            const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+            if (valueSetter) {
+                valueSetter.call(inputEl, promptText);
+            } else {
+                inputEl.value = promptText;
+            }
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+            inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+        } else if (inputEl.isContentEditable) {
+            try {
+                document.execCommand('selectAll', false, null);
+                document.execCommand('delete', false, null);
+                document.execCommand('insertText', false, promptText);
+            } catch (e) {
+                inputEl.textContent = promptText;
+            }
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+            inputEl.dispatchEvent(new Event('change', { bubbles: true }));
         }
 
-        textarea.dispatchEvent(new Event('input', { bubbles: true }));
-        textarea.dispatchEvent(new Event('change', { bubbles: true }));
-
+        await delay(300);
         console.log('✅ Prompt injected into Claude');
     } catch (error) {
         console.error('Error injecting prompt into Claude:', error);
+        throw error;
+    }
+}
+
+// Find Perplexity drop zone
+function findPerplexityDropZone() {
+    const selectors = [
+        'textarea[placeholder*="Ask anything"]',
+        'textarea[placeholder*="Ask follow-up"]',
+        'textarea[aria-label*="Ask"]',
+        'div[contenteditable="true"][role="textbox"]',
+        '[data-testid*="searchbox"]',
+        'form textarea',
+        'textarea'
+    ];
+
+    for (const selector of selectors) {
+        const el = document.querySelector(selector);
+        if (el && el.offsetParent !== null && !el.disabled) return el;
+    }
+    return null;
+}
+
+// Find Perplexity file input
+function findPerplexityFileInput() {
+    const selectors = [
+        'input[type="file"]',
+        'input[type="file"][accept*="pdf"]',
+        'input[type="file"][accept*="*"]'
+    ];
+
+    for (const selector of selectors) {
+        const elements = document.querySelectorAll(selector);
+        for (const element of elements) {
+            if (element && !element.disabled) {
+                return element;
+            }
+        }
+    }
+    return null;
+}
+
+// Upload PDFs to Perplexity
+async function uploadPDFsToPerplexity(pdfs) {
+    console.log('Starting upload of', pdfs.length, 'PDFs to Perplexity');
+
+    let successfulUploads = 0;
+    const failures = [];
+
+    for (let i = 0; i < pdfs.length; i++) {
+        const pdf = pdfs[i];
+        console.log(`\n📄 Uploading PDF ${i + 1}/${pdfs.length}: ${pdf.name}`);
+
+        try {
+            const file = base64ToFile(pdf.data, pdf.name, 'application/pdf');
+            await uploadSingleFileToPerplexity(file);
+            successfulUploads++;
+            console.log(`✅ Upload ${i + 1} completed: ${pdf.name}`);
+
+            if (i < pdfs.length - 1) {
+                await delay(1000);
+            }
+        } catch (error) {
+            console.error(`Error uploading ${pdf.name} to Perplexity:`, error);
+            failures.push({ name: pdf.name, error: error?.message || String(error) });
+        }
+    }
+
+    console.log(`\n📊 Perplexity Upload Summary:`);
+    console.log(`- Attempted: ${pdfs.length}`);
+    console.log(`- Successful: ${successfulUploads}`);
+
+    if (successfulUploads === 0) {
+        const firstFailure = failures[0];
+        const details = firstFailure ? ` (${firstFailure.name}: ${firstFailure.error})` : '';
+        throw new Error(`No files were uploaded successfully to Perplexity.${details}`);
+    }
+
+    if (failures.length > 0) {
+        const summaryNames = failures.slice(0, 3).map((f) => f.name).join(', ');
+        const more = failures.length > 3 ? ` (+${failures.length - 3} more)` : '';
+        throw new Error(`Uploaded ${successfulUploads}/${pdfs.length} files to Perplexity. Failed: ${summaryNames}${more}`);
+    }
+
+    return { uploadedCount: successfulUploads };
+}
+
+async function uploadSingleFileToPerplexity(file) {
+    const fileName = file?.name || 'file';
+
+    // Try drag and drop first
+    const dropZone = findPerplexityDropZone();
+    if (dropZone) {
+        try {
+            console.log(`📤 [Perplexity] Drag-dropping ${fileName}...`);
+            await simulateDragAndDrop(dropZone, file);
+            await delay(2000);
+            return { method: 'drag_drop' };
+        } catch (error) {
+            console.log(`⚠️ [Perplexity] Drag-drop failed for ${fileName}, falling back to file input...`);
+        }
+    }
+
+    // Fallback to file input
+    const fileInput = findPerplexityFileInput() || findFileInput();
+    if (!fileInput) {
+        throw new Error('No Perplexity file input found. Are you on an active chat and logged in?');
+    }
+
+    console.log(`📤 [Perplexity] Using file input for ${fileName}...`);
+    await simulateFileUpload(fileInput, file);
+    await delay(2000);
+
+    if (Object.prototype.hasOwnProperty.call(fileInput, 'files')) {
+        try {
+            delete fileInput.files;
+        } catch (error) {
+            // Best-effort cleanup
+        }
+    }
+
+    return { method: 'file_input' };
+}
+
+// Inject custom prompt into Perplexity's input field
+async function injectPromptToPerplexity(promptText) {
+    try {
+        console.log('🔤 Attempting to inject prompt into Perplexity:', promptText);
+
+        const selectors = [
+            'textarea[placeholder*="Ask anything"]',
+            'textarea[placeholder*="Ask follow-up"]',
+            'textarea[aria-label*="Ask"]',
+            'textarea[aria-label*="Search"]',
+            'div[contenteditable="true"][role="textbox"]',
+            '[data-testid*="searchbox"] textarea',
+            '[data-testid*="input"] textarea',
+            '[data-testid*="composer"] textarea',
+            '#ask-input',
+            'form textarea',
+            'textarea'
+        ];
+
+        let inputEl = null;
+        for (const selector of selectors) {
+            const el = document.querySelector(selector);
+            if (el && el.offsetParent !== null && !el.disabled && el.getAttribute('readonly') !== 'true') {
+                inputEl = el;
+                break;
+            }
+        }
+
+        if (!inputEl) {
+            // Try any visible textarea/contenteditable
+            const textareas = document.querySelectorAll('textarea');
+            for (const el of textareas) {
+                if (el.offsetParent !== null && !el.disabled) {
+                    inputEl = el;
+                    break;
+                }
+            }
+        }
+
+        if (!inputEl) {
+            const contentEditables = document.querySelectorAll('div[contenteditable="true"]');
+            for (const el of contentEditables) {
+                if (el.offsetParent !== null) {
+                    inputEl = el;
+                    break;
+                }
+            }
+        }
+
+        if (!inputEl) {
+            throw new Error('Could not find Perplexity input field to inject prompt');
+        }
+
+        inputEl.focus();
+        await delay(300);
+
+        if (inputEl.tagName === 'TEXTAREA') {
+            const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+            // Clear first
+            if (valueSetter) {
+                valueSetter.call(inputEl, '');
+            } else {
+                inputEl.value = '';
+            }
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+            await delay(100);
+            
+            if (valueSetter) {
+                valueSetter.call(inputEl, promptText);
+            } else {
+                inputEl.value = promptText;
+            }
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+            inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+            // Also try keydown/keyup for React
+            inputEl.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true }));
+            inputEl.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
+        } else if (inputEl.isContentEditable) {
+            try {
+                document.execCommand('selectAll', false, null);
+                document.execCommand('delete', false, null);
+                document.execCommand('insertText', false, promptText);
+            } catch (e) {
+                inputEl.textContent = '';
+                inputEl.textContent = promptText;
+            }
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+            inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+        } else {
+            inputEl.value = promptText;
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        await delay(500);
+        console.log('✅ Prompt injected into Perplexity');
+    } catch (error) {
+        console.error('Error injecting prompt into Perplexity:', error);
         throw error;
     }
 }

@@ -12,6 +12,7 @@ import { processUpload, processDirectDownload } from '@/hooks/useUpload';
 import { getCourseId, normalizeCourseName } from '@/data-client';
 import openaiIcon from '@/assets/openai.svg';
 import claudeIcon from '@/assets/claude-color.svg';
+import perplexityIcon from '@/assets/perplexity.svg';
 
 const getSelectedCourseId = (course: Pick<Course, 'id' | 'name' | 'code'>) =>
     course.id || getCourseId(course.name, course.code);
@@ -86,6 +87,8 @@ export default function App() {
                 const url = tabs[0]?.url || "";
                 if (url.includes("claude.ai")) {
                     setActiveLLM("Claude");
+                } else if (url.includes("perplexity.ai")) {
+                    setActiveLLM("Perplexity");
                 }
             });
         }
@@ -595,7 +598,8 @@ export default function App() {
                                 { id: 'general', label: 'General Analysis (No Prompt Injection)' },
                                 { id: 'internal_1', label: 'Internal 1 Prep (Modules 1-2)' },
                                 { id: 'internal_2', label: 'Internal 2 Prep (Modules 3-4)' },
-                                { id: 'model', label: 'Model Exam Prep (All Modules)' }
+                                { id: 'model', label: 'Model Exam Prep (All Modules)' },
+                                { id: 'pyq', label: "Create PYQ's (Attach Syllabus for Module-wise PYQ)" }
                             ].map((intent) => (
                                 <label key={intent.id} className={`flex items-center p-4 bg-card border-2 cursor-pointer transition-all ${studyIntent === intent.id ? 'border-primary shadow-sm -translate-y-1 rounded-[16px]' : 'border-foreground/20 hover:shadow-sm hover:-translate-y-0.5 rounded-[16px]'}`}>
                                     <input type="radio" name="intent" value={intent.id} checked={studyIntent === intent.id} onChange={(e) => setStudyIntent(e.target.value)} className="appearance-none w-5 h-5 border-2 border-foreground rounded-none mr-4 checked:border-primary checked:bg-primary transition-all flex-shrink-0 relative checked:after:content-[''] checked:after:absolute checked:after:top-1/2 checked:after:left-1/2 checked:after:-translate-x-1/2 checked:after:-translate-y-1/2 checked:after:w-2 checked:after:h-2 checked:after:bg-white" />
@@ -658,6 +662,8 @@ export default function App() {
                                     {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : (
                                         activeLLM === 'Claude' ? (
                                             <img src={claudeIcon} alt="Claude" className="w-4 h-4 mr-1 opacity-90 group-hover:scale-110 transition-transform duration-300" />
+                                        ) : activeLLM === 'Perplexity' ? (
+                                            <img src={perplexityIcon} alt="Perplexity" className="w-4 h-4 mr-1 opacity-90 group-hover:scale-110 transition-transform duration-300" />
                                         ) : (
                                             <img src={openaiIcon} alt="ChatGPT" className="w-4 h-4 mr-1 opacity-90 group-hover:scale-110 transition-transform duration-300" />
                                         )
