@@ -60,6 +60,7 @@ function getActiveLLMPlatform() {
     const hostname = window.location.hostname || '';
     if (hostname === 'claude.ai') return 'claude';
     if (hostname === 'chatgpt.com' || hostname === 'chat.openai.com') return 'chatgpt';
+    if (hostname === 'perplexity.ai' || hostname === 'www.perplexity.ai') return 'perplexity';
     return 'unknown';
 }
 
@@ -75,6 +76,10 @@ async function uploadPDFsToActiveLLM(pdfs) {
         return uploadPDFsToChatGPT(pdfs);
     }
 
+    if (platform === 'perplexity') {
+        return uploadPDFsToPerplexity(pdfs);
+    }
+
     throw new Error(`Unsupported platform: ${window.location.hostname}`);
 }
 
@@ -88,6 +93,10 @@ async function injectPromptToActiveLLM(promptText) {
 
     if (platform === 'chatgpt') {
         return injectPromptToChatGPT(promptText);
+    }
+
+    if (platform === 'perplexity') {
+        return injectPromptToPerplexity(promptText);
     }
 
     throw new Error(`Unsupported platform: ${window.location.hostname}`);
@@ -1340,6 +1349,180 @@ async function injectPromptToClaude(promptText) {
         console.log('✅ Prompt injected into Claude');
     } catch (error) {
         console.error('Error injecting prompt into Claude:', error);
+        throw error;
+    }
+}
+
+// Find Perplexity drop zone
+function findPerplexityDropZone() {
+    const selectors = [
+        'textarea[placeholder*="Ask anything"]',
+        'textarea[placeholder*="Ask follow-up"]',
+        'textarea[aria-label*="Ask"]',
+        'div[contenteditable="true"][role="textbox"]',
+        '[data-testid*="searchbox"]',
+        'form textarea',
+        'textarea'
+    ];
+
+    for (const selector of selectors) {
+        const el = document.querySelector(selector);
+        if (el && el.offsetParent !== null && !el.disabled) return el;
+    }
+    return null;
+}
+
+// Find Perplexity file input
+function findPerplexityFileInput() {
+    const selectors = [
+        'input[type="file"]',
+        'input[type="file"][accept*="pdf"]',
+        'input[type="file"][accept*="*"]'
+    ];
+
+    for (const selector of selectors) {
+        const elements = document.querySelectorAll(selector);
+        for (const element of elements) {
+            if (element && !element.disabled) {
+                return element;
+            }
+        }
+    }
+    return null;
+}
+
+// Upload PDFs to Perplexity
+async function uploadPDFsToPerplexity(pdfs) {
+    console.log('Starting upload of', pdfs.length, 'PDFs to Perplexity');
+
+    let successfulUploads = 0;
+    const failures = [];
+
+    for (let i = 0; i < pdfs.length; i++) {
+        const pdf = pdfs[i];
+        console.log(`\n📄 Uploading PDF ${i + 1}/${pdfs.length}: ${pdf.name}`);
+
+        try {
+            const file = base64ToFile(pdf.data, pdf.name, 'application/pdf');
+            await uploadSingleFileToPerplexity(file);
+            successfulUploads++;
+            console.log(`✅ Upload ${i + 1} completed: ${pdf.name}`);
+
+            if (i < pdfs.length - 1) {
+                await delay(1000);
+            }
+        } catch (error) {
+            console.error(`Error uploading ${pdf.name} to Perplexity:`, error);
+            failures.push({ name: pdf.name, error: error?.message || String(error) });
+        }
+    }
+
+    console.log(`\n📊 Perplexity Upload Summary:`);
+    console.log(`- Attempted: ${pdfs.length}`);
+    console.log(`- Successful: ${successfulUploads}`);
+
+    if (successfulUploads === 0) {
+        const firstFailure = failures[0];
+        const details = firstFailure ? ` (${firstFailure.name}: ${firstFailure.error})` : '';
+        throw new Error(`No files were uploaded successfully to Perplexity.${details}`);
+    }
+
+    if (failures.length > 0) {
+        const summaryNames = failures.slice(0, 3).map((f) => f.name).join(', ');
+        const more = failures.length > 3 ? ` (+${failures.length - 3} more)` : '';
+        throw new Error(`Uploaded ${successfulUploads}/${pdfs.length} files to Perplexity. Failed: ${summaryNames}${more}`);
+    }
+
+    return { uploadedCount: successfulUploads };
+}
+
+async function uploadSingleFileToPerplexity(file) {
+    const fileName = file?.name || 'file';
+
+    // Try drag and drop first
+    const dropZone = findPerplexityDropZone();
+    if (dropZone) {
+        try {
+            console.log(`📤 [Perplexity] Drag-dropping ${fileName}...`);
+            await simulateDragAndDrop(dropZone, file);
+            await delay(2000);
+            return { method: 'drag_drop' };
+        } catch (error) {
+            console.log(`⚠️ [Perplexity] Drag-drop failed for ${fileName}, falling back to file input...`);
+        }
+    }
+
+    // Fallback to file input
+    const fileInput = findPerplexityFileInput() || findFileInput();
+    if (!fileInput) {
+        throw new Error('No Perplexity file input found. Are you on an active chat and logged in?');
+    }
+
+    console.log(`📤 [Perplexity] Using file input for ${fileName}...`);
+    await simulateFileUpload(fileInput, file);
+    await delay(2000);
+
+    if (Object.prototype.hasOwnProperty.call(fileInput, 'files')) {
+        try {
+            delete fileInput.files;
+        } catch (error) {
+            // Best-effort cleanup
+        }
+    }
+
+    return { method: 'file_input' };
+}
+
+// Inject custom prompt into Perplexity's input field
+async function injectPromptToPerplexity(promptText) {
+    try {
+        console.log('🔤 Attempting to inject prompt into Perplexity:', promptText);
+
+        const selectors = [
+            'textarea[placeholder*="Ask anything"]',
+            'textarea[placeholder*="Ask follow-up"]',
+            'textarea[aria-label*="Ask"]',
+            'div[contenteditable="true"][role="textbox"]',
+            '[data-testid*="searchbox"] textarea',
+            'form textarea',
+            'textarea'
+        ];
+
+        let inputEl = null;
+        for (const selector of selectors) {
+            const el = document.querySelector(selector);
+            if (el && el.offsetParent !== null && !el.disabled && el.getAttribute('readonly') !== 'true') {
+                inputEl = el;
+                break;
+            }
+        }
+
+        if (!inputEl) {
+            throw new Error('Could not find Perplexity input field to inject prompt');
+        }
+
+        inputEl.focus();
+
+        if (inputEl.tagName === 'TEXTAREA') {
+            const valueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+            if (valueSetter) {
+                valueSetter.call(inputEl, promptText);
+            } else {
+                inputEl.value = promptText;
+            }
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+            inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+        } else if (inputEl.isContentEditable) {
+            inputEl.textContent = promptText;
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        } else {
+            inputEl.value = promptText;
+            inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        console.log('✅ Prompt injected into Perplexity');
+    } catch (error) {
+        console.error('Error injecting prompt into Perplexity:', error);
         throw error;
     }
 }

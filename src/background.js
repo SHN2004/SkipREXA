@@ -99,7 +99,7 @@ chrome.runtime.onInstalled.addListener((details) => {
         id: "upload-papers",
         title: "Upload Question Papers",
         contexts: ["page"],
-        documentUrlPatterns: ["*://chatgpt.com/*", "*://chat.openai.com/*", "*://claude.ai/*"]
+        documentUrlPatterns: ["*://chatgpt.com/*", "*://chat.openai.com/*", "*://claude.ai/*", "*://www.perplexity.ai/*", "*://perplexity.ai/*"]
     });
 });
 
@@ -108,7 +108,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === 'complete' && tab.url) {
         const isSupportedPlatform = tab.url.includes('chatgpt.com') || 
                                     tab.url.includes('chat.openai.com') ||
-                                    tab.url.includes('claude.ai');
+                                    tab.url.includes('claude.ai') ||
+                                    tab.url.includes('perplexity.ai');
         
         if (isSupportedPlatform) {
             // Inject content script if not already injected

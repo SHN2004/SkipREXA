@@ -12,6 +12,7 @@ import { processUpload, processDirectDownload } from '@/hooks/useUpload';
 import { getCourseId, normalizeCourseName } from '@/data-client';
 import openaiIcon from '@/assets/openai.svg';
 import claudeIcon from '@/assets/claude-color.svg';
+import perplexityIcon from '@/assets/perplexity.svg';
 
 const getSelectedCourseId = (course: Pick<Course, 'id' | 'name' | 'code'>) =>
     course.id || getCourseId(course.name, course.code);
@@ -86,6 +87,8 @@ export default function App() {
                 const url = tabs[0]?.url || "";
                 if (url.includes("claude.ai")) {
                     setActiveLLM("Claude");
+                } else if (url.includes("perplexity.ai")) {
+                    setActiveLLM("Perplexity");
                 }
             });
         }
@@ -658,6 +661,8 @@ export default function App() {
                                     {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : (
                                         activeLLM === 'Claude' ? (
                                             <img src={claudeIcon} alt="Claude" className="w-4 h-4 mr-1 opacity-90 group-hover:scale-110 transition-transform duration-300" />
+                                        ) : activeLLM === 'Perplexity' ? (
+                                            <img src={perplexityIcon} alt="Perplexity" className="w-4 h-4 mr-1 opacity-90 group-hover:scale-110 transition-transform duration-300" />
                                         ) : (
                                             <img src={openaiIcon} alt="ChatGPT" className="w-4 h-4 mr-1 opacity-90 group-hover:scale-110 transition-transform duration-300" />
                                         )

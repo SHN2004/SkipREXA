@@ -632,8 +632,8 @@ export async function processUpload(selectedPapers: Paper[], selectedCourses: Co
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab || !tab.url) throw new Error("Could not access current tab.");
 
-  if (!tab.url.includes("chatgpt.com") && !tab.url.includes("chat.openai.com") && !tab.url.includes("claude.ai")) {
-    throw new Error("Please open ChatGPT or Claude first");
+  if (!tab.url.includes("chatgpt.com") && !tab.url.includes("chat.openai.com") && !tab.url.includes("claude.ai") && !tab.url.includes("perplexity.ai")) {
+    throw new Error("Please open ChatGPT, Claude, or Perplexity first");
   }
 
   // Wake up background script
@@ -701,6 +701,19 @@ export async function processUpload(selectedPapers: Paper[], selectedCourses: Co
         console.error("Claude upload failed for", pdf.name, e);
       }
     }
+  } else if (tab.url.includes("perplexity.ai") && tab.id) {
+    updateProgress("Uploading to Perplexity...");
+    try {
+      await chrome.tabs.sendMessage(tab.id, {
+        action: "uploadPDFs",
+        pdfs: pdfsToSend,
+      });
+    } catch (e: any) {
+      if (e.message && e.message.includes("Receiving end does not exist")) {
+        throw new Error("Could not connect. Please refresh the Perplexity page to load the extension.");
+      }
+      throw e;
+    }
   } else if (tab.id) {
     // ChatGPT flow
     await new Promise(r => setTimeout(r, 1000));
@@ -723,6 +736,11 @@ export async function processUpload(selectedPapers: Paper[], selectedCourses: Co
     updateProgress("Injecting study prompt...");
     if (tab.url.includes("claude.ai")) {
       await injectPromptToClaudeMainWorld(tab.id, customPrompt).catch(e => console.log("Claude Prompt inject error.", e));
+    } else if (tab.url.includes("perplexity.ai")) {
+      await chrome.tabs.sendMessage(tab.id, {
+        action: "injectPrompt",
+        prompt: customPrompt,
+      }).catch(e => console.log("Prompt inject error. Assuming success.", e));
     } else {
       await chrome.tabs.sendMessage(tab.id, {
         action: "injectPrompt",
