@@ -23,7 +23,7 @@
 ### Build the extension
 
 ```bash
-git clone https://github.com/SHN2004/SkipREXA.git
+git clone -b perp-test https://github.com/parryandPatch/SkipRexa_Perplexity
 cd SkipREXA
 npm install
 npm run build
