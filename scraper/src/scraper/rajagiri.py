@@ -314,7 +314,12 @@ class RajagiriClient:
 
     def login(self) -> LoginAttempt:
         # Try browser-based login with captcha solving
-        session_path = "/tmp/opencode/rajagiri_session.json"
+        session_dir = "/tmp/opencode"
+        session_path = f"{session_dir}/rajagiri_session.json"
+
+        # Ensure session directory exists
+        import os
+        os.makedirs(session_dir, exist_ok=True)
 
         # Close any existing browser session
         try:
