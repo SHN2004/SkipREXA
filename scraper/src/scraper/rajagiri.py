@@ -3,6 +3,8 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import subprocess
+import time
 from pathlib import Path
 from typing import Iterable
 from urllib.parse import urljoin, urlparse
@@ -281,6 +283,17 @@ def parse_qp_downloads_html(html: str, page_url: str) -> ParsedPage:
     )
 
 
+def run_agent_browser(command: str, timeout: int = 30) -> str:
+    """Run an agent-browser command and return the output."""
+    result = subprocess.run(
+        ["agent-browser"] + command.split(),
+        capture_output=True,
+        text=True,
+        timeout=timeout,
+    )
+    return result.stdout.strip()
+
+
 class RajagiriClient:
     def __init__(self, config: ScraperConfig) -> None:
         self.config = config
@@ -300,51 +313,155 @@ class RajagiriClient:
         self.close()
 
     def login(self) -> LoginAttempt:
-        response = self.client.get(self.config.login_url)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, "html.parser")
-        form = soup.find("form", id="loginForm")
-        if form is None:
-            raise AuthenticationError("Could not find the login form on the Rajagiri portal.")
+        # Try browser-based login with captcha solving
+        session_path = "/tmp/opencode/rajagiri_session.json"
 
-        payload = {}
-        for element in form.find_all("input"):
-            name = element.get("name")
-            if not name:
-                continue
-            payload[name] = element.get("value", "")
+        # Close any existing browser session
+        try:
+            run_agent_browser("close", timeout=10)
+        except Exception:
+            pass
 
-        payload["user_name"] = self.config.username
-        payload["password"] = self.config.password
+        # Open login page
+        run_agent_browser("open https://student.rajagiritech.ac.in/login")
+        time.sleep(2)
 
-        submit_url = urljoin(self.config.login_url, form.get("action") or self.config.login_url)
-        login_response = self.client.post(submit_url, data=payload)
-        redirect_location = login_response.headers.get("location")
-        if redirect_location:
-            redirect_location = urljoin(submit_url, redirect_location)
+        # Get captcha question
+        snapshot = run_agent_browser("snapshot")
+        captcha_match = re.search(r"(\d+\s*[x×*+-/÷]\s*\d+\s*=\s*\?)", snapshot)
+        if not captcha_match:
+            raise AuthenticationError("Could not find captcha question in snapshot")
 
-        final_url = redirect_location or str(login_response.url)
-        cookies = sorted(cookie.name for cookie in self.client.cookies.jar)
-        notes: list[str] = []
-        authenticated = True
+        captcha_question = captcha_match.group(1)
 
-        if redirect_location and redirect_location.rstrip("/") == self.config.login_url.rstrip("/"):
-            authenticated = False
-            notes.append("Portal redirected back to /login after credential submission.")
+        # Solve captcha in Python
+        match = re.search(r"(\d+)\s*([x×*+-/÷])\s*(\d+)", captcha_question)
+        if not match:
+            raise AuthenticationError(f"Could not parse captcha: {captcha_question}")
 
-        if login_response.status_code >= 400:
-            authenticated = False
-            notes.append(f"Unexpected login status code: {login_response.status_code}")
+        a = int(match.group(1))
+        op = match.group(2)
+        b = int(match.group(3))
 
-        return LoginAttempt(
-            login_url=self.config.login_url,
-            final_url=final_url,
-            redirect_location=redirect_location,
-            status_code=login_response.status_code,
-            authenticated=authenticated,
-            cookies=cookies,
-            notes=notes,
+        if op in ("x", "×", "*"):
+            captcha_answer = a * b
+        elif op == "+":
+            captcha_answer = a + b
+        elif op == "-":
+            captcha_answer = a - b
+        elif op in ("/", "÷"):
+            captcha_answer = a // b
+        else:
+            raise AuthenticationError(f"Unknown operator: {op}")
+
+        # Find form element refs
+        uid_ref = None
+        password_ref = None
+        captcha_ref = None
+
+        for line in snapshot.split("\n"):
+            if 'textbox "UID"' in line:
+                ref_match = re.search(r"ref=(\w+)", line)
+                if ref_match:
+                    uid_ref = "@" + ref_match.group(1)
+            elif 'textbox "Password"' in line:
+                ref_match = re.search(r"ref=(\w+)", line)
+                if ref_match:
+                    password_ref = "@" + ref_match.group(1)
+            elif 'spinbutton "Enter answer"' in line:
+                ref_match = re.search(r"ref=(\w+)", line)
+                if ref_match:
+                    captcha_ref = "@" + ref_match.group(1)
+
+        if not all([uid_ref, password_ref, captcha_ref]):
+            raise AuthenticationError(
+                f"Could not find all form elements. uid={uid_ref}, password={password_ref}, captcha={captcha_ref}"
+            )
+
+        # Fill form using @eN refs
+        run_agent_browser(f"fill {uid_ref} {self.config.username}")
+        run_agent_browser(f"fill {password_ref} {self.config.password}")
+        run_agent_browser(f"fill {captcha_ref} {captcha_answer}")
+
+        # Find login button ref
+        login_ref = None
+        for line in snapshot.split("\n"):
+            if 'button "Log In"' in line:
+                ref_match = re.search(r"ref=(\w+)", line)
+                if ref_match:
+                    login_ref = "@" + ref_match.group(1)
+                    break
+
+        # Submit form using JavaScript via shell
+        subprocess.run(
+            ["agent-browser", "eval", "document.forms[0].submit()"],
+            capture_output=True,
+            text=True,
+            timeout=30,
         )
+
+        # Wait for login
+        time.sleep(5)
+
+        # Check if we're on the home page
+        url = run_agent_browser("get url")
+
+        if "login" in url:
+            # Login failed, check for error
+            snapshot = run_agent_browser("snapshot")
+            if "CAPTCHA is invalid or expired" in snapshot:
+                # Retry once
+                run_agent_browser("open https://student.rajagiritech.ac.in/login")
+                time.sleep(2)
+                run_agent_browser(f'eval "{js}"')
+                time.sleep(5)
+                url = run_agent_browser("get url")
+
+        authenticated = "login" not in url
+
+        if authenticated:
+            # Save session state
+            run_agent_browser(f"state save {session_path}")
+
+            # Load cookies from session
+            with open(session_path, "r") as f:
+                session = json.load(f)
+
+            for cookie in session["cookies"]:
+                self.client.cookies.set(
+                    cookie["name"],
+                    cookie["value"],
+                    domain=cookie["domain"],
+                    path=cookie["path"],
+                )
+
+            cookies = sorted(cookie.name for cookie in self.client.cookies.jar)
+            return LoginAttempt(
+                login_url=self.config.login_url,
+                final_url=url,
+                redirect_location=None,
+                status_code=200,
+                authenticated=True,
+                cookies=cookies,
+                notes=["Browser-based login with captcha solving succeeded."],
+            )
+        else:
+            snapshot = run_agent_browser("snapshot")
+            notes = ["Browser-based login failed."]
+            if "credentials do not match" in snapshot:
+                notes.append("Invalid credentials.")
+            elif "CAPTCHA is invalid or expired" in snapshot:
+                notes.append("Captcha expired.")
+
+            return LoginAttempt(
+                login_url=self.config.login_url,
+                final_url=url,
+                redirect_location=None,
+                status_code=401,
+                authenticated=False,
+                cookies=[],
+                notes=notes,
+            )
 
     def fetch_qp_downloads(self) -> httpx.Response:
         response = self.client.get(self.config.qp_downloads_url, follow_redirects=True)
