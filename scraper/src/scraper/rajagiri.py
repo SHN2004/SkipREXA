@@ -283,10 +283,10 @@ def parse_qp_downloads_html(html: str, page_url: str) -> ParsedPage:
     )
 
 
-def run_agent_browser(command: str, timeout: int = 30) -> str:
+def run_agent_browser(*args: str, timeout: int = 30) -> str:
     """Run an agent-browser command and return the output."""
     result = subprocess.run(
-        ["agent-browser"] + command.split(),
+        ["agent-browser", *args],
         capture_output=True,
         text=True,
         timeout=timeout,
@@ -312,23 +312,10 @@ class RajagiriClient:
     def __exit__(self, *_args: object) -> None:
         self.close()
 
-    def login(self) -> LoginAttempt:
-        # Try browser-based login with captcha solving
-        session_dir = "/tmp/opencode"
-        session_path = f"{session_dir}/rajagiri_session.json"
-
-        # Ensure session directory exists
-        import os
-        os.makedirs(session_dir, exist_ok=True)
-
-        # Close any existing browser session
-        try:
-            run_agent_browser("close", timeout=10)
-        except Exception:
-            pass
-
+    def _attempt_login(self) -> str:
+        """Fill and submit the login form once; return the resulting URL."""
         # Open login page
-        run_agent_browser("open https://student.rajagiritech.ac.in/login")
+        run_agent_browser("open", self.config.login_url)
         time.sleep(2)
 
         # Get captcha question
@@ -384,49 +371,39 @@ class RajagiriClient:
             )
 
         # Fill form using @eN refs
-        run_agent_browser(f"fill {uid_ref} {self.config.username}")
-        run_agent_browser(f"fill {password_ref} {self.config.password}")
-        run_agent_browser(f"fill {captcha_ref} {captcha_answer}")
-
-        # Find login button ref
-        login_ref = None
-        for line in snapshot.split("\n"):
-            if 'button "Log In"' in line:
-                ref_match = re.search(r"ref=(\w+)", line)
-                if ref_match:
-                    login_ref = "@" + ref_match.group(1)
-                    break
-
-        # Submit form using JavaScript via shell
-        subprocess.run(
-            ["agent-browser", "eval", "document.forms[0].submit()"],
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
+        run_agent_browser("fill", uid_ref, self.config.username)
+        run_agent_browser("fill", password_ref, self.config.password)
+        run_agent_browser("fill", captcha_ref, str(captcha_answer))
+        run_agent_browser("eval", "document.forms[0].submit()")
 
         # Wait for login
         time.sleep(5)
+        return run_agent_browser("get", "url")
 
-        # Check if we're on the home page
-        url = run_agent_browser("get url")
+    def login(self) -> LoginAttempt:
+        # Try browser-based login with captcha solving
+        session_dir = "/tmp/opencode"
+        session_path = f"{session_dir}/rajagiri_session.json"
 
-        if "login" in url:
-            # Login failed, check for error
-            snapshot = run_agent_browser("snapshot")
-            if "CAPTCHA is invalid or expired" in snapshot:
-                # Retry once
-                run_agent_browser("open https://student.rajagiritech.ac.in/login")
-                time.sleep(2)
-                run_agent_browser(f'eval "{js}"')
-                time.sleep(5)
-                url = run_agent_browser("get url")
+        # Ensure session directory exists
+        import os
+        os.makedirs(session_dir, exist_ok=True)
+
+        # Close any existing browser session
+        try:
+            run_agent_browser("close", timeout=10)
+        except Exception:
+            pass
+
+        url = self._attempt_login()
+        if "login" in url and "CAPTCHA is invalid or expired" in run_agent_browser("snapshot"):
+            url = self._attempt_login()  # fresh page means a fresh captcha
 
         authenticated = "login" not in url
 
         if authenticated:
             # Save session state
-            run_agent_browser(f"state save {session_path}")
+            run_agent_browser("state", "save", session_path)
 
             # Load cookies from session
             with open(session_path, "r") as f:
