@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "generated_at": "2026-11-22T06:13:24.847110+00:00",
+    "generated_at": "2026-11-23T11:50:50.549705+00:00",
     "source": "student.rajagiritech.ac.in",
     "page_url": "https://student.rajagiritech.ac.in/qp_downloads",
-    "paper_count": 3355,
+    "paper_count": 3359,
     "notes": []
   },
   "papers": [
@@ -1092,6 +1092,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/215498.pdf"
+        ]
+      }
+    },
+    {
+      "id": "f29c33f4fdf2c104",
+      "sl_no": "3360",
+      "question_paper_code": "Advanced Data Structures and Algorithms",
+      "course_name": "Advanced Data Structures and Algorithms",
+      "course_code": "202902/CO100B",
+      "actual_subject_code": null,
+      "semester": "S1",
+      "exam_type": "Regular",
+      "admission_year": 2026,
+      "exam_month": "November",
+      "exam_year": 2026,
+      "raw_exam_details": "S1 M.Tech End Semester Examinations (2026 admns.) November 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/216928.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Course Name",
+          "Course Code",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "3360",
+          "Advanced Data Structures and Algorithms",
+          "202902/CO100B",
+          "S1 M.Tech End Semester Examinations (2026 admns.) November 2026",
+          "Download"
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/216928.pdf"
         ]
       }
     },
@@ -2253,7 +2287,7 @@
     },
     {
       "id": "e810388e7056cae0",
-      "sl_no": "3355",
+      "sl_no": "3357",
       "question_paper_code": "Advanced Microcontrollers & Real Time Operating Systems",
       "course_name": "Advanced Microcontrollers & Real Time Operating Systems",
       "course_code": "202105/EC100A",
@@ -2274,7 +2308,7 @@
           "Download"
         ],
         "cells": [
-          "3355",
+          "3357",
           "Advanced Microcontrollers & Real Time Operating Systems",
           "202105/EC100A",
           "S1 M.Tech End Semester Examinations (2026 admns.) November 2026",
@@ -4152,6 +4186,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/215495.pdf"
+        ]
+      }
+    },
+    {
+      "id": "9934dfc2738b147d",
+      "sl_no": "3356",
+      "question_paper_code": "Algorithms and Complexity",
+      "course_name": "Algorithms and Complexity",
+      "course_code": "202102/CS100B",
+      "actual_subject_code": null,
+      "semester": "S1",
+      "exam_type": "Regular",
+      "admission_year": 2026,
+      "exam_month": "November",
+      "exam_year": 2026,
+      "raw_exam_details": "S1 M.Tech End Semester Examinations (2026 admns.) November 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/217061.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Course Name",
+          "Course Code",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "3356",
+          "Algorithms and Complexity",
+          "202102/CS100B",
+          "S1 M.Tech End Semester Examinations (2026 admns.) November 2026",
+          "Download"
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/217061.pdf"
         ]
       }
     },
@@ -15580,6 +15648,40 @@
       }
     },
     {
+      "id": "52c5d878f52107d0",
+      "sl_no": "3345",
+      "question_paper_code": "Calculus and Linear Algebra",
+      "course_name": "Calculus and Linear Algebra",
+      "course_code": "102908/MA100B",
+      "actual_subject_code": null,
+      "semester": "S1",
+      "exam_type": "Regular",
+      "admission_year": 2026,
+      "exam_month": "November",
+      "exam_year": 2026,
+      "raw_exam_details": "S1 Btech End Semester Examinations (2026 admns.) November 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/217036.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Course Name",
+          "Course Code",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "3345",
+          "Calculus and Linear Algebra",
+          "102908/MA100B",
+          "S1 Btech End Semester Examinations (2026 admns.) November 2026",
+          "Download"
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/217036.pdf"
+        ]
+      }
+    },
+    {
       "id": "e9065dd4118f01c5",
       "sl_no": "1851",
       "question_paper_code": "Calculus and Transforms",
@@ -17344,6 +17446,40 @@
         ],
         "links": [
           "https://student.rajagiritech.ac.in/storage/qp/215504.pdf"
+        ]
+      }
+    },
+    {
+      "id": "f67235ad914b9452",
+      "sl_no": "3358",
+      "question_paper_code": "CMOS VLSI Design",
+      "course_name": "CMOS VLSI Design",
+      "course_code": "202105/EC100B",
+      "actual_subject_code": null,
+      "semester": "S1",
+      "exam_type": "Regular",
+      "admission_year": 2026,
+      "exam_month": "November",
+      "exam_year": 2026,
+      "raw_exam_details": "S1 M.Tech End Semester Examinations (2026 admns.) November 2026",
+      "download_url": "https://student.rajagiritech.ac.in/storage/qp/216940.pdf",
+      "source_row": {
+        "headers": [
+          "Sl.no",
+          "Course Name",
+          "Course Code",
+          "Exam",
+          "Download"
+        ],
+        "cells": [
+          "3358",
+          "CMOS VLSI Design",
+          "202105/EC100B",
+          "S1 M.Tech End Semester Examinations (2026 admns.) November 2026",
+          "Download"
+        ],
+        "links": [
+          "https://student.rajagiritech.ac.in/storage/qp/216940.pdf"
         ]
       }
     },
@@ -40503,7 +40639,7 @@
     },
     {
       "id": "6a6719755a662677",
-      "sl_no": "3347",
+      "sl_no": "3348",
       "question_paper_code": "Discrete Mathematics",
       "course_name": "Discrete Mathematics",
       "course_code": "102009/MA100A",
@@ -40524,7 +40660,7 @@
           "Download"
         ],
         "cells": [
-          "3347",
+          "3348",
           "Discrete Mathematics",
           "102009/MA100A",
           "S1 Btech End Semester Examinations (2026 admns.) November 2026",
@@ -44039,7 +44175,7 @@
     },
     {
       "id": "d52ed7467bf693d8",
-      "sl_no": "3351",
+      "sl_no": "3352",
       "question_paper_code": "Embedded System Design#",
       "course_name": "Embedded System Design#",
       "course_code": "202105/EC301A",
@@ -44060,7 +44196,7 @@
           "Download"
         ],
         "cells": [
-          "3351",
+          "3352",
           "Embedded System Design#",
           "202105/EC301A",
           "MTech. Degree Third Semester (2025 admission) End Semester Examination",
@@ -50057,7 +50193,7 @@
     },
     {
       "id": "c76c749490d17bbb",
-      "sl_no": "3346",
+      "sl_no": "3347",
       "question_paper_code": "Engineering Physics A",
       "course_name": "Engineering Physics A",
       "course_code": "102906/PH900A",
@@ -50078,7 +50214,7 @@
           "Download"
         ],
         "cells": [
-          "3346",
+          "3347",
           "Engineering Physics A",
           "102906/PH900A",
           "S1 Btech End Semester Examinations (2026 admns.) November 2026",
@@ -50669,7 +50805,7 @@
     },
     {
       "id": "44d5e73790ae33e8",
-      "sl_no": "3345",
+      "sl_no": "3346",
       "question_paper_code": "Engineering Physics B",
       "course_name": "Engineering Physics B",
       "course_code": "102902/PH900A",
@@ -50690,7 +50826,7 @@
           "Download"
         ],
         "cells": [
-          "3345",
+          "3346",
           "Engineering Physics B",
           "102902/PH900A",
           "S1 Btech End Semester Examinations (2026 admns.) November 2026",
@@ -53015,7 +53151,7 @@
     },
     {
       "id": "3d9f8bd781909205",
-      "sl_no": "3352",
+      "sl_no": "3353",
       "question_paper_code": "Finite Element Method",
       "course_name": "Finite Element Method",
       "course_code": "102006/ME702A",
@@ -53036,7 +53172,7 @@
           "Download"
         ],
         "cells": [
-          "3352",
+          "3353",
           "Finite Element Method",
           "102006/ME702A",
           "S7 Btech Regular (2023 admns.) October 2026",
@@ -67907,7 +68043,7 @@
     },
     {
       "id": "84ee450b735ca8b7",
-      "sl_no": "3348",
+      "sl_no": "3349",
       "question_paper_code": "Introductory Topics In Statistics, Probability and Calculus",
       "course_name": "Introductory Topics In Statistics, Probability and Calculus",
       "course_code": "102009/MA100B",
@@ -67928,7 +68064,7 @@
           "Download"
         ],
         "cells": [
-          "3348",
+          "3349",
           "Introductory Topics In Statistics, Probability and Calculus",
           "102009/MA100B",
           "S1 Btech End Semester Examinations (2026 admns.) November 2026",
@@ -75999,7 +76135,7 @@
     },
     {
       "id": "d6e2b4ed17fc24ae",
-      "sl_no": "3354",
+      "sl_no": "3355",
       "question_paper_code": "Mathematical Foundations",
       "course_name": "Mathematical Foundations",
       "course_code": "202902/MA100A",
@@ -76020,7 +76156,7 @@
           "Download"
         ],
         "cells": [
-          "3354",
+          "3355",
           "Mathematical Foundations",
           "202902/MA100A",
           "S1 M.Tech End Semester Examinations (2026 admns.) November 2026",
@@ -76135,7 +76271,7 @@
     },
     {
       "id": "5e25112ccbbe8097",
-      "sl_no": "3353",
+      "sl_no": "3354",
       "question_paper_code": "Mathematical Foundations for Data Science",
       "course_name": "Mathematical Foundations for Data Science",
       "course_code": "202108/MA100A",
@@ -76156,7 +76292,7 @@
           "Download"
         ],
         "cells": [
-          "3353",
+          "3354",
           "Mathematical Foundations for Data Science",
           "202108/MA100A",
           "S1 M.Tech End Semester Examinations (2026 admns.) November 2026",
@@ -76237,7 +76373,7 @@
     },
     {
       "id": "4c7f40b87e0271a8",
-      "sl_no": "3356",
+      "sl_no": "3359",
       "question_paper_code": "Mathematical Foundations for Machine Learning",
       "course_name": "Mathematical Foundations for Machine Learning",
       "course_code": "202107/MA100A",
@@ -76258,7 +76394,7 @@
           "Download"
         ],
         "cells": [
-          "3356",
+          "3359",
           "Mathematical Foundations for Machine Learning",
           "202107/MA100A",
           "S1 M.Tech End Semester Examinations (2026 admns.) November 2026",
@@ -98439,7 +98575,7 @@
     },
     {
       "id": "0f23bbd44682acc1",
-      "sl_no": "3349",
+      "sl_no": "3350",
       "question_paper_code": "Reinforcement Learning#",
       "course_name": "Reinforcement Learning#",
       "course_code": "202902/CO303A",
@@ -98460,7 +98596,7 @@
           "Download"
         ],
         "cells": [
-          "3349",
+          "3350",
           "Reinforcement Learning#",
           "202902/CO303A",
           "MTech. Degree Third Semester (2025 admission) End Semester Examination",
@@ -103845,7 +103981,7 @@
     },
     {
       "id": "91944b49764c484c",
-      "sl_no": "3350",
+      "sl_no": "3351",
       "question_paper_code": "Software Testing#",
       "course_name": "Software Testing#",
       "course_code": "202902/CS301A",
@@ -103866,7 +104002,7 @@
           "Download"
         ],
         "cells": [
-          "3350",
+          "3351",
           "Software Testing#",
           "202902/CS301A",
           "MTech. Degree Third Semester (2025 admission) End Semester Examination",
