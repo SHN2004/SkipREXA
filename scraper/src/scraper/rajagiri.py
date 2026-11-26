@@ -214,7 +214,6 @@ def build_paper(row: RawTableRow, page_url: str) -> QuestionPaper | None:
         exam_year=exam_year,
         raw_exam_details=raw_exam_details,
         download_url=normalize_link(download_url, page_url),
-        source_row=row,
     )
 
 

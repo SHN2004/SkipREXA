@@ -36,7 +36,6 @@ class QuestionPaper(BaseModel):
     exam_year: int | None = None
     raw_exam_details: str | None = None
     download_url: str
-    source_row: RawTableRow
 
 
 class ScrapeMetadata(BaseModel):
